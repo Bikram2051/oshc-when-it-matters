@@ -1,0 +1,32 @@
+[project]
+name = "oshc-when-it-matters"
+version = "0.1.0"
+description = "Team D5 prototype. COS70008 Technology Innovation Research and Project, Medibank x Swinburne."
+requires-python = ">=3.11"
+dependencies = [
+  "streamlit>=1.38",
+  "pydantic>=2.8",
+  "sentence-transformers>=3.0",
+  "rank-bm25>=0.2.2",
+  "numpy>=1.26",
+  "scikit-learn>=1.5",
+  "rapidfuzz>=3.9",
+  "pymupdf>=1.24",
+  "reportlab>=4.2",
+  "textstat>=0.7",
+  "wordfreq>=3.1",
+  "lingua-language-detector>=2.0",
+  "pandas>=2.2",
+  "plotly>=5.23",
+  "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3", "ruff>=0.6"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100

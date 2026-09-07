@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mock Billing Email</title>
+<style>
+ body{font-family:Georgia,serif;margin:0;background:#eceff1;color:#1a1a1a}
+ .mail{max-width:640px;margin:32px auto;background:#fff;border:1px solid #d5d9dd;padding:28px}
+ .from{font-size:13px;color:#6b7280;border-bottom:1px solid #eee;padding-bottom:12px}
+ .cta{display:inline-block;background:#1c3f60;color:#fff;text-decoration:none;
+      padding:10px 18px;border-radius:4px;font-family:system-ui,sans-serif}
+ .note{font-size:12px;color:#6b7280;margin-top:28px;font-family:system-ui,sans-serif}
+</style>
+</head>
+<body>
+<div class="mail">
+  <div class="from">From: accounts@example-clinic.test<br>Subject: Your account is ready</div>
+  <p>Your account for the consultation on 14 October is now available.</p>
+  <p><strong>Amount charged: $95.00</strong></p>
+  <p><a class="cta" href="http://localhost:8501/Bill_Explainer?sample=gp_simple">
+     What does this mean?</a></p>
+  <p class="note">Mock email built by Team D5 for demonstration. The linked document is a
+  synthetic invoice. No real patient, provider or account exists.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,7 @@
+category,description,benefit_basis,value,pds_page,captured_on
+gp_out_of_hospital,Out of hospital medical service listed on the MBS,percent_of_mbs,,TO FILL FROM PDS,
+specialist_out_of_hospital,Out of hospital specialist consultation,percent_of_mbs,,TO FILL FROM PDS,
+pathology_out_of_hospital,Out of hospital pathology,percent_of_mbs,,TO FILL FROM PDS,
+prescription_pbs,Pharmaceutical listed under the PBS arrangement,abstain,,TO FILL FROM PDS,
+hospital_accommodation,Shared ward accommodation in an agreement hospital,abstain,,TO FILL FROM PDS,
+ambulance,Emergency ambulance transport,abstain,,TO FILL FROM PDS,

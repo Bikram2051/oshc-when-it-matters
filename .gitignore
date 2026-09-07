@@ -1,0 +1,28 @@
+# Secrets. Never commit.
+.env
+*.key
+
+# Third-party content we may store for research but must not republish.
+corpus/*
+!corpus/.gitkeep
+!corpus/manifest.json
+
+# Anything resembling a real document. Belt and braces.
+**/real/**
+*.real.pdf
+
+# Held-out evaluation material. Released on evaluation day only.
+data/heldout/*
+!data/heldout/.gitkeep
+
+# Local
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/events.sqlite
+.DS_Store
+.idea/
+.vscode/
+
+# NOTE: cache/llm/ is deliberately NOT ignored. It is committed.

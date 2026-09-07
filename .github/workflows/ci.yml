@@ -1,0 +1,20 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install test dependencies only
+        run: pip install pydantic pytest
+      - name: Contract, arithmetic and guardrail tests
+        run: python -m pytest tests -q
+      - name: Fail if a secret or a real document was committed
+        run: |
+          if git ls-files | grep -E '(^\.env$|\.key$|/real/)'; then
+            echo "Blocked: secret or real-document path is tracked."; exit 1
+          fi
+          echo "No secrets or real documents tracked."

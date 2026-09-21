@@ -28,3 +28,4 @@ data/events.sqlite
 # NOTE: cache/llm/ is deliberately NOT ignored. It is committed.
 
 data/freeze/
+*.egg-info/

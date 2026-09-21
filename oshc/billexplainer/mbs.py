@@ -149,7 +149,9 @@ def normalise_item_number(raw: str | None) -> str:
     return ""
 
 
-def load_mbs_csv(path: str | Path, column_map: dict[str, str] | None = None) -> list[MbsRow]:
+def load_mbs_csv(
+    path: str | Path, column_map: dict[str, str] | None = None
+) -> list[MbsRow]:
     """Read an MBS export into rows.
 
     column_map renames the export's own headers onto REQUIRED_COLUMNS, because
@@ -161,7 +163,9 @@ def load_mbs_csv(path: str | Path, column_map: dict[str, str] | None = None) -> 
     with open(path, newline="", encoding="utf-8-sig") as fh:
         lines = [ln for ln in fh if not ln.lstrip().startswith("#")]
     reader = csv.DictReader(lines)
-    headers = [column_map.get(h, h) if column_map else h for h in (reader.fieldnames or [])]
+    headers = [
+        column_map.get(h, h) if column_map else h for h in (reader.fieldnames or [])
+    ]
     missing = [c for c in REQUIRED_COLUMNS if c not in headers]
     if missing:
         raise ValueError(
@@ -172,7 +176,9 @@ def load_mbs_csv(path: str | Path, column_map: dict[str, str] | None = None) -> 
         row = {column_map.get(k, k) if column_map else k: v for k, v in raw.items()}
         item = normalise_item_number(row.get("ItemNum"))
         desc = (row.get("Description") or "").strip()
-        fee_raw = (row.get("ScheduleFee") or "").replace("$", "").replace(",", "").strip()
+        fee_raw = (
+            (row.get("ScheduleFee") or "").replace("$", "").replace(",", "").strip()
+        )
         if not item or not desc or not fee_raw:
             continue
         rows.append(
@@ -268,8 +274,14 @@ def to_sqlite(rows: list[MbsRow], db_path: str | Path) -> int:
         con.executemany(
             "INSERT OR REPLACE INTO mbs_items VALUES (?,?,?,?,?,?)",
             [
-                (r.item_number, r.description, normalise(r.description),
-                 str(r.schedule_fee), r.category, r.captured_on)
+                (
+                    r.item_number,
+                    r.description,
+                    normalise(r.description),
+                    str(r.schedule_fee),
+                    r.category,
+                    r.captured_on,
+                )
                 for r in rows
             ],
         )
@@ -283,11 +295,17 @@ def from_sqlite(db_path: str | Path) -> MbsIndex:
     con = sqlite3.connect(db_path)
     try:
         cur = con.execute(
-            "SELECT item_number, description, schedule_fee, category, captured_on FROM mbs_items"
+            "SELECT item_number, description, schedule_fee, category, captured_on FROM "
+            "mbs_items"
         )
         rows = [
-            MbsRow(item_number=i, description=d, schedule_fee=Decimal(f),
-                   category=c, captured_on=o)
+            MbsRow(
+                item_number=i,
+                description=d,
+                schedule_fee=Decimal(f),
+                category=c,
+                captured_on=o,
+            )
             for i, d, f, c, o in cur.fetchall()
         ]
     finally:

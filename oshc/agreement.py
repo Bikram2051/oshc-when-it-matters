@@ -7,6 +7,7 @@ record sets align exactly and every label is inside the permitted set.
 
 Owner: Bikram Bhattarai.
 """
+
 from __future__ import annotations
 
 import random
@@ -49,7 +50,7 @@ def cohens_kappa(a: list[str], b: list[str]) -> KappaResult:
 
     n = len(a)
     cats = tuple(sorted(set(a) | set(b)))
-    observed = sum(1 for x, y in zip(a, b) if x == y) / n
+    observed = sum(1 for x, y in zip(a, b, strict=True) if x == y) / n
 
     ca, cb = Counter(a), Counter(b)
     expected = sum((ca[c] / n) * (cb[c] / n) for c in cats)
@@ -59,7 +60,8 @@ def cohens_kappa(a: list[str], b: list[str]) -> KappaResult:
         # chance agreement is already total. Say so rather than dividing by zero.
         raise ValueError(
             "kappa undefined: expected agreement is 1.0 because both coders used "
-            "a single category. Report percentage agreement and the distribution instead."
+            "a single category. Report percentage agreement and the distribution "
+            "instead."
         )
 
     kappa = (observed - expected) / (1 - expected)
@@ -80,8 +82,13 @@ def cohens_kappa(a: list[str], b: list[str]) -> KappaResult:
     )
 
 
-def bootstrap_ci(a: list[str], b: list[str], iterations: int = 2000,
-                 seed: int = 20260919, alpha: float = 0.05) -> tuple[float, float]:
+def bootstrap_ci(
+    a: list[str],
+    b: list[str],
+    iterations: int = 2000,
+    seed: int = 20260919,
+    alpha: float = 0.05,
+) -> tuple[float, float]:
     """Percentile bootstrap. Resamples pairs, not labels."""
     rng = random.Random(seed)
     n = len(a)
@@ -93,7 +100,9 @@ def bootstrap_ci(a: list[str], b: list[str], iterations: int = 2000,
         except ValueError:
             continue  # degenerate resample, skip it
     if len(draws) < iterations * 0.5:
-        raise ValueError("too many degenerate resamples; n is too small for a bootstrap CI")
+        raise ValueError(
+            "too many degenerate resamples; n is too small for a bootstrap CI"
+        )
     draws.sort()
     lo = draws[int((alpha / 2) * len(draws))]
     hi = draws[int((1 - alpha / 2) * len(draws)) - 1]

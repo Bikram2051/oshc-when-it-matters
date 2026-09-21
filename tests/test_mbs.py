@@ -6,6 +6,8 @@ behaviour tested here is about WHEN TO REFUSE, not when to match.
 
 Owner: Bikram Bhattarai. Reviewer: Aayush Khade.
 """
+
+import dataclasses
 from pathlib import Path
 
 import pytest
@@ -29,6 +31,7 @@ def index():
 
 # --- item number path -------------------------------------------------------
 
+
 def test_exact_item_number_matches_with_full_confidence(index):
     m = match(index, item_number="99023", description="anything at all")
     assert m.matched is True
@@ -44,7 +47,9 @@ def test_item_number_wins_over_a_conflicting_description(index):
 
 
 def test_unknown_item_number_falls_back_to_description(index):
-    m = match(index, item_number="00000", description="Level B consultation, consulting rooms")
+    m = match(
+        index, item_number="00000", description="Level B consultation, consulting rooms"
+    )
     assert m.matched is True
     assert m.item_number == "99023"
 
@@ -65,6 +70,7 @@ def test_two_numbers_in_the_item_field_abstain_rather_than_pick_one(index):
 
 
 # --- description path -------------------------------------------------------
+
 
 def test_close_description_matches_above_the_floor(index):
     m = match(index, description="level b consultation consulting rooms")
@@ -94,6 +100,7 @@ def test_empty_description_abstains_rather_than_raising(index):
 
 # --- invariants that protect the benefit figure ----------------------------
 
+
 def test_an_unmatched_result_never_carries_a_descriptor_or_fee(index):
     m = match(index, description="consumables and dressings")
     assert m.matched is False
@@ -110,7 +117,7 @@ def test_a_matched_result_always_carries_a_fee(index):
 
 def test_result_is_immutable(index):
     m = match(index, item_number="99023", description="")
-    with pytest.raises(Exception):
+    with pytest.raises(dataclasses.FrozenInstanceError):
         m.matched = False
 
 
@@ -121,16 +128,21 @@ def test_score_is_always_a_fraction(index):
 
 # --- normalisation ----------------------------------------------------------
 
-@pytest.mark.parametrize("raw,expected", [
-    ("  Level   B  CONSULTATION ", "level b consultation"),
-    ("Pathology - episode (out of hospital)", "pathology episode out of hospital"),
-    ("Consult,  Level  B.", "consult level b"),
-])
+
+@pytest.mark.parametrize(
+    "raw,expected",
+    [
+        ("  Level   B  CONSULTATION ", "level b consultation"),
+        ("Pathology - episode (out of hospital)", "pathology episode out of hospital"),
+        ("Consult,  Level  B.", "consult level b"),
+    ],
+)
 def test_normalise_strips_case_punctuation_and_runs_of_space(raw, expected):
     assert normalise(raw) == expected
 
 
 # --- loader -----------------------------------------------------------------
+
 
 def test_loader_rejects_a_file_missing_a_required_column(tmp_path):
     bad = tmp_path / "bad.csv"
@@ -154,10 +166,16 @@ def test_index_is_built_from_every_row(index):
 # These exist because token_set_ratio scores a subset at 1.0. Found by manual
 # probing after the first suite went green, not by the suite itself.
 
+
 def test_a_bare_generic_line_does_not_inherit_a_specific_item(index):
     """'Consultation' must not silently become Level B and pick up its fee."""
-    for vague in ("Consultation", "consult", "Doctor's fee", "Medical service",
-                  "consultation, consulting rooms"):
+    for vague in (
+        "Consultation",
+        "consult",
+        "Doctor's fee",
+        "Medical service",
+        "consultation, consulting rooms",
+    ):
         m = match(index, description=vague)
         assert m.matched is False, f"over-matched on: {vague!r}"
         assert m.schedule_fee is None
@@ -169,10 +187,13 @@ def test_wording_matching_two_items_equally_abstains_with_a_useful_note():
 
     from oshc.billexplainer.mbs import AMBIGUOUS_NOTE, MbsRow
 
-    tied = build_index([
-        MbsRow("99901", "physiotherapy session type a", Decimal("60.00")),
-        MbsRow("99902", "physiotherapy session type b", Decimal("95.00")),
-    ], source_file="tied.csv")
+    tied = build_index(
+        [
+            MbsRow("99901", "physiotherapy session type a", Decimal("60.00")),
+            MbsRow("99902", "physiotherapy session type b", Decimal("95.00")),
+        ],
+        source_file="tied.csv",
+    )
     m = match(tied, description="physiotherapy session type")
     assert m.matched is False
     assert m.note == AMBIGUOUS_NOTE

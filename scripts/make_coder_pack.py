@@ -23,7 +23,7 @@ from __future__ import annotations
 import argparse
 import json
 import random
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import openpyxl
@@ -38,8 +38,7 @@ CODES = {
     "C5": "Choosing the right service",
     "C6": "Emergency and urgent help",
     "S": (
-        "No comprehension gap: a service complaint, or a disliked policy term "
-        "the person understood"
+        "No comprehension gap: a service complaint, or a disliked policy term the person understood"
     ),
 }
 FILL_ME = PatternFill("solid", fgColor="FFF2CC")
@@ -250,9 +249,7 @@ def main() -> int:
         ex = ins.cell(
             row=row,
             column=3,
-            value=(
-                a["snippet"][:150] if a else "no agreed example, use the rules above"
-            ),
+            value=(a["snippet"][:150] if a else "no agreed example, use the rules above"),
         )
         ex.font = Font(name="Times New Roman", size=10, italic=True)
         ex.alignment = Alignment(wrap_text=True, vertical="top")
@@ -288,9 +285,7 @@ def main() -> int:
             cell.font = BODY
 
     last = len(order) + 2
-    dv_code = DataValidation(
-        type="list", formula1='"' + ",".join(CODES) + '"', allow_blank=True
-    )
+    dv_code = DataValidation(type="list", formula1='"' + ",".join(CODES) + '"', allow_blank=True)
     dv_gap = DataValidation(type="list", formula1='"Y,N"', allow_blank=True)
     sh.add_data_validation(dv_code)
     sh.add_data_validation(dv_gap)
@@ -307,16 +302,14 @@ def main() -> int:
 
     meta = {
         "coder": args.coder,
-        "built_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "built_at_utc": datetime.now(UTC).isoformat(timespec="seconds"),
         "master": Path(args.master).name,
         "shuffle_seed": args.seed,
         "records_in_pack": len(order),
         "first_person_total": len(first_person),
         "withheld_as_anchors": withheld,
         "codes_without_commenter_anchor": [
-            c
-            for c in CODES
-            if anchors.get(c) in (None,) or anchors[c]["role"] != "Commenter"
+            c for c in CODES if anchors.get(c) in (None,) or anchors[c]["role"] != "Commenter"
         ],
     }
     (out_dir / f"coder_pack_{args.coder.lower()}_manifest.json").write_text(
@@ -324,9 +317,7 @@ def main() -> int:
     )
 
     print(f"pack written      : {out}")
-    print(
-        f"records in pack   : {len(order)} of {len(first_person)} first-person records"
-    )
+    print(f"records in pack   : {len(order)} of {len(first_person)} first-person records")
     print(f"withheld as anchor: {', '.join(withheld) or 'none'}")
     print(f"shuffle seed      : {args.seed}")
     print()

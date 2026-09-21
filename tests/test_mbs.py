@@ -47,9 +47,7 @@ def test_item_number_wins_over_a_conflicting_description(index):
 
 
 def test_unknown_item_number_falls_back_to_description(index):
-    m = match(
-        index, item_number="00000", description="Level B consultation, consulting rooms"
-    )
+    m = match(index, item_number="00000", description="Level B consultation, consulting rooms")
     assert m.matched is True
     assert m.item_number == "99023"
 

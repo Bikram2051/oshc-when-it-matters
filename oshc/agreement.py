@@ -100,9 +100,7 @@ def bootstrap_ci(
         except ValueError:
             continue  # degenerate resample, skip it
     if len(draws) < iterations * 0.5:
-        raise ValueError(
-            "too many degenerate resamples; n is too small for a bootstrap CI"
-        )
+        raise ValueError("too many degenerate resamples; n is too small for a bootstrap CI")
     draws.sort()
     lo = draws[int((alpha / 2) * len(draws))]
     hi = draws[int((1 - alpha / 2) * len(draws)) - 1]

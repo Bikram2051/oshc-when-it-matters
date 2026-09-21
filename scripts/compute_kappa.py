@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import openpyxl
@@ -31,9 +31,7 @@ GAPS = {"Y", "N"}
 
 def read_master(path: Path) -> dict[str, dict]:
     rows = list(
-        openpyxl.load_workbook(path, data_only=True)["Review Coding"].iter_rows(
-            values_only=True
-        )
+        openpyxl.load_workbook(path, data_only=True)["Review Coding"].iter_rows(values_only=True)
     )
     h = [str(x).strip() if x else "" for x in rows[0]]
     i = {n: h.index(n) for n in h}
@@ -51,11 +49,7 @@ def read_master(path: Path) -> dict[str, dict]:
 
 
 def read_pack(path: Path) -> dict[str, dict]:
-    rows = list(
-        openpyxl.load_workbook(path, data_only=True)["Coding"].iter_rows(
-            values_only=True
-        )
-    )
+    rows = list(openpyxl.load_workbook(path, data_only=True)["Coding"].iter_rows(values_only=True))
     h = [str(x).strip() if x else "" for x in rows[0]]
     i = {n: h.index(n) for n in h}
     out = {}
@@ -84,20 +78,12 @@ def main() -> int:
     problems = []
     missing = [k for k in pack if k not in master]
     if missing:
-        problems.append(
-            f"{len(missing)} pack ID(s) not in the master: {', '.join(missing[:5])}"
-        )
+        problems.append(f"{len(missing)} pack ID(s) not in the master: {', '.join(missing[:5])}")
     unfilled = [k for k, v in pack.items() if not v["code1"] or not v["gap"]]
     if unfilled:
         problems.append(f"{len(unfilled)} row(s) not coded: {', '.join(unfilled[:5])}")
-    bad = [
-        f"{k}={v['code1']}"
-        for k, v in pack.items()
-        if v["code1"] and v["code1"] not in CODES
-    ]
-    bad += [
-        f"{k}={v['gap']}" for k, v in pack.items() if v["gap"] and v["gap"] not in GAPS
-    ]
+    bad = [f"{k}={v['code1']}" for k, v in pack.items() if v["code1"] and v["code1"] not in CODES]
+    bad += [f"{k}={v['gap']}" for k, v in pack.items() if v["gap"] and v["gap"] not in GAPS]
     if bad:
         problems.append(f"label(s) outside the permitted set: {', '.join(bad[:5])}")
     if problems:
@@ -124,10 +110,7 @@ def main() -> int:
         print(f"  n                  : {r.n}")
         print(f"  agreement          : {r.observed_agreement:.1%}")
         print(f"  expected by chance : {r.expected_agreement:.1%}")
-        print(
-            f"  kappa              : {r.kappa:.3f}"
-            f"  95% CI [{r.ci_low:.3f}, {r.ci_high:.3f}]"
-        )
+        print(f"  kappa              : {r.kappa:.3f}  95% CI [{r.ci_low:.3f}, {r.ci_high:.3f}]")
         print(f"  reading            : {r.interpretation()}")
         weak = {k: v for k, v in (r.per_category or {}).items() if v < 0.7}
         if weak:
@@ -151,7 +134,7 @@ def main() -> int:
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    stamp = datetime.now(UTC).isoformat(timespec="seconds")
     (out_dir / f"agreement_{stamp[:10]}.json").write_text(
         json.dumps(
             {
@@ -159,8 +142,7 @@ def main() -> int:
                 "coders": ["Bikram", args.second_coder],
                 "n": len(ids),
                 "results": {
-                    k: {kk: vv for kk, vv in v.__dict__.items()}
-                    for k, v in results.items()
+                    k: {kk: vv for kk, vv in v.__dict__.items()} for k, v in results.items()
                 },
                 "disagreements": disagreements,
             },

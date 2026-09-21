@@ -20,7 +20,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import openpyxl
@@ -32,17 +32,13 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--workbook", required=True)
     ap.add_argument("--sheet", default="Review Coding")
-    ap.add_argument(
-        "--coder", required=True, help="value in the Coder column to freeze"
-    )
+    ap.add_argument("--coder", required=True, help="value in the Coder column to freeze")
     ap.add_argument("--out", default="data/freeze")
     args = ap.parse_args()
 
     wb = openpyxl.load_workbook(args.workbook, data_only=True)
     if args.sheet not in wb.sheetnames:
-        print(
-            f"error: no sheet named {args.sheet!r}. Found: {', '.join(wb.sheetnames)}"
-        )
+        print(f"error: no sheet named {args.sheet!r}. Found: {', '.join(wb.sheetnames)}")
         return 1
     rows = list(wb[args.sheet].iter_rows(values_only=True))
     header = [str(h).strip() if h else "" for h in rows[0]]
@@ -56,17 +52,11 @@ def main() -> int:
     for r in rows[1:]:
         if str(r[idx["Coder"]]).strip() != args.coder:
             continue
-        labels.append(
-            {f: ("" if r[idx[f]] is None else str(r[idx[f]]).strip()) for f in FIELDS}
-        )
+        labels.append({f: ("" if r[idx[f]] is None else str(r[idx[f]]).strip()) for f in FIELDS})
 
     if not labels:
-        coders = sorted(
-            {str(r[idx["Coder"]]).strip() for r in rows[1:] if r[idx["Coder"]]}
-        )
-        print(
-            f"error: no rows with Coder == {args.coder!r}. Present: {', '.join(coders)}"
-        )
+        coders = sorted({str(r[idx["Coder"]]).strip() for r in rows[1:] if r[idx["Coder"]]})
+        print(f"error: no rows with Coder == {args.coder!r}. Present: {', '.join(coders)}")
         return 1
 
     uncoded = [rec["Review ID"] for rec in labels if not rec["Code 1"]]
@@ -78,11 +68,9 @@ def main() -> int:
         return 1
 
     labels.sort(key=lambda d: d["Review ID"])
-    canonical = json.dumps(
-        labels, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    )
+    canonical = json.dumps(labels, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
-    now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    now = datetime.now(UTC).isoformat(timespec="seconds")
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -110,13 +98,8 @@ def main() -> int:
     print(f"sha256       : {digest}")
     print(f"written to   : {out}")
     print()
-    print(
-        "Post the sha256, the record count and the timestamp in the team channel now."
-    )
-    print(
-        "Do not post the file. The hash is the proof; the labels are the thing being "
-        "proved."
-    )
+    print("Post the sha256, the record count and the timestamp in the team channel now.")
+    print("Do not post the file. The hash is the proof; the labels are the thing being proved.")
     return 0
 
 

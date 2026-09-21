@@ -79,12 +79,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--source", required=True, help="official MBS export, .csv or .xml")
     ap.add_argument("--db", default="data/mbs/mbs.sqlite")
-    ap.add_argument(
-        "--captured-on", required=True, help="the date you downloaded it, YYYY-MM-DD"
-    )
-    ap.add_argument(
-        "--map", default="", help="EXPORTCOL=OurCol pairs, comma separated (csv only)"
-    )
+    ap.add_argument("--captured-on", required=True, help="the date you downloaded it, YYYY-MM-DD")
+    ap.add_argument("--map", default="", help="EXPORTCOL=OurCol pairs, comma separated (csv only)")
     args = ap.parse_args()
 
     src = Path(args.source)
@@ -115,10 +111,7 @@ def main() -> int:
     print(f"sha256      : {digest}")
     print(f"captured_on : {args.captured_on}")
     print(f"rows written: {written}")
-    print(
-        f"first row   : {sample.item_number} | {sample.description[:60]}"
-        f" | {sample.schedule_fee}"
-    )
+    print(f"first row   : {sample.item_number} | {sample.description[:60]} | {sample.schedule_fee}")
     print()
     print("Record the sha256 and captured_on in the minutes. The fee table is")
     print("evidence, and evidence without provenance is not evidence.")

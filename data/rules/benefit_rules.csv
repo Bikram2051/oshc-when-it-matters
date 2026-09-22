@@ -1,7 +1,7 @@
 category,description,benefit_basis,value,pds_page,captured_on
-gp_out_of_hospital,Out of hospital medical service listed on the MBS,percent_of_mbs,,TO FILL FROM PDS,
-specialist_out_of_hospital,Out of hospital specialist consultation,percent_of_mbs,,TO FILL FROM PDS,
-pathology_out_of_hospital,Out of hospital pathology,percent_of_mbs,,TO FILL FROM PDS,
-prescription_pbs,Pharmaceutical listed under the PBS arrangement,abstain,,TO FILL FROM PDS,
-hospital_accommodation,Shared ward accommodation in an agreement hospital,abstain,,TO FILL FROM PDS,
-ambulance,Emergency ambulance transport,abstain,,TO FILL FROM PDS,
+gp_out_of_hospital,Out of hospital GP consultation listed on the MBS,percent_of_mbs,100,Member Guide p.17,2026-09-21
+specialist_out_of_hospital,Out of hospital specialist consultation listed on the MBS,percent_of_mbs,85,Member Guide p.17,2026-09-21
+pathology_out_of_hospital,Out of hospital pathology listed on the MBS,percent_of_mbs,85,Member Guide p.17,2026-09-21
+prescription_pbs,Prescription medicine,abstain,,Member Guide p.24 (amounts in Cover Summary only),2026-09-21
+hospital_accommodation,Hospital accommodation,abstain,,Member Guide p.19 (depends on hospital type),2026-09-21
+ambulance,Emergency ambulance transport,abstain,,Member Guide p.25 (no amount stated),2026-09-21

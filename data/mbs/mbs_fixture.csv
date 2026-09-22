@@ -1,0 +1,9 @@
+# SYNTHETIC FIXTURE. Not real MBS data. Item numbers in the 99xxx range are
+# invented so they can never be mistaken for genuine MBS items, and the fees
+# are arbitrary. Tests only. The real table is built by scripts/load_mbs.py
+# from the official MBS export downloaded from mbsonline.gov.au.
+ItemNum,Description,ScheduleFee,Category,CapturedOn
+99023,"Level B consultation, consulting rooms",42.85,1,2026-09-19
+99036,"Level C consultation, consulting rooms",83.00,1,2026-09-19
+99104,"Specialist, initial referred consultation",91.80,1,2026-09-19
+99806,"Pathology episode, out of hospital",25.70,6,2026-09-19

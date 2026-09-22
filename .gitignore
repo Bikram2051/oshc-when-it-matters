@@ -26,3 +26,6 @@ data/events.sqlite
 .vscode/
 
 # NOTE: cache/llm/ is deliberately NOT ignored. It is committed.
+
+data/freeze/
+*.egg-info/

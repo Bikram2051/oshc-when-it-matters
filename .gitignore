@@ -5,7 +5,7 @@
 # Third-party content we may store for research but must not republish.
 corpus/*
 !corpus/.gitkeep
-!corpus/manifest.json
+!corpus/MANIFEST.csv
 
 # Anything resembling a real document. Belt and braces.
 **/real/**

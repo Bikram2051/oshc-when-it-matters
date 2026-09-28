@@ -43,6 +43,7 @@ def main(argv: list[str] | None = None) -> None:
         sys.exit("openpyxl is not installed. Run: uv pip install openpyxl  (or: python -m pip install openpyxl)")
 
     sheet = load_workbook(args.xlsx, read_only=True, data_only=True).worksheets[0]
+    sheet.reset_dimensions()
     rows = sheet.iter_rows(values_only=True)
     header = next(rows, None)
     if not header:

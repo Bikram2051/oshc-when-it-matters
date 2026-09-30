@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "custodian": "Md Minhaj Rahman",
+  "reported_by": "Bikram Bhattarai",
+  "reported_in_chat_on": "2026-10-01",
+  "record_written_at_utc": "2026-09-30T16:46:25.756426+00:00",
+  "original_freeze_timestamp": null,
+  "status": "Reported hashes recorded; underlying files not verified.",
+  "heldout_contents_accessed_by_this_script": false,
+  "files": [
+    {
+      "filename": "specialist_gap.json",
+      "sha256": "4da51538222dc7ba257e3ac108d1c370949c2010a7bf416c8c92ba1584369349"
+    },
+    {
+      "filename": "hospital_mixed.json",
+      "sha256": "54c22002acf9e0bc33a6b3f6405e4ce94dd5fc49fc1be39f6b944339922979a7"
+    }
+  ],
+  "verification_required": [
+    "Retain the original dated freeze message.",
+    "Verify file hashes before evaluation.",
+    "Keep held-out contents out of development work and tools.",
+    "Do not tune against held-out results."
+  ]
+}

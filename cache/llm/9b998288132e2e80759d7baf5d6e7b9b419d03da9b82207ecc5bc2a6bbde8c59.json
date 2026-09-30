@@ -1,0 +1,10 @@
+{
+  "model": "claude-haiku-4-5-20251001",
+  "params": {
+    "temperature": 0.0,
+    "max_tokens": 1024,
+    "image": null
+  },
+  "prompt": "Say hello in one short sentence.",
+  "response": "Hello!"
+}

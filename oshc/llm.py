@@ -18,6 +18,10 @@ import os
 from pathlib import Path
 from typing import Any
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 CACHE_DIR = Path(__file__).resolve().parent.parent / "cache" / "llm"
 
 
@@ -76,12 +80,35 @@ def complete(
 def _call_provider(
     prompt: str, model: str, temperature: float, max_tokens: int, image_path: str | None
 ) -> str:
-    """Single place that talks to a network. Implemented in Week 6, day 1.
+    """Call the Anthropic provider and return text only."""
 
-    Keep every provider detail inside this function. Nothing else in the
-    codebase may import a provider SDK.
-    """
-    raise NotImplementedError(
-        "Implement the provider call here. Owner: Aayush. "
-        "Read the key from OSHC_API_KEY. Never commit .env."
-    )
+    import anthropic
+
+    api_key = os.getenv("OSHC_API_KEY")
+    if not api_key:
+        raise RuntimeError(
+            "OSHC_API_KEY is not set. Add it to your local .env file."
+        )
+
+    client = anthropic.Anthropic(api_key=api_key)
+
+    request = {
+        "model": model,
+        "max_tokens": max_tokens,
+        "messages": [
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+    }
+
+    # Haiku uses temperature=0.
+    # Current Anthropic SDKs pass this through extra_body.
+    # Sonnet does not receive a temperature parameter.
+    if "haiku" in model.lower():
+        request["extra_body"] = {"temperature": 0}
+
+    response = client.messages.create(**request)
+
+    return response.content[0].text

@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "request_sha256": "3f85f25a9e65976aaa59cf24bb4212078958e05480464753c1b1588762796384",
+  "model": "claude-haiku-4-5-20251001",
+  "created_at": "2026-09-30T17:13:41.871563+00:00",
+  "message_id": "msg_011CfZzu4pXGAGx63w8aS8Sq",
+  "stop_reason": "end_turn",
+  "input_tokens": 91,
+  "output_tokens": 13,
+  "response": "```json\n{\"status\":\"ok\"}\n```",
+  "response_sha256": "db5aa671aa871ef5ea156fb349884a02456974de9db22ed1f631cb4223823f16"
+}

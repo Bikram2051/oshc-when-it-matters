@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -161,6 +162,17 @@ def complete(prompt: str, *, model=None, temperature=0.0, max_tokens=1024,
     return text
 
 
+def _json_payload(response: str) -> str:
+    '''Unwrap one complete JSON code fence; leave other content for validation.'''
+    text = response.strip()
+    fenced = re.fullmatch(
+        r"```(?:json)?[ \t]*\r?\n(.*?)\r?\n```",
+        text,
+        flags=re.DOTALL | re.IGNORECASE,
+    )
+    return fenced.group(1) if fenced else text
+
+
 def complete_json(prompt: str, schema: type[BaseModel], *, system="",
                   max_tokens=2048, repair=False):
     '''Validate cached and live output. One separately budgeted repair is opt-in.'''
@@ -171,7 +183,7 @@ def complete_json(prompt: str, schema: type[BaseModel], *, system="",
     for attempt in range(2 if repair else 1):
         response = complete(prompt, system=instruction, max_tokens=max_tokens)
         try:
-            return schema.model_validate_json(response, strict=True)
+            return schema.model_validate_json(_json_payload(response), strict=True)
         except ValidationError:
             if not repair or attempt == 1:
                 raise OutputValidationError("Model output did not match the required schema.") from None

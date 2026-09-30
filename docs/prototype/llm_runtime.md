@@ -34,3 +34,12 @@ References:
 - https://platform.claude.com/docs/en/about-claude/pricing
 - https://platform.claude.com/docs/en/build-with-claude/token-counting
 - https://platform.claude.com/docs/en/cli-sdks-libraries/sdks/python
+
+
+JSON formatting correction, 2026-10-01:
+- The live connection test returned correct JSON inside a Markdown code fence.
+- Parsing now accepts raw JSON or one whole code fence labelled json or unlabelled.
+- Surrounding prose, multiple values and schema violations remain rejected.
+- Strict Pydantic validation, API requests and cache keys are unchanged.
+- Original response bytes are preserved; normalization happens only while parsing.
+- Fourteen offline regression cases cover accepted and rejected response formats.

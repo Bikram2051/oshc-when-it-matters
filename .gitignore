@@ -29,3 +29,6 @@ data/events.sqlite
 
 data/freeze/
 *.egg-info/
+
+# Persistent local API spending ledger
+/data/private_runtime/

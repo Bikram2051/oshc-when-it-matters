@@ -46,5 +46,7 @@ Tests use synthetic development inputs and mocked model responses, plus a real
 adapter offline cache-miss check. They verify software behaviour, not model
 accuracy, clinical safety or independent evaluation performance.
 
-A controlled synthetic API extraction and cached replay remain to be verified.
+Controlled synthetic API extraction and offline replay were verified; see
+bill_llm_check.json. This checks integration on one constructed example,
+not model accuracy on independent invoices.
 Held-out invoice families have not been opened or used for this implementation.

@@ -1,0 +1,71 @@
+{
+  "checked_at_utc": "2026-10-01T01:03:24.341497+00:00",
+  "implementation_commit": "a4dfa97",
+  "data_role": "AI-authored synthetic development fixture; integration check, not independent evaluation",
+  "model": "claude-haiku-4-5-20251001",
+  "source_file": "data/demo_dev/llm_reader_example.txt",
+  "normalised_input_sha256": "cc24d33fcc8e4cdde2047e1b2906b22eedc548751dd47e3d30b78c7c07e34988",
+  "cache_file": "cache/llm/v2/79edc78aed0b2db4131b17dd5ff136e5e14f94371f7acdcc998e0ec85f8e4134.json",
+  "cache_file_sha256_at_check": "481c37f6bff2b791910bdf26bcac1453171d32f53d213d9226e0635fafbf201b",
+  "response_sha256": "f4749a345e5d6090bd336b1690921dad2572c7f1b4fddef2fc9680f31304b308",
+  "request_sha256": "79edc78aed0b2db4131b17dd5ff136e5e14f94371f7acdcc998e0ec85f8e4134",
+  "input_tokens": 1383,
+  "output_tokens": 230,
+  "requests": {
+    "token_count_requests": 1,
+    "paid_request_attempts": 1
+  },
+  "additional_cost_usd": 0.002533,
+  "checks": {
+    "expected_rows": true,
+    "missing_benefits_and_gaps_unknown": true,
+    "offline_replay_equal": true,
+    "uncached_offline_input_blocked": true,
+    "offline_budget_unchanged": true,
+    "offline_cache_bytes_unchanged": true
+  },
+  "budget_after": {
+    "currency": "USD",
+    "limit": 8.0,
+    "spent_or_reserved": 0.002689,
+    "remaining": 7.997311,
+    "unsettled_calls": 0,
+    "blocked_for_review": false
+  },
+  "result": {
+    "extractor": "llm",
+    "source_kind": "pasted_text",
+    "line_items": [
+      {
+        "raw_description": "Short consultation",
+        "item_number": "23",
+        "charged": 90.0,
+        "benefit_paid": null,
+        "gap": null,
+        "mbs_descriptor": null,
+        "mbs_match_score": null,
+        "matched": false,
+        "note": "LLM-selected evidence, verified at source lines 5-8."
+      },
+      {
+        "raw_description": "Administration fee",
+        "item_number": null,
+        "charged": 15.0,
+        "benefit_paid": null,
+        "gap": null,
+        "mbs_descriptor": null,
+        "mbs_match_score": null,
+        "matched": false,
+        "note": "LLM-selected evidence, verified at source lines 10-12."
+      }
+    ],
+    "provider": "Demonstration Clinic",
+    "service_date": "2026-09-01",
+    "total_charged": 105.0,
+    "total_benefit": null,
+    "total_gap": null,
+    "warnings": [
+      "Check against the original bill. Source checks do not establish completeness, coverage or real-world accuracy."
+    ]
+  }
+}

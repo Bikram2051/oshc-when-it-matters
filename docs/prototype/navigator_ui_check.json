@@ -1,0 +1,51 @@
+{
+  "checked_at_utc": "2026-10-01T14:53:55.065715+00:00",
+  "scope": "AI-assisted source-browser engineering checks, not held-out retrieval or safety evaluation.",
+  "source_sha256": "6ca7151567ee2b61f8e6b50340c297d50deb249a013f055ef38f50ed07ec87c7",
+  "topic_checks": [
+    {
+      "topic": "Making a claim",
+      "selected_chunk": "medibank-columns-v1-6ca7151567ee-p04-right",
+      "pdf_page": 4,
+      "exact_source_text": true
+    },
+    {
+      "topic": "Waiting periods",
+      "selected_chunk": "medibank-columns-v1-6ca7151567ee-p21-right",
+      "pdf_page": 21,
+      "exact_source_text": true
+    },
+    {
+      "topic": "Membership card",
+      "selected_chunk": "medibank-columns-v1-6ca7151567ee-p08-left",
+      "pdf_page": 8,
+      "exact_source_text": true
+    },
+    {
+      "topic": "Direct billing",
+      "selected_chunk": "medibank-columns-v1-6ca7151567ee-p28-right",
+      "pdf_page": 28,
+      "exact_source_text": true
+    },
+    {
+      "topic": "Ambulance services",
+      "selected_chunk": "medibank-columns-v1-6ca7151567ee-p25-left",
+      "pdf_page": 25,
+      "exact_source_text": true
+    },
+    {
+      "topic": "Medicare Benefits Schedule",
+      "selected_chunk": "medibank-columns-v1-6ca7151567ee-p17-left",
+      "pdf_page": 17,
+      "exact_source_text": true
+    }
+  ],
+  "claim_instructions_page_28": true,
+  "table_page_19_available": true,
+  "adjacent_page_navigation": true,
+  "personal_question_input": false,
+  "generated_answers": false,
+  "additional_api_calls": 0,
+  "protected_files_unchanged": true,
+  "budget_unchanged": true
+}

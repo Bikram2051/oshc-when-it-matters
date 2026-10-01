@@ -1,0 +1,144 @@
+{
+  "checked_at_utc": "2026-10-01T14:35:52.541847+00:00",
+  "scope": "AI-assisted engineering checks using known source topics; not held-out Recall@5.",
+  "source_sha256": "6ca7151567ee2b61f8e6b50340c297d50deb249a013f055ef38f50ed07ec87c7",
+  "captured_on": "2026-09-28",
+  "effective_month": "2026-05",
+  "physical_pages": 37,
+  "profile": "medibank-columns-v1",
+  "pymupdf_version": "1.28.2",
+  "index_sha256": "fca64412fe31827ff42ab5ad6ed816d84a793105bb2cc98b3c1990496040954f",
+  "chunk_count": 61,
+  "indexed_pages": [
+    3,
+    4,
+    5,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36
+  ],
+  "omitted_pages": {
+    "1": "Cover, used for effective-date verification",
+    "2": "Front matter",
+    "6": "Contents",
+    "7": "Contents",
+    "19": "Hospital Benefits table: inspect the original PDF table",
+    "37": "Back cover"
+  },
+  "search_method": "BM25Okapi baseline",
+  "search_smoke_checks": [
+    {
+      "query": "Medicare Benefits Schedule",
+      "expected_any_page": [
+        17
+      ],
+      "returned_pages": [
+        17,
+        20,
+        27,
+        36,
+        9
+      ],
+      "passed": true
+    },
+    {
+      "query": "making a claim",
+      "expected_any_page": [
+        28,
+        29
+      ],
+      "returned_pages": [
+        4,
+        28,
+        29,
+        30,
+        31
+      ],
+      "passed": true
+    },
+    {
+      "query": "waiting periods",
+      "expected_any_page": [
+        21
+      ],
+      "returned_pages": [
+        21,
+        8,
+        14,
+        8,
+        20
+      ],
+      "passed": true
+    },
+    {
+      "query": "membership card",
+      "expected_any_page": [
+        8
+      ],
+      "returned_pages": [
+        8,
+        9,
+        10,
+        29,
+        10
+      ],
+      "passed": true
+    },
+    {
+      "query": "direct billing",
+      "expected_any_page": [
+        28
+      ],
+      "returned_pages": [
+        28,
+        31,
+        30,
+        10,
+        35
+      ],
+      "passed": true
+    },
+    {
+      "query": "ambulance services",
+      "expected_any_page": [
+        25
+      ],
+      "returned_pages": [
+        25,
+        25,
+        28,
+        3,
+        22
+      ],
+      "passed": true
+    }
+  ],
+  "protected_files_unchanged": true,
+  "budget_unchanged": true,
+  "additional_api_calls": 0
+}

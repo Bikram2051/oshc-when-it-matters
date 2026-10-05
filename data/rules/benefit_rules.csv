@@ -5,3 +5,5 @@ pathology_out_of_hospital,Out of hospital pathology listed on the MBS,percent_of
 prescription_pbs,Prescription medicine,abstain,,Member Guide p.24 (amounts in Cover Summary only),2026-09-21
 hospital_accommodation,Hospital accommodation,abstain,,Member Guide p.19 (depends on hospital type),2026-09-21
 ambulance,Emergency ambulance transport,abstain,,Member Guide p.25 (no amount stated),2026-09-21
+radiology_out_of_hospital,Out of hospital radiology services such as x-rays listed on the MBS,percent_of_mbs,85,Member Guide p.17,2026-10-05
+allied_health_out_of_hospital,Out of hospital allied health services billed with an MBS item number,percent_of_mbs,85,Member Guide p.17,2026-10-05

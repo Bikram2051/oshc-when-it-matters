@@ -61,3 +61,10 @@ def test_decision_is_immutable():
     d = check("what is a gap payment")
     with pytest.raises(Exception):
         d.verdict = V.REFUSE_ADVICE
+
+def test_numeric_substring_does_not_trigger_emergency():
+    assert check("What is item 1000 in the MBS?").verdict is V.ALLOW
+
+
+def test_emergency_word_boundary_is_preserved():
+    assert check("What does emergency department mean?").verdict is V.ESCALATE_EMERGENCY

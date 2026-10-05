@@ -19,19 +19,35 @@ import re
 
 from oshc.schemas import GuardrailDecision, GuardrailVerdict
 
-# Emergency terms exit to the official health pathway and 000 by rule, never
-# by model. A false negative here is unacceptable, so this list is generous
-# and the false-refusal cost is accepted.
+
 EMERGENCY_TERMS: tuple[str, ...] = (
-    "ambulance", "unconscious", "not breathing", "cant breathe", "can't breathe",
-    "chest pain", "heart attack", "stroke", "seizure", "overdose", "poisoning",
-    "severe bleeding", "bleeding heavily", "suicidal", "kill myself", "self harm",
-    "anaphylaxis", "allergic reaction", "broken bone", "head injury", "000",
-    "emergency", "urgent care now", "life threatening",
+    "ambulance",
+    "unconscious",
+    "not breathing",
+    "cant breathe",
+    "can't breathe",
+    "chest pain",
+    "heart attack",
+    "stroke",
+    "seizure",
+    "overdose",
+    "poisoning",
+    "severe bleeding",
+    "bleeding heavily",
+    "suicidal",
+    "kill myself",
+    "self harm",
+    "anaphylaxis",
+    "allergic reaction",
+    "broken bone",
+    "head injury",
+    "000",
+    "emergency",
+    "urgent care now",
+    "life threatening",
 )
 
-# Requests for a determination about THIS person's cover or reimbursement.
-# These are personal financial product advice under s 766B.
+
 ADVICE_PATTERNS: tuple[str, ...] = (
     r"\b(am|are)\s+i\s+covered\b",
     r"\bis\s+(my|this)\s+.{0,40}\bcovered\b",
@@ -43,8 +59,7 @@ ADVICE_PATTERNS: tuple[str, ...] = (
     r"\bmy\s+(policy|membership|claim)\s+.{0,30}\b(cover|pay|reimburse)\b",
 )
 
-# Requests for assessment of symptoms. Navigator never maps symptoms to a
-# service; there is no such code path in this repository.
+
 CLINICAL_PATTERNS: tuple[str, ...] = (
     r"\bi\s+(have|feel|am\s+feeling|got)\s+.{0,40}\b(pain|ache|fever|rash|sick|nausea|dizzy)\b",
     r"\bwhat\s+(is\s+)?wrong\s+with\s+me\b",
@@ -53,6 +68,7 @@ CLINICAL_PATTERNS: tuple[str, ...] = (
     r"\bis\s+(this|it)\s+serious\b",
     r"\bmy\s+symptoms?\b",
 )
+
 
 _ADVICE_RE = [re.compile(p, re.IGNORECASE) for p in ADVICE_PATTERNS]
 _CLINICAL_RE = [re.compile(p, re.IGNORECASE) for p in CLINICAL_PATTERNS]
@@ -64,10 +80,11 @@ def _normalise(text: str) -> str:
 
 def check(text: str) -> GuardrailDecision:
     """Layer 1 gazetteer check. Order matters: emergency wins over everything."""
+
     norm = _normalise(text)
 
     for term in EMERGENCY_TERMS:
-        if term in norm:
+        if re.search(rf"(?<!\w){re.escape(term)}(?!\w)", norm):
             return GuardrailDecision(
                 verdict=GuardrailVerdict.ESCALATE_EMERGENCY,
                 layer="gazetteer",
@@ -92,7 +109,10 @@ def check(text: str) -> GuardrailDecision:
                 trigger=match.group(0),
             )
 
-    return GuardrailDecision(verdict=GuardrailVerdict.ALLOW, layer="none")
+    return GuardrailDecision(
+        verdict=GuardrailVerdict.ALLOW,
+        layer="none",
+    )
 
 
 REFUSAL_TEXT: dict[GuardrailVerdict, str] = {

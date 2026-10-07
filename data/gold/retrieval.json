@@ -1,0 +1,305 @@
+[
+  {
+    "id": 1,
+    "query": "What does Medibank OSHC provide benefits towards?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p3:c1"]
+  },
+  {
+    "id": 2,
+    "query": "What is the purpose of the Medibank OSHC Member Guide?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p3:c1"]
+  },
+  {
+    "id": 3,
+    "query": "Who is eligible for Medibank OSHC?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p5:c1"]
+  },
+  {
+    "id": 4,
+    "query": "When does Medibank OSHC cover start?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p12:c1"]
+  },
+  {
+    "id": 5,
+    "query": "What happens when a member transfers from another Australian insurer?",
+    "relevant_chunk_ids": [
+      "Medibank_OSHC_Member_Guide.pdf:p8:c1",
+      "Medibank_OSHC_Member_Guide.pdf:p12:c1"
+    ]
+  },
+  {
+    "id": 6,
+    "query": "When can unused OSHC premiums be refunded?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p13:c1"]
+  },
+  {
+    "id": 7,
+    "query": "Who can be included as a member of Medibank OSHC?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p14:c1"]
+  },
+  {
+    "id": 8,
+    "query": "What is an inpatient service?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p15:c1"]
+  },
+  {
+    "id": 9,
+    "query": "What is an outpatient service?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p15:c1"]
+  },
+  {
+    "id": 10,
+    "query": "What does MBS mean?",
+    "relevant_chunk_ids": [
+      "Medibank_OSHC_Member_Guide.pdf:p17:c1",
+      "Medibank_OSHC_Member_Guide.pdf:p36:c1"
+    ]
+  },
+  {
+    "id": 11,
+    "query": "What benefit is available for included in-hospital medical services?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p17:c1"]
+  },
+  {
+    "id": 12,
+    "query": "Can a doctor charge more than the MBS fee?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p17:c1"]
+  },
+  {
+    "id": 13,
+    "query": "What are Members' Choice hospitals?",
+    "relevant_chunk_ids": [
+      "Medibank_OSHC_Member_Guide.pdf:p16:c1",
+      "Medibank_OSHC_Member_Guide.pdf:p36:c1"
+    ]
+  },
+  {
+    "id": 14,
+    "query": "What factors affect hospital benefits?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p20:c1"]
+  },
+  {
+    "id": 15,
+    "query": "Is there a waiting period for pre-existing conditions?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p22:c1"]
+  },
+  {
+    "id": 16,
+    "query": "What is the waiting period for pregnancy and birth?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p23:c1"]
+  },
+  {
+    "id": 17,
+    "query": "What prescription medicines can receive benefits?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p24:c1"]
+  },
+  {
+    "id": 18,
+    "query": "When is ambulance treatment covered?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p25:c1"]
+  },
+  {
+    "id": 19,
+    "query": "What mental health benefits are available under Comprehensive OSHC?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p26:c1"]
+  },
+  {
+    "id": 20,
+    "query": "What services are excluded from OSHC benefits?",
+    "relevant_chunk_ids": [
+      "Medibank_OSHC_Member_Guide.pdf:p27:c1",
+      "Medibank_OSHC_Member_Guide.pdf:p28:c1"
+    ]
+  },
+  {
+    "id": 21,
+    "query": "How can an OSHC member submit a claim?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p29:c1"]
+  },
+  {
+    "id": 22,
+    "query": "What online services are available to Medibank OSHC members?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p10:c1"]
+  },
+  {
+    "id": 23,
+    "query": "What support services are available to OSHC students?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p30:c1"]
+  },
+  {
+    "id": 24,
+    "query": "What is a recognised provider?",
+    "relevant_chunk_ids": ["Medibank_OSHC_Member_Guide.pdf:p31:c1"]
+  },
+  {
+    "id": 25,
+    "query": "What is an MBS item?",
+    "relevant_chunk_ids": [
+      "Medibank_OSHC_Member_Guide.pdf:p17:c1",
+      "Medibank_OSHC_Member_Guide.pdf:p36:c1"
+    ]
+  },
+  {
+    "id": 26,
+    "query": "What MBS item covers a short general practitioner consultation?",
+    "relevant_chunk_ids": ["MBS-XML-20260801.XML:c1"]
+  },
+  {
+    "id": 27,
+    "query": "What does the MBS say about general practitioner attendance?",
+    "relevant_chunk_ids": ["MBS-XML-20260801.XML:c2"]
+  },
+  {
+    "id": 28,
+    "query": "What MBS service applies to a longer general practitioner consultation?",
+    "relevant_chunk_ids": ["MBS-XML-20260801.XML:c3"]
+  },
+  {
+    "id": 29,
+    "query": "What MBS services are available for specialist consultations?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c7",
+      "MBS-XML-20260801.XML:c8"
+    ]
+  },
+  {
+    "id": 30,
+    "query": "What is a specialist attendance following referral?",
+    "relevant_chunk_ids": ["MBS-XML-20260801.XML:c7"]
+  },
+  {
+    "id": 31,
+    "query": "What MBS services are available for consultant physicians?",
+    "relevant_chunk_ids": ["MBS-XML-20260801.XML:c14"]
+  },
+  {
+    "id": 32,
+    "query": "What MBS services involve psychiatry?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c35",
+      "MBS-XML-20260801.XML:c142"
+    ]
+  },
+  {
+    "id": 33,
+    "query": "What MBS items involve psychology health services?",
+    "relevant_chunk_ids": ["MBS-XML-20260801.XML:c1001"]
+  },
+  {
+    "id": 34,
+    "query": "What MBS services involve X-ray procedures?",
+    "relevant_chunk_ids": ["MBS-XML-20260801.XML:c830"]
+  },
+  {
+    "id": 35,
+    "query": "What MBS services involve ultrasound examinations?",
+    "relevant_chunk_ids": ["MBS-XML-20260801.XML:c236"]
+  },
+  {
+    "id": 36,
+    "query": "What MBS services involve pathology?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c123",
+      "MBS-XML-20260801.XML:c124"
+    ]
+  },
+  {
+    "id": 37,
+    "query": "What MBS services involve blood tests?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c1001"
+    ]
+  },
+  {
+    "id": 38,
+    "query": "What MBS services involve dental treatment?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c357",
+      "MBS-XML-20260801.XML:c639"
+    ]
+  },
+  {
+    "id": 39,
+    "query": "What MBS services involve tooth extraction?",
+    "relevant_chunk_ids": ["MBS-XML-20260801.XML:c357"]
+  },
+   {
+    "id": 40,
+    "query": "What MBS services involve anaesthesia for dental extraction?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c357"
+    ]
+  },
+  {
+    "id": 41,
+    "query": "What MBS service is available for an HbA1c test in established diabetes?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c980"
+    ]
+  },
+  {
+    "id": 42,
+    "query": "What MBS services involve MRI scans?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c867"
+    ]
+  },
+  {
+    "id": 43,
+    "query": "What MBS services involve ultrasound during a procedure?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c236",
+      "MBS-XML-20260801.XML:c262"
+    ]
+  },
+  {
+    "id": 44,
+    "query": "What MBS service covers a specialist attendance following a referral?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c7"
+    ]
+  },
+  {
+    "id": 45,
+    "query": "What MBS service covers a specialist attendance for a scheduled operation on the same day?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c8"
+    ]
+  },
+  {
+    "id": 46,
+    "query": "What MBS service covers a consultant physician reviewing a patient with multiple morbidities?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c14"
+    ]
+  },
+  {
+    "id": 47,
+    "query": "What MBS service covers a long psychiatric consultation following referral?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c35"
+    ]
+  },
+  {
+    "id": 48,
+    "query": "What MBS service involves a video consultation with a consultant psychiatrist?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c142"
+    ]
+  },
+  {
+    "id": 49,
+    "query": "What MBS service involves psychology treatment under chronic condition management arrangements?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c1001"
+    ]
+  },
+  {
+    "id": 50,
+    "query": "What MBS services involve GP consultations of different durations?",
+    "relevant_chunk_ids": [
+      "MBS-XML-20260801.XML:c2",
+      "MBS-XML-20260801.XML:c3"
+    ]
+  }
+]

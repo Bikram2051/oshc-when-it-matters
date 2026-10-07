@@ -137,7 +137,7 @@
   },
   {
     "id": 20,
-    "query": "What services are excluded from OSHC benefits?",
+    "query": "What treatments, services, and situations are excluded from Medibank OSHC benefits?",
     "relevant_chunk_ids": [
       "Medibank_OSHC_Member_Guide.pdf:p27:c1",
       "Medibank_OSHC_Member_Guide.pdf:p28:c1"
@@ -188,7 +188,7 @@
   },
   {
     "id": 27,
-    "query": "What does the MBS say about general practitioner attendance?",
+    "query": "What MBS items cover GP attendances for short, at least 20-minute, and at least 40-minute consultations?",
     "relevant_chunk_ids": [
       "MBS-XML-20260801.XML:c1",
       "MBS-XML-20260801.XML:c2",
@@ -197,7 +197,7 @@
   },
   {
     "id": 28,
-    "query": "What MBS service applies to a longer general practitioner consultation?",
+    "query": "What MBS items cover GP consultations lasting at least 20 minutes and at least 40 minutes?",
     "relevant_chunk_ids": [
       "MBS-XML-20260801.XML:c2",
       "MBS-XML-20260801.XML:c3"
@@ -205,7 +205,7 @@
   },
   {
     "id": 29,
-    "query": "What MBS services are available for specialist consultations?",
+    "query": "What MBS items cover specialist attendances following referral, including initial, subsequent, and same-day operation attendances?",
     "relevant_chunk_ids": [
       "MBS-XML-20260801.XML:c6",
       "MBS-XML-20260801.XML:c7",
@@ -221,7 +221,7 @@
   },
   {
     "id": 31,
-    "query": "What MBS services are available for consultant physicians?",
+    "query": "What MBS items cover consultant physician attendances following referral, including initial, subsequent, minor, and complex assessments?",
     "relevant_chunk_ids": [
       "MBS-XML-20260801.XML:c7",
       "MBS-XML-20260801.XML:c8",
@@ -233,7 +233,7 @@
   },
   {
     "id": 32,
-    "query": "What MBS services involve psychiatry?",
+    "query": "What MBS items cover psychiatric consultant physician attendances following referral, including different consultation durations and settings?",
     "relevant_chunk_ids": [
       "MBS-XML-20260801.XML:c35",
       "MBS-XML-20260801.XML:c36",
@@ -245,7 +245,7 @@
   },
   {
     "id": 33,
-    "query": "What MBS items involve psychology health services?",
+    "query": "What MBS item covers a psychology health service for a patient with a chronic condition and complex care needs?",
     "relevant_chunk_ids": [
       "MBS-XML-20260801.XML:c1001"
     ]
@@ -263,42 +263,36 @@
   },
   {
     "id": 35,
-    "query": "What MBS services involve ultrasound examinations?",
+    "query": "What MBS service involves ultrasound imaging in conjunction with a surgical procedure?",
     "relevant_chunk_ids": [
-      "MBS-XML-20260801.XML:c236",
-      "MBS-XML-20260801.XML:c262",
-      "MBS-XML-20260801.XML:c790",
-      "MBS-XML-20260801.XML:c795",
-      "MBS-XML-20260801.XML:c799"
+      "MBS-XML-20260801.XML:c788"
     ]
   },
   {
     "id": 36,
-    "query": "What MBS services involve pathology?",
+    "query": "What MBS pathology items cover haemoglobin, haematocrit, erythrocyte count, and microscopy of urine?",
     "relevant_chunk_ids": [
       "MBS-XML-20260801.XML:c979"
     ]
   },
   {
     "id": 37,
-    "query": "What MBS services involve blood tests?",
+    "query": "What MBS pathology item covers examination of a blood film, including differential leucocyte count, haemoglobin, haematocrit or erythrocyte count?",
     "relevant_chunk_ids": [
       "MBS-XML-20260801.XML:c979"
     ]
   },
   {
     "id": 38,
-    "query": "What MBS services involve dental treatment?",
+    "query": "What MBS items cover dental imaging, including teeth X-rays and orthopantomography?",
     "relevant_chunk_ids": [
-      "MBS-XML-20260801.XML:c357",
-      "MBS-XML-20260801.XML:c763",
       "MBS-XML-20260801.XML:c831",
       "MBS-XML-20260801.XML:c832"
     ]
   },
   {
     "id": 39,
-    "query": "What MBS services involve tooth extraction?",
+    "query": "What MBS item covers the initiation of anaesthesia for extraction of a tooth or teeth?",
     "relevant_chunk_ids": [
       "MBS-XML-20260801.XML:c357"
     ]
@@ -330,10 +324,9 @@
   },
   {
     "id": 43,
-    "query": "What MBS services involve ultrasound during a procedure?",
+    "query": "What MBS service involves ultrasound imaging in conjunction with a surgical procedure?",
     "relevant_chunk_ids": [
-      "MBS-XML-20260801.XML:c236",
-      "MBS-XML-20260801.XML:c262"
+      "MBS-XML-20260801.XML:c788"
     ]
   },
   {
@@ -359,14 +352,14 @@
   },
   {
     "id": 47,
-    "query": "What MBS service covers a long psychiatric consultation following referral?",
+    "query": "What MBS item covers a psychiatric consultant physician attendance of at least 45 minutes for a patient under 25 with a complex neurodevelopmental disorder?",
     "relevant_chunk_ids": [
       "MBS-XML-20260801.XML:c35"
     ]
   },
   {
     "id": 48,
-    "query": "What MBS service involves a video consultation with a consultant psychiatrist?",
+    "query": "What MBS item covers a consultant psychiatrist video attendance lasting at least 45 minutes but not more than 75 minutes following referral?",
     "relevant_chunk_ids": [
       "MBS-XML-20260801.XML:c142"
     ]
@@ -380,7 +373,7 @@
   },
   {
     "id": 50,
-    "query": "What MBS services involve GP consultations of different durations?",
+    "query": "What MBS items cover GP consultations lasting at least 20 minutes and at least 40 minutes?",
     "relevant_chunk_ids": [
       "MBS-XML-20260801.XML:c2",
       "MBS-XML-20260801.XML:c3"

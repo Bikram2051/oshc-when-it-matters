@@ -42,11 +42,13 @@ No real personal invoices are requested.
   A rerun or correction must be documented and must not replace the first result silently.
 - Any later extractor tuning requires a new independent set for a fresh performance claim.
 
-## Current limitation
+## Status, 10 October 2026
 
-The two files were not found in the checked data/heldout and Downloads folders.
-This does not establish that they are absent elsewhere. Hashes alone do not provide
-evaluation inputs, ground truth or proof of when the files were frozen.
+Both parameter files were verified against their 24 September hashes on 9 October
+(see heldout_freeze_record.json), so the files themselves are no longer needed.
+Items 1 to 3 and 5 above are still with the custodian. The expected-output format
+(item 4), the order of work and the scoring rules are now fixed in
+extraction_protocol.md.
 
 If the handoff remains unavailable, present held-out extraction accuracy as pending.
 New examples authored during development remain development evidence.

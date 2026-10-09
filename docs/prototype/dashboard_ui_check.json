@@ -1,13 +1,13 @@
 {
-  "checked_at_utc": "2026-10-02T01:11:07.601709+00:00",
-  "scope": "AI-assisted Dashboard integration check. Historical checks were not rerun.",
+  "checked_at_utc": "2026-10-09T05:33:53.826449+00:00",
+  "scope": "Dashboard integration check. Historical checks were not rerun.",
   "input_report_sha256": {
-    "docs/prototype/bill_ui_check.json": "94ee5bfbb0be663e08a145ac5eb5fb6aea6e1d8da82d72980964fb207d0e16c6",
-    "docs/prototype/mbs_reference_check.json": "8a2f1c4568c910d42c64e640ec5ade91b4216e7b4d24cfd1a7a5e0ae8321e473",
-    "docs/prototype/mbs_source_check.json": "ab81d387df1427925787eab611eee7f0498de8334b3cb4b52b983be73f08e936",
-    "docs/prototype/policy_source_check.json": "37c1ebaa4f19635ebd758e5fef0fa4fa137f8344ecf24f7a598703ce13a91779",
-    "docs/prototype/navigator_ui_check.json": "c3c99968d9fb3c04c021c3beab6a2c0e502ddaec0fde56eb1bd794b1adce12f7",
-    "docs/prototype/coach_ui_check.json": "89d6b11a8fb571a57b7ec7b7ccf7c78f9415f6b90cf1bfecc14fd4763e95d393"
+    "docs/prototype/bill_ui_check.json": "e8e43a8d042ce5a528fcbdd53cc644e57a7042b3d55e24d8d5dbdba66dcdae76",
+    "docs/prototype/mbs_reference_check.json": "0a0ac7b9c09b4fa3c808a06717e5d943cce26446f0d427a1329df29f179152b0",
+    "docs/prototype/mbs_source_check.json": "af9887ba70654e75b210a71247f4096ae9382938be7d878a83457d7f2de7c298",
+    "docs/prototype/policy_source_check.json": "9708c4d7f0fe2b58b363ba025c18c1a9213a4815c6e2edbe6ea9ac1724dd2273",
+    "docs/prototype/navigator_ui_check.json": "a0c4ed2fbffcf3d58168650d77db14924e6572bf59a2b81ef60441da6bc35002",
+    "docs/prototype/coach_ui_check.json": "c7f859102965e693298688d37f2fb936de1ea6faedfc6b73d1cd112cf5702373"
   },
   "six_reports_displayed": true,
   "independent_metrics_not_fabricated": true,

@@ -72,6 +72,11 @@ def render():
         st.error("The saved guide could not be verified. Restore the frozen source before browsing.")
         return
 
+    requested_page = st.session_state.pop("nv_requested_page", None)
+    if type(requested_page) is int and 1 <= requested_page <= 37:
+        st.session_state["nv_view"] = PAGE_VIEW
+        st.session_state["nv_page"] = requested_page
+
     st.caption("Medibank OSHC Member Guide | Effective May 2026 | Saved 28 September 2026")
     st.info("Browse the guide for general information. Excerpts do not determine your cover. "
             "Read the original page and surrounding conditions before relying on an excerpt.")

@@ -1,0 +1,18 @@
+{
+    "family": "hospital_mixed",
+    "random_seed": 520761,
+    "provider_type": "hospital",
+    "line_item_count": 2,
+    "allowed_mbs_items": ["99806", "99036", "99806"],
+    "fee_multiplier_range": [2.39, 2.44],
+    "print_item_numbers": true,
+    "layout": "itemised_table",
+    "column_order": [
+      "charged",
+      "benefit_paid",
+      "description",
+      "gap",
+      "service_date"
+    ],
+    "date_format": "%d-%b-%Y"
+  }

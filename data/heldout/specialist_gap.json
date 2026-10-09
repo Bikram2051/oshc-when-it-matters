@@ -1,0 +1,18 @@
+{
+    "family": "specialist_gap",
+    "random_seed": 162534,
+    "provider_type": "Consultant",
+    "line_item_count": 3,
+    "allowed_mbs_items": ["99036", "99806"],
+    "fee_multiplier_range": [3.25, 3.67],
+    "print_item_numbers": true,
+    "layout": "stacked_summary_table",
+    "column_order": [
+      "item_number",
+      "charged",
+      "description",
+      "gap",
+      "benefit_paid"
+    ],
+    "date_format": "%d/%m/%Y"
+  }

@@ -5,6 +5,12 @@
   "reported_in_chat_on": "2026-10-01",
   "record_written_at_utc": "2026-09-30T16:46:25.756426+00:00",
   "original_freeze_timestamp": null,
+  "first_reported": {
+    "by": "Md Minhaj Rahman",
+    "channel": "WhatsApp",
+    "at": "2026-09-24T19:57:00+10:00",
+    "note": "Minhaj sent both hashes at this time, before the 25/09 due date. reported_in_chat_on is when Bikram copied them into this record, not when they were first reported."
+  },
   "status": "Reported hashes recorded; underlying files not verified.",
   "heldout_contents_accessed_by_this_script": false,
   "files": [

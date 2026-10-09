@@ -77,7 +77,7 @@ Three separations, all of which exist so a number can come out badly:
 2. **Guardrail probes.** The dev probe set is in `tests/test_guardrail.py` and is visible to Aayush, who builds the gate. The held-out probe set is authored by Bikram, kept out of the repository, and run once at evaluation. Building against the set you are scored on is not a measurement.
 3. **Coding frame.** All 55 first-person records are coded independently by Bikram and Minhaj, kappa reported, disagreements resolved by discussion, consensus labels frozen before any classifier is trained.
 
-The same separation applies to AI coding tools. The model never sees held-out layout parameters and never sees the held-out probe set.
+The same separation applies to every tool used in development: held-out layout parameters and the held-out probe set are never entered into any of them.
 
 ---
 
@@ -106,4 +106,4 @@ Stated as design decisions, not gaps. Each removes a risk from the Week 5 NIST a
 - No model fine-tuning.
 - No native app, and no script tag embedded in a third-party page.
 
-See `D5_technical_architecture_plan_v2.md` for the full plan, and `CONTRIBUTING.md` for the AI-assisted coding workflow.
+See `D5_technical_architecture_plan_v2.md` for the full plan, and `CONTRIBUTING.md` for the development workflow.

@@ -1,0 +1,2 @@
+# Evidence reports are hashed. Keep their bytes the same on every platform.
+docs/prototype/*.json text eol=lf

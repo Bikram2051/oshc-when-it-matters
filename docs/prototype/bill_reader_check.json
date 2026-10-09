@@ -1,0 +1,78 @@
+{
+  "checked_at_utc": "2026-09-30T17:52:27.672869+00:00",
+  "data_role": "AI-authored synthetic development example, not held-out evaluation",
+  "api_calls": 0,
+  "budget_unchanged": true,
+  "results": {
+    "pasted_text": {
+      "extractor": "rules",
+      "source_kind": "pasted_text",
+      "line_items": [
+        {
+          "raw_description": "Short consultation",
+          "item_number": "23",
+          "charged": 90.0,
+          "benefit_paid": null,
+          "gap": null,
+          "mbs_descriptor": null,
+          "mbs_match_score": null,
+          "matched": false,
+          "note": "Printed values from source line 5."
+        },
+        {
+          "raw_description": "Administration fee",
+          "item_number": null,
+          "charged": 15.0,
+          "benefit_paid": null,
+          "gap": null,
+          "mbs_descriptor": null,
+          "mbs_match_score": null,
+          "matched": false,
+          "note": "Printed values from source line 6."
+        }
+      ],
+      "provider": "Demonstration Clinic",
+      "service_date": "2026-09-01",
+      "total_charged": 105.0,
+      "total_benefit": null,
+      "total_gap": null,
+      "warnings": []
+    },
+    "pdf_text": {
+      "extractor": "rules",
+      "source_kind": "pdf_text",
+      "line_items": [
+        {
+          "raw_description": "Short consultation",
+          "item_number": "23",
+          "charged": 90.0,
+          "benefit_paid": null,
+          "gap": null,
+          "mbs_descriptor": null,
+          "mbs_match_score": null,
+          "matched": false,
+          "note": "Printed values from source line 5."
+        },
+        {
+          "raw_description": "Administration fee",
+          "item_number": null,
+          "charged": 15.0,
+          "benefit_paid": null,
+          "gap": null,
+          "mbs_descriptor": null,
+          "mbs_match_score": null,
+          "matched": false,
+          "note": "Printed values from source line 6."
+        }
+      ],
+      "provider": "Demonstration Clinic",
+      "service_date": "2026-09-01",
+      "total_charged": 105.0,
+      "total_benefit": null,
+      "total_gap": null,
+      "warnings": [
+        "Check extracted rows against the PDF; images and handwriting are not read."
+      ]
+    }
+  }
+}

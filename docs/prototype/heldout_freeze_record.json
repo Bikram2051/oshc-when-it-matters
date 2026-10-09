@@ -11,7 +11,29 @@
     "at": "2026-09-24T19:57:00+10:00",
     "note": "Minhaj sent both hashes at this time, before the 25/09 due date. reported_in_chat_on is when Bikram copied them into this record, not when they were first reported."
   },
-  "status": "Reported hashes recorded; underlying files not verified.",
+  "status": "Hashes verified on 2026-10-09 against the files the custodian pushed and a copy sent to the evaluator; both match the values first reported on 2026-09-24.",
+  "verification": {
+    "date": "2026-10-09",
+    "method": "SHA-256 of both files in PR #16 and of the copy of specialist_gap.json sent to the evaluator",
+    "result": "Match for both files."
+  },
+  "exposure": [
+    {
+      "at": "2026-10-09T18:39:03+11:00",
+      "event": "The custodian pushed both parameter files to the public branch minhaj-heldout-handoff (PR #16).",
+      "resolution": "PR #16 closed without merging and its branch deleted."
+    },
+    {
+      "at": "2026-10-09, evening",
+      "event": "specialist_gap.json was sent to the evaluator and opened in a development tool session."
+    }
+  ],
+  "extractor_freeze": {
+    "commit": "40e04f811ac23be00883ff00b789682314e305ad",
+    "oshc_billexplainer_tree": "bff4a9b244c4e046cb821eb0db9ea8afea147de9",
+    "logic_last_changed": "2026-10-01T04:17:33+10:00",
+    "rule": "No change to oshc/billexplainer, oshc/llm.py, oshc/llm_budget.py or oshc/schemas.py until the held-out run is recorded."
+  },
   "heldout_contents_accessed_by_this_script": false,
   "files": [
     {

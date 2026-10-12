@@ -1,0 +1,18 @@
+{
+  "checked_at_utc": "2026-09-30T17:24:11.963029+00:00",
+  "model": "claude-haiku-4-5-20251001",
+  "source": "Cached live connection test, replayed after parser correction",
+  "cache_file": "cache/llm/v2/3f85f25a9e65976aaa59cf24bb4212078958e05480464753c1b1588762796384.json",
+  "request_sha256": "3f85f25a9e65976aaa59cf24bb4212078958e05480464753c1b1588762796384",
+  "response_sha256": "db5aa671aa871ef5ea156fb349884a02456974de9db22ed1f631cb4223823f16",
+  "validated_result": {
+    "status": "ok"
+  },
+  "offline_replay": "pass",
+  "uncached_offline_request": "blocked",
+  "cache_bytes_unchanged": true,
+  "live_api_calls_during_this_verification": 0,
+  "cached_response_input_tokens": 91,
+  "cached_response_output_tokens": 13,
+  "local_spent_or_reserved_usd": 0.000156
+}

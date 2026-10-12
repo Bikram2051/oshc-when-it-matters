@@ -1,0 +1,19 @@
+{
+  "checked_at_utc": "2026-10-02T01:11:07.601709+00:00",
+  "scope": "AI-assisted Dashboard integration check. Historical checks were not rerun.",
+  "input_report_sha256": {
+    "docs/prototype/bill_ui_check.json": "94ee5bfbb0be663e08a145ac5eb5fb6aea6e1d8da82d72980964fb207d0e16c6",
+    "docs/prototype/mbs_reference_check.json": "8a2f1c4568c910d42c64e640ec5ade91b4216e7b4d24cfd1a7a5e0ae8321e473",
+    "docs/prototype/mbs_source_check.json": "ab81d387df1427925787eab611eee7f0498de8334b3cb4b52b983be73f08e936",
+    "docs/prototype/policy_source_check.json": "37c1ebaa4f19635ebd758e5fef0fa4fa137f8344ecf24f7a598703ce13a91779",
+    "docs/prototype/navigator_ui_check.json": "c3c99968d9fb3c04c021c3beab6a2c0e502ddaec0fde56eb1bd794b1adce12f7",
+    "docs/prototype/coach_ui_check.json": "89d6b11a8fb571a57b7ec7b7ccf7c78f9415f6b90cf1bfecc14fd4763e95d393"
+  },
+  "six_reports_displayed": true,
+  "independent_metrics_not_fabricated": true,
+  "summary_export_available": true,
+  "input_reports_unchanged": true,
+  "protected_files_unchanged": true,
+  "budget_unchanged": true,
+  "additional_api_calls": 0
+}

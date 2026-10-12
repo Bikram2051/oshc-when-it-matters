@@ -32,3 +32,6 @@ data/freeze/
 
 # Persistent local API spending ledger
 /data/private_runtime/
+
+# Public reference documents downloaded from external sources
+data/public_samples/*.pdf

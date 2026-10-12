@@ -13,23 +13,21 @@ Three people, six weeks, 8 to 10 hours each per week. This document is how that 
 
 ---
 
-## AI-assisted coding
+## Development discipline
 
-The unit permits it and this plan assumes it. It works only if the humans do the parts the model cannot.
+These rules keep the work checkable. They apply to every contributor and every tool.
 
-**1. Write the spec first, in the repository.** Every module begins as a pydantic type in `oshc/schemas.py` plus a docstring stating inputs, outputs, and the one thing the function must never do. That docstring is the prompt. If you cannot write it, you do not yet understand the task, and no amount of prompting fixes that.
+**1. Write the spec first, in the repository.** Every module begins as a pydantic type in `oshc/schemas.py` plus a docstring stating inputs, outputs, and the one thing the function must never do. If you cannot write that docstring, you do not yet understand the task.
 
-**2. Tests before code for anything deterministic.** Benefit arithmetic, the guardrail gazetteer, the MBS matcher: a human writes the pytest cases first, then asks the model to make them pass. This inverts the failure mode where generated code looks right and is not. `tests/test_arithmetic.py` and `tests/test_guardrail.py` are the worked examples.
+**2. Tests before code for anything deterministic.** Benefit arithmetic, the guardrail gazetteer, the MBS matcher: write the pytest cases first, then write the code that makes them pass. This catches code that looks right and is not. `tests/test_arithmetic.py` and `tests/test_guardrail.py` are the worked examples.
 
-**3. Every generated diff is a junior developer's pull request.** The named reviewer reads it line by line before merge. Reading a diff costs a tenth of writing one and catches the error models make most often: silently handling the case they were told to refuse.
+**3. Every diff is reviewed line by line.** The named reviewer reads it before merge. Reading a diff costs a tenth of writing one and catches the most common error: silently handling the case the code was meant to refuse.
 
-**4. The model does not see held-out material.** Not the frozen layout parameters, not the held-out probe set. Do not paste them into a chat window to "help it understand the task". The separation is worthless the moment it leaks.
+**4. Held-out material stays with its custodian.** Not the frozen layout parameters, not the held-out probe set. Do not paste them into any tool or chat. The separation is worthless the moment it leaks.
 
-**5. Never paste a real document into any tool**, including an AI assistant. Synthetic only.
+**5. Never paste a real document into any tool.** Synthetic only.
 
-**6. Name the source of every number.** Before anything goes in a slide, report or the tracker, it must name the number and the file that produced it. "The model said" is not a source.
-
-Expected split: roughly 70 percent of code volume generated to spec, 100 percent of money and safety tests human-authored, 100 percent of gold sets human-authored and double-checked.
+**6. Name the source of every number.** Before anything goes in a slide, report or the tracker, it must name the number and the file that produced it. A number without a file is not a result.
 
 ---
 

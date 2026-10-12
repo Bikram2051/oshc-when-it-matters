@@ -1,0 +1,14 @@
+SYNTHETIC DEVELOPMENT EXAMPLE - NOT A REAL BILL
+Provider: Demonstration Clinic
+Service date: 01/09/2026
+
+Description: Short consultation
+Item: 23
+Charge: $90.00
+Amount paid: $90.00
+
+Description: Administration fee
+Charge: $15.00
+Amount paid: $15.00
+
+Total charged: $105.00

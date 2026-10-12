@@ -1,0 +1,76 @@
+{
+  "checked_at_utc": "2026-10-01T02:25:45.240614+00:00",
+  "parent_commit": "7b41e66",
+  "data_role": "AI-assisted synthetic engineering examples; not independent evaluation",
+  "checks": {
+    "published_amount_used": true,
+    "cached_bill_replayed": true,
+    "printed_values_unchanged": true,
+    "mixed_total_unknown": true,
+    "budget_and_source_database_cache_bytes_unchanged": true
+  },
+  "additional_api_calls": 0,
+  "budget_after": {
+    "currency": "USD",
+    "limit": 8.0,
+    "spent_or_reserved": 0.002689,
+    "remaining": 7.997311,
+    "unsettled_calls": 0,
+    "blocked_for_review": false
+  },
+  "cached_example": {
+    "source_sha256": "c5c04792cbdc7017589b4453aa4506f26b6cfcbfeaee3b0d6c866a8050b06565",
+    "source_page": "https://www.mbsonline.gov.au/internet/mbsonline/publishing.nsf/Content/Downloads-20260801",
+    "release_date": "2026-08-01",
+    "captured_on": "2026-09-28",
+    "scope": "Illustrative MBS reference comparison in AUD. The selected reference is capped at the line charge for this example. This is not an OSHC benefit or claim decision. Policy conditions, item eligibility, other adjustments and later source revisions have not been assessed. Printed benefits and gaps remain separate.",
+    "lines": [
+      {
+        "line_number": 1,
+        "status": "available",
+        "reason": "Reference comparison only; cover is not assessed.",
+        "item_number": "23",
+        "reference_field": "Benefit100",
+        "descriptor": "Professional attendance by a general practitioner at consulting rooms (other than a service to which another item in this Schedule applies), lasting at least 6 minutes and less than 20 minutes and including any of the following that are clinically relevant:(a) taking a patient history;(b) performing a clinical examination;(c) arranging any necessary investigation;(d) implementing a management plan;(e) providing appropriate preventive health care;for one or more health-related issues, with appropriate documentation",
+        "reference_amount": "45.05",
+        "amount_used": "45.05",
+        "difference": "44.95"
+      },
+      {
+        "line_number": 2,
+        "status": "unavailable",
+        "reason": "Choose an explicit MBS reference basis for this example.",
+        "item_number": null,
+        "reference_field": null,
+        "descriptor": null,
+        "reference_amount": null,
+        "amount_used": null,
+        "difference": null
+      }
+    ],
+    "total_difference": null,
+    "total_note": "Total unavailable: every line must resolve and line charges must match a printed bill total."
+  },
+  "constructed_specialist_example": {
+    "source_sha256": "c5c04792cbdc7017589b4453aa4506f26b6cfcbfeaee3b0d6c866a8050b06565",
+    "source_page": "https://www.mbsonline.gov.au/internet/mbsonline/publishing.nsf/Content/Downloads-20260801",
+    "release_date": "2026-08-01",
+    "captured_on": "2026-09-28",
+    "scope": "Illustrative MBS reference comparison in AUD. The selected reference is capped at the line charge for this example. This is not an OSHC benefit or claim decision. Policy conditions, item eligibility, other adjustments and later source revisions have not been assessed. Printed benefits and gaps remain separate.",
+    "lines": [
+      {
+        "line_number": 1,
+        "status": "available",
+        "reason": "Reference comparison only; cover is not assessed.",
+        "item_number": "104",
+        "reference_field": "Benefit85",
+        "descriptor": "Professional attendance at consulting rooms or hospital by a specialist in the practice of the specialist\u2019s specialty after referral of the patient to the specialist\u2014initial attendance in a single course of treatment, other than a service to which item 106, 109, 125 or 16401 applies",
+        "reference_amount": "88.40",
+        "amount_used": "88.40",
+        "difference": "61.60"
+      }
+    ],
+    "total_difference": "61.60",
+    "total_note": "Sum of illustrative differences only; not an actual bill gap or insurer benefit."
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "request_sha256": "79edc78aed0b2db4131b17dd5ff136e5e14f94371f7acdcc998e0ec85f8e4134",
+  "model": "claude-haiku-4-5-20251001",
+  "created_at": "2026-10-01T01:03:24.324109+00:00",
+  "message_id": "msg_011CfaciQ3JSbXpgSKGQVVxw",
+  "stop_reason": "end_turn",
+  "input_tokens": 1383,
+  "output_tokens": 230,
+  "response": "```json\n{\n  \"provider\": {\n    \"line\": 2,\n    \"text\": \"Demonstration Clinic\"\n  },\n  \"service_date\": {\n    \"line\": 3,\n    \"text\": \"01/09/2026\"\n  },\n  \"rows\": [\n    {\n      \"start_line\": 5,\n      \"end_line\": 8,\n      \"raw_description\": \"Short consultation\",\n      \"item_number\": \"23\",\n      \"charged\": \"$90.00\"\n    },\n    {\n      \"start_line\": 10,\n      \"end_line\": 12,\n      \"raw_description\": \"Administration fee\",\n      \"charged\": \"$15.00\"\n    }\n  ],\n  \"total_charged\": {\n    \"line\": 14,\n    \"text\": \"$105.00\"\n  },\n  \"total_benefit\": null,\n  \"total_gap\": null\n}\n```",
+  "response_sha256": "f4749a345e5d6090bd336b1690921dad2572c7f1b4fddef2fc9680f31304b308"
+}

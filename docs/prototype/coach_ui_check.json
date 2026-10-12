@@ -1,0 +1,39 @@
+{
+  "checked_at_utc": "2026-10-02T00:14:15.654539+00:00",
+  "scope": "AI-assisted engineering rehearsal of authored lessons; no real learner evaluation.",
+  "source_sha256": "6ca7151567ee2b61f8e6b50340c297d50deb249a013f055ef38f50ed07ec87c7",
+  "lesson_checks": [
+    {
+      "lesson": "cover_documents",
+      "pdf_page": 8,
+      "column": "left",
+      "source_anchors_found": true,
+      "wrong_then_correct_feedback": true,
+      "first_attempt_preserved": true
+    },
+    {
+      "lesson": "mbs_fee",
+      "pdf_page": 17,
+      "column": "left",
+      "source_anchors_found": true,
+      "wrong_then_correct_feedback": true,
+      "first_attempt_preserved": true
+    },
+    {
+      "lesson": "direct_billing",
+      "pdf_page": 28,
+      "column": "right",
+      "source_anchors_found": true,
+      "wrong_then_correct_feedback": true,
+      "first_attempt_preserved": true
+    }
+  ],
+  "home_navigation": true,
+  "navigator_page_handoff": true,
+  "progress_reset": true,
+  "progress_storage": "Streamlit session only",
+  "learning_effectiveness_measured": false,
+  "additional_api_calls": 0,
+  "protected_files_unchanged": true,
+  "budget_unchanged": true
+}

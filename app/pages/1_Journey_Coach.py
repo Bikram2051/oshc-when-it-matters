@@ -1,11 +1,11 @@
-"""Journey Coach page. Skeleton. See plan section 6."""
+"""Journey Coach: fixed lessons and session-only practice."""
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import streamlit as st  # noqa: E402
+from oshc.coach_ui import render  # noqa: E402
 
-st.set_page_config(page_title="Journey Coach", layout="centered")
-st.title("Journey Coach")
-st.caption("Page id: coach. Not yet implemented. See the architecture plan.")
+st.set_page_config(page_title="Journey Coach | NextBest", page_icon="+", layout="centered")
+render()

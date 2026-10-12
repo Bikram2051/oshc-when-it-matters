@@ -1,0 +1,7 @@
+SYNTHETIC DEVELOPMENT EXAMPLE
+Provider: Demonstration Clinic
+Service date: 01/09/2026
+Item | Description | Charge
+23 | Short consultation | $90.00
+- | Administration fee | $15.00
+Total charged: $105.00

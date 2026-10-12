@@ -1,0 +1,48 @@
+{
+  "checked_at_utc": "2026-10-01T07:47:35.321937+00:00",
+  "parent_commit": "e420e72",
+  "streamlit_version": "1.64.0",
+  "data_role": "Synthetic UI integration checks, not independent evaluation",
+  "examples": [
+    {
+      "example": "GP visit: text example",
+      "displayed_totals": [
+        "AUD 105.00",
+        "Not shown",
+        "Not shown"
+      ],
+      "gp_difference_aud": "44.95",
+      "whole_bill_comparison": null
+    },
+    {
+      "example": "GP visit: PDF example",
+      "displayed_totals": [
+        "AUD 105.00",
+        "Not shown",
+        "Not shown"
+      ],
+      "gp_difference_aud": "44.95",
+      "whole_bill_comparison": null
+    },
+    {
+      "example": "GP visit: saved AI reading",
+      "displayed_totals": [
+        "AUD 105.00",
+        "Not shown",
+        "Not shown"
+      ],
+      "gp_difference_aud": "44.95",
+      "whole_bill_comparison": null
+    }
+  ],
+  "provider_calls": 0,
+  "budget_source_database_cache_unchanged": true,
+  "budget_after": {
+    "currency": "USD",
+    "limit": 8.0,
+    "spent_or_reserved": 0.002689,
+    "remaining": 7.997311,
+    "unsettled_calls": 0,
+    "blocked_for_review": false
+  }
+}

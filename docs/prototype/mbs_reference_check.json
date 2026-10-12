@@ -1,7 +1,7 @@
 {
   "checked_at_utc": "2026-10-01T02:25:45.240614+00:00",
   "parent_commit": "7b41e66",
-  "data_role": "AI-assisted synthetic engineering examples; not independent evaluation",
+  "data_role": "Synthetic engineering examples; not independent evaluation",
   "checks": {
     "published_amount_used": true,
     "cached_bill_replayed": true,

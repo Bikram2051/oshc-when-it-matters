@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "custodian": "Md Minhaj Rahman",
+  "reported_by": "Bikram Bhattarai",
+  "reported_in_chat_on": "2026-10-01",
+  "record_written_at_utc": "2026-09-30T16:46:25.756426+00:00",
+  "original_freeze_timestamp": null,
+  "first_reported": {
+    "by": "Md Minhaj Rahman",
+    "channel": "WhatsApp",
+    "at": "2026-09-24T19:57:00+10:00",
+    "note": "Minhaj sent both hashes at this time, before the 25/09 due date. reported_in_chat_on is when Bikram copied them into this record, not when they were first reported."
+  },
+  "status": "Hashes verified on 2026-10-09 against the files the custodian pushed and a copy sent to the evaluator; both match the values first reported on 2026-09-24.",
+  "verification": {
+    "date": "2026-10-09",
+    "method": "SHA-256 of both files in PR #16 and of the copy of specialist_gap.json sent to the evaluator",
+    "result": "Match for both files."
+  },
+  "exposure": [
+    {
+      "at": "2026-10-09T18:39:03+11:00",
+      "event": "The custodian pushed both parameter files to the public branch minhaj-heldout-handoff (PR #16).",
+      "resolution": "PR #16 closed without merging and its branch deleted."
+    },
+    {
+      "at": "2026-10-09, evening",
+      "event": "specialist_gap.json was sent to the evaluator and opened in a development tool session."
+    }
+  ],
+  "extractor_freeze": {
+    "commit": "40e04f811ac23be00883ff00b789682314e305ad",
+    "oshc_billexplainer_tree": "bff4a9b244c4e046cb821eb0db9ea8afea147de9",
+    "logic_last_changed": "2026-10-01T04:17:33+10:00",
+    "rule": "No change to oshc/billexplainer, oshc/llm.py, oshc/llm_budget.py or oshc/schemas.py until the held-out run is recorded."
+  },
+  "heldout_contents_accessed_by_this_script": false,
+  "files": [
+    {
+      "filename": "specialist_gap.json",
+      "sha256": "4da51538222dc7ba257e3ac108d1c370949c2010a7bf416c8c92ba1584369349"
+    },
+    {
+      "filename": "hospital_mixed.json",
+      "sha256": "54c22002acf9e0bc33a6b3f6405e4ce94dd5fc49fc1be39f6b944339922979a7"
+    }
+  ],
+  "verification_required": [
+    "Retain the original dated freeze message.",
+    "Verify file hashes before evaluation.",
+    "Keep held-out contents out of development work and tools.",
+    "Do not tune against held-out results."
+  ]
+}

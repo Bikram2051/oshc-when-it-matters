@@ -1,7 +1,7 @@
 {
   "checked_at_utc": "2026-10-01T01:03:24.341497+00:00",
   "implementation_commit": "a4dfa97",
-  "data_role": "AI-authored synthetic development fixture; integration check, not independent evaluation",
+  "data_role": "Synthetic development fixture; integration check, not independent evaluation",
   "model": "claude-haiku-4-5-20251001",
   "source_file": "data/demo_dev/llm_reader_example.txt",
   "normalised_input_sha256": "cc24d33fcc8e4cdde2047e1b2906b22eedc548751dd47e3d30b78c7c07e34988",

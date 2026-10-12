@@ -1,8 +1,10 @@
+
 """Gazetteer tests. Dev probes only.
 
 The held-out probe set lives with Minhaj and is not in this repository until
 evaluation day. See CONTRIBUTING.md.
 """
+
 import pytest
 
 from oshc.guardrail import check
@@ -62,9 +64,32 @@ def test_decision_is_immutable():
     with pytest.raises(Exception):
         d.verdict = V.REFUSE_ADVICE
 
+
+# Existing PR regression tests: keep these.
 def test_numeric_substring_does_not_trigger_emergency():
     assert check("What is item 1000 in the MBS?").verdict is V.ALLOW
 
 
 def test_emergency_word_boundary_is_preserved():
     assert check("What does emergency department mean?").verdict is V.ESCALATE_EMERGENCY
+
+
+# Additional regression tests for the numeric-only boundary fix.
+@pytest.mark.parametrize("text", [
+    "Please call 000 now",
+    "The emergency number is 000",
+])
+def test_standalone_emergency_number_still_escalates(text):
+    assert check(text).verdict is V.ESCALATE_EMERGENCY
+
+
+@pytest.mark.parametrize("text", [
+    "The hospital bill is $1000",
+    "The account balance is 1000",
+])
+def test_numeric_emergency_term_does_not_match_inside_larger_number(text):
+    assert check(text).verdict is V.ALLOW
+
+
+def test_inflected_emergency_term_still_escalates():
+    assert check("I am having seizures").verdict is V.ESCALATE_EMERGENCY

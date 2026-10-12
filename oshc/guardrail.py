@@ -20,6 +20,9 @@ import re
 from oshc.schemas import GuardrailDecision, GuardrailVerdict
 
 
+# Emergency terms exit to the official health pathway and 000 by rule, never
+# by model. A false negative here is unacceptable, so this list is generous
+# and the false-refusal cost is accepted.
 EMERGENCY_TERMS: tuple[str, ...] = (
     "ambulance",
     "unconscious",
@@ -48,6 +51,8 @@ EMERGENCY_TERMS: tuple[str, ...] = (
 )
 
 
+# Requests for a determination about THIS person's cover or reimbursement.
+# These are personal financial product advice under s 766B.
 ADVICE_PATTERNS: tuple[str, ...] = (
     r"\b(am|are)\s+i\s+covered\b",
     r"\bis\s+(my|this)\s+.{0,40}\bcovered\b",
@@ -60,6 +65,8 @@ ADVICE_PATTERNS: tuple[str, ...] = (
 )
 
 
+# Requests for assessment of symptoms. Navigator never maps symptoms to a
+# service; there is no such code path in this repository.
 CLINICAL_PATTERNS: tuple[str, ...] = (
     r"\bi\s+(have|feel|am\s+feeling|got)\s+.{0,40}\b(pain|ache|fever|rash|sick|nausea|dizzy)\b",
     r"\bwhat\s+(is\s+)?wrong\s+with\s+me\b",
@@ -84,7 +91,14 @@ def check(text: str) -> GuardrailDecision:
     norm = _normalise(text)
 
     for term in EMERGENCY_TERMS:
-        if re.search(rf"(?<!\w){re.escape(term)}(?!\w)", norm):
+        if term.isdigit():
+            # Numeric emergency terms must not match inside larger numbers.
+            matched = re.search(rf"(?<!\d){re.escape(term)}(?!\d)", norm)
+        else:
+            # Preserve substring matching for emergency words and inflections.
+            matched = term in norm
+
+        if matched:
             return GuardrailDecision(
                 verdict=GuardrailVerdict.ESCALATE_EMERGENCY,
                 layer="gazetteer",
@@ -121,8 +135,8 @@ REFUSAL_TEXT: dict[GuardrailVerdict, str] = {
         "call healthdirect on 1800 022 222, any time."
     ),
     GuardrailVerdict.REFUSE_CLINICAL: (
-        "This tool explains how OSHC and Australian healthcare work. It does "
-        "not assess symptoms. For health advice, call healthdirect on "
+        "This tool explains how OSHC and Australian healthcare work. It "
+        "does not assess symptoms. For health advice, call healthdirect on "
         "1800 022 222 or see a GP."
     ),
     GuardrailVerdict.REFUSE_ADVICE: (

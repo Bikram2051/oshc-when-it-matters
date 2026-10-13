@@ -61,3 +61,24 @@ def test_decision_is_immutable():
     d = check("what is a gap payment")
     with pytest.raises(Exception):
         d.verdict = V.REFUSE_ADVICE
+
+
+@pytest.mark.parametrize("text", [
+    "The invoice total is 1000 dollars.",
+    "The item code is 10000.",
+    "The serial number is 2000.",
+])
+def test_larger_numbers_do_not_trigger_emergency_000(text):
+    assert check(text).verdict is V.ALLOW
+
+
+@pytest.mark.parametrize("text", [
+    "000",
+    "Please call 000 now.",
+])
+def test_standalone_000_triggers_emergency(text):
+    assert check(text).verdict is V.ESCALATE_EMERGENCY
+
+
+def test_ordinary_emergency_terms_still_match():
+    assert check("ambulance information").verdict is V.ESCALATE_EMERGENCY

@@ -1,0 +1,209 @@
+{
+  "computed_at_utc": "2026-10-13T01:44:53+00:00",
+  "coders": [
+    "Bikram",
+    "Minhaj"
+  ],
+  "n": 53,
+  "results": {
+    "Gap": {
+      "kappa": 0.4176,
+      "observed_agreement": 0.6792,
+      "expected_agreement": 0.4493,
+      "n": 53,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "ci_low": 0.2464,
+      "ci_high": 0.6015,
+      "per_category": {
+        "N": 0.5278,
+        "Y": 0.5
+      }
+    },
+    "Code 1": {
+      "kappa": 0.4173,
+      "observed_agreement": 0.5849,
+      "expected_agreement": 0.2876,
+      "n": 53,
+      "categories": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "S"
+      ],
+      "ci_low": 0.2542,
+      "ci_high": 0.5842,
+      "per_category": {
+        "C1": 0.4,
+        "C2": 0.2308,
+        "C3": 0.5714,
+        "C4": 0.2,
+        "C5": 0.0,
+        "C6": 0.5,
+        "S": 0.5278
+      }
+    }
+  },
+  "disagreements": [
+    {
+      "id": "AS-028",
+      "bikram_code1": "C4",
+      "Minhaj_code1": "C2",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "Y"
+    },
+    {
+      "id": "AS-040",
+      "bikram_code1": "C3",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "FM-051",
+      "bikram_code1": "C4",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "FM-052",
+      "bikram_code1": "C2",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "FM-053",
+      "bikram_code1": "C2",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "FM-054",
+      "bikram_code1": "C1",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "FM-056",
+      "bikram_code1": "C4",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "FM-057",
+      "bikram_code1": "C2",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "GP-017",
+      "bikram_code1": "C2",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "GP-022",
+      "bikram_code1": "C4",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "PR-004",
+      "bikram_code1": "C4",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "PR-005",
+      "bikram_code1": "C2",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "PR-014",
+      "bikram_code1": "C2",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "PR-025",
+      "bikram_code1": "C4",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "PR-030",
+      "bikram_code1": "C2",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "PR-031",
+      "bikram_code1": "C5",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "PR-032",
+      "bikram_code1": "C1",
+      "Minhaj_code1": "C4",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "Y"
+    },
+    {
+      "id": "PR-035",
+      "bikram_code1": "C2",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    },
+    {
+      "id": "PR-037",
+      "bikram_code1": "C1",
+      "Minhaj_code1": "C2",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "Y"
+    },
+    {
+      "id": "PR-041",
+      "bikram_code1": "C5",
+      "Minhaj_code1": "C3",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "Y"
+    },
+    {
+      "id": "PR-043",
+      "bikram_code1": "C6",
+      "Minhaj_code1": "C3",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "Y"
+    },
+    {
+      "id": "PR-044",
+      "bikram_code1": "C4",
+      "Minhaj_code1": "S",
+      "bikram_gap": "Y",
+      "Minhaj_gap": "N"
+    }
+  ],
+  "note": "Review snippets removed before committing. corpus/ is gitignored under 'third-party content we may store for research but must not republish', and these excerpts fall under the same rule. Record ids resolve against the master workbook, which is where the text lives."
+}

@@ -5,6 +5,12 @@ reports take precedence over earlier walkthrough scripts. The dashboard reads
 saved evidence; opening it does not rerun a test, spend API credit or certify the
 current working tree.
 
+Delivery update: the refreshed prototype is implemented at `d9a2737`. All 463
+repository tests passed after the routing change, and the offline package passed
+fresh-environment workflow verification with zero provider calls. See
+[the delivery checkpoint](delivery_2026-10-14.md) and
+`demo_package_final_check_2026-10-14.json`. The research evaluation gaps below remain.
+
 ## Working prototype
 
 - Journey Coach has three sourced English lessons, practice feedback, first-attempt

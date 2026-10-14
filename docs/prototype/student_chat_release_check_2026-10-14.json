@@ -1,0 +1,59 @@
+{
+  "checked_at_utc": "2026-10-14T08:35:46.292555+00:00",
+  "scope": "Development smoke checks, not held-out refusal recall or answer accuracy.",
+  "base_commit": "d9a2737cf285884f2aa8b42e41d7209e6ac00866",
+  "source_code_sha256": {
+    "oshc/student_chat.py": "92e15f76807ff6e4221677e5a951a799912d3a8d699a21549908efd5d4a4f9d9",
+    "oshc/ask_ui.py": "fe34de7a038209794dc59b485fbd074bd7a17f0e954dd5dfee4808a5631cc1cf",
+    "oshc/guardrail.py": "4b9cb298990c2262b119b619420ea69b16a481fdf79d20f6344a5809a7884e07"
+  },
+  "general_question_checks": {
+    "claiming": {
+      "source_bound": true,
+      "cited_pages": [
+        "PDF page 31, right column",
+        "PDF page 4, right column",
+        "PDF page 28, right column",
+        "PDF page 9, left column",
+        "PDF page 8, left column"
+      ]
+    },
+    "waiting_periods": {
+      "source_bound": true,
+      "cited_pages": [
+        "PDF page 21, right column",
+        "PDF page 8, right column",
+        "PDF page 14, right column",
+        "PDF page 8, left column",
+        "PDF page 20, left column"
+      ]
+    },
+    "membership_card": {
+      "source_bound": true,
+      "cited_pages": [
+        "PDF page 10, right column",
+        "PDF page 8, left column",
+        "PDF page 30, right column",
+        "PDF page 9, right column",
+        "PDF page 10, left column"
+      ]
+    },
+    "mbs": {
+      "source_bound": true,
+      "cited_pages": [
+        "PDF page 17, left column",
+        "PDF page 20, left column",
+        "PDF page 27, left column",
+        "PDF page 36, left column",
+        "PDF page 9, right column"
+      ]
+    }
+  },
+  "blocked_and_uncertain_checks": 6,
+  "blocked_requests_never_load_source": true,
+  "rejected_text_not_retained": true,
+  "source_bound_output": true,
+  "generated_answers": false,
+  "provider_calls": 0,
+  "held_out_evaluation": false
+}

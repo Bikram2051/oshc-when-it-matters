@@ -1,4 +1,11 @@
-# Ask a question
+# Ask a question: historical 13 October checkpoint
+
+Superseded on 14 October by [guarded guide chat](student_chat.md). The text below
+records the earlier single-question prototype and its historical retrieval report;
+it does not describe the current conversation interface. The current transcript
+and response-boundary checks live in `tests/test_ask_ui.py` and
+`scripts/prototype_check_student_chat.py`. The older check command forwards to the
+new development check, and cannot silently replace the historical retrieval scores.
 
 This checkpoint adds a free-text question field to the prototype. It is not a
 conversational Navigator, not a chatbot, and not a claim decision.

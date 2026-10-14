@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Team D5 prototype. COS70008 Technology Innovation Research and Project, Medibank x Swinburne."
 requires-python = ">=3.11"
 dependencies = [
-  "streamlit>=1.38",
+  "streamlit>=1.57",
   "pydantic>=2.8",
   "sentence-transformers>=3.0",
   "rank-bm25>=0.2.2",

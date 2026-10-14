@@ -7,9 +7,12 @@ import json
 import os
 import platform
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from importlib.metadata import version
 from pathlib import Path, PurePosixPath
+
+REQUIRED_CHECKS = {"home_coach_source_handoff", "three_bill_flows_and_comparisons",
+                   "dashboard_scope", "guarded_student_chat", "offline_cache_miss_blocked"}
 
 
 def signature(path):
@@ -81,7 +84,9 @@ def main():
     os.chdir(root)
     sys.path.insert(0, str(root))
     from unittest.mock import patch
+
     from streamlit.testing.v1 import AppTest
+
     import oshc.llm as adapter
     from oshc.coach_lessons import LESSONS
 
@@ -93,7 +98,7 @@ def main():
          patch.object(adapter, "Budget", side_effect=AssertionError("Spending ledger accessed")) as ledger:
         at = AppTest.from_file(str(root / "app/Home.py"), default_timeout=30).run()
         assert not at.exception and not at.error
-        assert at.title[0].value == "NextBest"
+        assert at.title[0].value == "A clearer next step."
         at.button(key="home_coach").click().run()
         assert not at.exception and at.title[0].value == "Journey Coach"
         at.switch_page("pages/1_Journey_Coach.py").run()
@@ -125,10 +130,33 @@ def main():
             assert not at.exception and not at.metric
             print(label + ": PASS", flush=True)
         checks["three_bill_flows_and_comparisons"] = True
-        at.switch_page("pages/4_Dashboard.py").run()
+        at.switch_page("pages/4_Ask.py").run()
+        assert not at.exception and not at.error and at.session_state["ask_history"] == []
+        at.button(key="ask_s1").click().run()
+        assert not at.exception and not at.error
+        assert len(at.session_state["ask_history"]) == 1
+        assert at.session_state["ask_history"][0]["response"].status == "answered"
+        at.run()
+        assert not at.exception and len(at.session_state["ask_history"]) == 1
+        at.button(key="ask_clear").click().run()
+        # A blocked turn must never open the source, even in the packaged app.
+        with patch("oshc.ask_ui.load_source", side_effect=AssertionError("Blocked source access")) as source:
+            at.chat_input(key="ask_box").set_value("am I covered for physio").run()
+            assert not at.exception and at.error
+            response = at.session_state["ask_history"][0]["response"]
+            assert response.decision.blocked and not response.hits and not response.safe_to_echo
+            source.assert_not_called()
+        at.button(key="ask_clear").click().run()
+        assert not at.exception and at.session_state["ask_history"] == []
+        checks["guarded_student_chat"] = True
+        print("Guarded chat -> source passage -> blocked request -> clear: PASS", flush=True)
+
+        at.switch_page("pages/5_Dashboard.py").run()
         assert not at.exception and not at.error and not at.warning
-        assert at.metric[0].value == "6 of 6"
-        assert set(at.dataframe[1].value["Status"]) == {"Not linked here"}
+        assert at.metric[0].value == "7 of 7"
+        assert at.metric[1].value == "1 of 6"
+        assert {tab.label for tab in at.tabs} == {"Overview", "Results", "Safety", "Evidence & sources"}
+        assert set(at.dataframe[1].value["Status"]) == {"Not linked here", "Recorded result"}
         checks["dashboard_scope"] = True
         try:
             adapter.complete("Packaged offline cache miss check", max_tokens=16)
@@ -139,10 +167,11 @@ def main():
         provider.assert_not_called()
         ledger.assert_not_called()
         checks["offline_cache_miss_blocked"] = True
+    assert set(checks) == REQUIRED_CHECKS
     verify_files(root)
     if signature(root / "package_manifest.json")["sha256"] != manifest_sha:
         raise AssertionError("Package manifest changed during the check.")
-    report = {"checked_at_utc": datetime.now(timezone.utc).isoformat(),
+    report = {"checked_at_utc": datetime.now(UTC).isoformat(),
               "scope": "Fresh-environment demo integration check; not independent accuracy evaluation.",
               "source_commit": manifest["source_commit"], "environment": environment(),
               "manifest_sha256": manifest_sha, "checks": checks,

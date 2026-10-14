@@ -20,6 +20,7 @@ data/heldout/*
 __pycache__/
 *.pyc
 .pytest_cache/
+.test-tmp/
 data/events.sqlite
 .DS_Store
 .idea/

@@ -1,0 +1,22 @@
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "viewer"
+
+[theme]
+base = "light"
+primaryColor = "#086F73"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F2F6F7"
+textColor = "#183442"
+linkColor = "#086F73"
+borderColor = "#D9E5E8"
+baseRadius = "0.75rem"
+buttonRadius = "0.5rem"
+showWidgetBorder = true
+font = "sans-serif"
+headingFont = "sans-serif"
+headingFontSizes = ["2.75rem", "1.75rem", "1.25rem"]
+headingFontWeights = [700, 650, 600]
+chartCategoricalColors = ["#086F73", "#5271A3", "#C18B39", "#8A648F", "#C9675B"]

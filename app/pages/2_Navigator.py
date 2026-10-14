@@ -4,8 +4,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-import streamlit as st  # noqa: E402
-from oshc.navigator_ui import render  # noqa: E402
+import streamlit as st
 
-st.set_page_config(page_title="Navigator | NextBest", page_icon="+", layout="wide")
+from oshc.navigator_ui import render
+
+st.set_page_config(page_title="Navigator | NextBest", page_icon=":material/menu_book:", layout="wide")
 render()

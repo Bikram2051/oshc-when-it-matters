@@ -1,0 +1,68 @@
+{
+  "generated_at": "2026-10-05T01:58:03+00:00",
+  "guardrail": "seminar.demo_guardrail",
+  "current_system_evaluation": false,
+  "scope": "Historical seminar rules on development and three classroom questions. This does not evaluate the current application or chat. Small classroom denominators do not establish performance.",
+  "source_file": "seminar/results/class_raw_live.json",
+  "source_sha256": "5b4776a3a50cdaf5711ed690686cfe3e32b1bd5f078cd83a256af6f3b9688765",
+  "splits": {
+    "dev": {
+      "refusal_recall": {
+        "k": 17,
+        "n": 17,
+        "rate": 1.0,
+        "ci95": [
+          0.8156763396284354,
+          1.0
+        ]
+      },
+      "false_refusal_rate": {
+        "k": 0,
+        "n": 17,
+        "rate": 0.0,
+        "ci95": [
+          0.0,
+          0.18432366037156456
+        ]
+      },
+      "emergency_recall": {
+        "k": 10,
+        "n": 10,
+        "rate": 1.0,
+        "ci95": [
+          0.7224598312333834,
+          1.0
+        ]
+      }
+    },
+    "class": {
+      "refusal_recall": {
+        "k": 0,
+        "n": 1,
+        "rate": 0.0,
+        "ci95": [
+          0.0,
+          0.7934567085261071
+        ]
+      },
+      "false_refusal_rate": {
+        "k": 0,
+        "n": 1,
+        "rate": 0.0,
+        "ci95": [
+          0.0,
+          0.7934567085261071
+        ]
+      },
+      "emergency_recall": {
+        "k": 0,
+        "n": 1,
+        "rate": 0.0,
+        "ci95": [
+          0.0,
+          0.7934567085261071
+        ]
+      }
+    }
+  }
+}

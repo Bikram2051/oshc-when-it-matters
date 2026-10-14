@@ -4,7 +4,17 @@ Team D5 prototype. COS70008 Technology Innovation Research and Project, Swinburn
 
 Bikram Bhattarai, Md Minhaj Rahman, Aayush Khade. Supervisor: Dr Eureka Priyadarshini.
 
-Three modules, one Streamlit app: **Journey Coach** (framing before it matters), **Navigator** (what each service does and costs), **Bill Explainer** (reads a bill, explains cover and claiming).
+**NextBest** is an offline Streamlit learning prototype with top navigation:
+
+- **Journey Coach:** three sourced lessons and practice feedback.
+- **Navigator:** saved guide passages alongside the original PDF pages.
+- **Bill Explainer:** synthetic invoices and published MBS reference comparisons.
+- **Ask NextBest:** students ask general questions in a session-only, guarded guide chat.
+- **Project dashboard:** Overview, Results, Safety, and Evidence & sources tabs.
+
+The [14 October project review](docs/prototype/project_progress_2026-10-14.md) records
+what works, which results exist, and which evaluations are still pending. Development
+tests and saved demonstration checks do not replace independent evaluation.
 
 ---
 
@@ -13,7 +23,7 @@ Three modules, one Streamlit app: **Journey Coach** (framing before it matters),
 Windows:
 
 ```powershell
-git clone <repo-url>
+git clone https://github.com/Bikram2051/oshc-when-it-matters.git
 cd oshc-when-it-matters
 .\setup.ps1
 ```
@@ -21,7 +31,7 @@ cd oshc-when-it-matters
 macOS or Linux:
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/Bikram2051/oshc-when-it-matters.git
 cd oshc-when-it-matters
 ./setup.sh
 ```
@@ -30,11 +40,52 @@ Then:
 
 ```bash
 streamlit run app/Home.py
-python -m pytest          # 41 tests, all must pass
-python -m eval.run_all    # the five headline numbers
+python -m pytest
 ```
 
-If setup fails on your machine, that is a Week 1 blocker and goes in the group chat the same day, not the following week.
+On Windows, `./Start_NextBest.ps1` launches the offline demonstration on port 8502.
+Use `-Python 'path/to/environment/Scripts/python.exe'` to reuse an existing project
+environment. The entry point defaults to `OSHC_OFFLINE=1`, `OSHC_ENABLE_LIVE=0`, and
+the model used for the saved bill example. It does not enable paid calls.
+
+The pinned Member Guide PDF and MBS XML are deliberately gitignored. Restore the
+privately shared public-source snapshots into `corpus/`, with hashes matching
+`corpus/MANIFEST.csv`. The guide-backed pages visibly abstain when source verification
+fails; emergency responses do not require the guide.
+
+Development smoke checks, with offline flags set:
+
+```powershell
+$env:OSHC_OFFLINE = "1"
+$env:OSHC_ENABLE_LIVE = "0"
+python scripts/prototype_check_student_chat.py --out chat_check.json
+python scripts/prototype_check_dashboard_ui.py --out dashboard_check.json
+```
+
+Each check refuses to overwrite an existing report. `python -m eval.run_all` remains
+an unfinished evaluation entry point; it does not currently produce five results.
+See the project review for the missing independent labels, extraction handoff and
+guardrail evaluation. Existing historical reports remain unchanged.
+
+## Student questions and response boundaries
+
+Every submitted message, including starter questions and later turns, goes through
+the same guardrail service **before** loading the guide or searching. Emergency,
+clinical and personal-benefit requests stop. Sensitive, unsupported or ambiguous
+requests receive a fixed clarification. There is no refusal-to-search shortcut.
+
+Allowed responses contain exact passages checked against the verified guide and
+linked to physical PDF pages. No language model or composer writes a policy answer.
+Earlier messages are not silently reused as context; each follow-up names its topic.
+The original baseline guardrail remains frozen, with a conservative additional scope
+boundary for this chat. The known baseline clinical limitations are recorded rather
+than presented as solved by a passing development suite.
+
+The latest ten turns stay in Streamlit session memory until cleared or the session
+ends. Rejected messages are withheld, and raw rule matches are removed from response
+metadata. Chat is never logged, exported, persisted to disk or sent to a provider.
+Free-form generated policy answers remain disabled pending the held-out safety gate.
+See [the chat specification](docs/prototype/student_chat.md).
 
 ---
 

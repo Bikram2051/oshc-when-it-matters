@@ -4,12 +4,16 @@ from __future__ import annotations
 import hashlib
 import io
 import os
+import uuid
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pymupdf
 import streamlit as st
 
 from oshc.policy_search import PolicySearch
+from oshc.schemas import Event, EventName
+from oshc.telemetry import record
 from oshc.policy_source import (
     CAPTURED_ON, OMITTED_PAGES, SOURCE_DOC, SOURCE_SHA256, SOURCE_URL,
     SourceError, build_corpus,
@@ -61,6 +65,22 @@ def _preview(raw: bytes, page: int, *, width):
 
 
 def render():
+    if "telemetry_session_id" not in st.session_state:
+        st.session_state["telemetry_session_id"] = str(uuid.uuid4())
+
+    if not st.session_state.get("telemetry_navigator_open"):
+        record(
+            Event(
+                session_id=st.session_state["telemetry_session_id"],
+                name=EventName.OPEN,
+                at=datetime.now(timezone.utc),
+                page="navigator",
+                code=None,
+                detail=None,
+            )
+        )
+        st.session_state["telemetry_navigator_open"] = True
+
     st.title("Navigator")
     st.caption("Read the policy source")
     if os.getenv("OSHC_OFFLINE") != "1" or os.getenv("OSHC_ENABLE_LIVE") != "0":

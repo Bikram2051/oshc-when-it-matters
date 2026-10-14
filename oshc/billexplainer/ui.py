@@ -4,6 +4,8 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import uuid
+from datetime import datetime, timezone
 from dataclasses import asdict
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -15,7 +17,8 @@ from oshc.billexplainer.extract_rules import extract as extract_local
 from oshc.billexplainer.mbs_reference import SourceError, compare_bill, load_snapshot
 from oshc.billexplainer.read import MAX_BYTES, MAX_CHARS, read_pdf, read_text
 from oshc.llm_budget import MODEL
-from oshc.schemas import ExtractionResult
+from oshc.schemas import Event, EventName, ExtractionResult
+from oshc.telemetry import record
 
 ROOT = Path(__file__).resolve().parents[2]
 EXAMPLES = {
@@ -101,6 +104,22 @@ def _input():
 
 
 def render():
+    if "telemetry_session_id" not in st.session_state:
+        st.session_state["telemetry_session_id"] = str(uuid.uuid4())
+
+    if not st.session_state.get("telemetry_explainer_open"):
+        record(
+            Event(
+                session_id=st.session_state["telemetry_session_id"],
+                name=EventName.OPEN,
+                at=datetime.now(timezone.utc),
+                page="explainer",
+                code=None,
+                detail=None,
+            )
+        )
+        st.session_state["telemetry_explainer_open"] = True
+
     st.caption("NEXTBEST / AT THE MOMENT OF NEED")
     st.title("Make sense of a bill")
     st.write("See what the document says, understand the numbers, and identify what still needs checking.")
@@ -136,6 +155,17 @@ def render():
                 result, source_text = read_bill(data, kind, reader)
             st.session_state["be_result"] = {"identity": identity, "result": result.model_dump(),
                                             "text": source_text, "label": label, "reader": reader}
+
+            record(
+                Event(
+                    session_id=st.session_state["telemetry_session_id"],
+                    name=EventName.DECODE_RUN,
+                    at=datetime.now(timezone.utc),
+                    page="explainer",
+                    code=None,
+                    detail=None,
+                )
+            )
         except (OSError, ValueError, RuntimeError):
             st.error("This example could not be read. Check the file and use the local text example.")
             return

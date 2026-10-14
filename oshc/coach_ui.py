@@ -2,12 +2,16 @@
 from __future__ import annotations
 
 import os
+import uuid
+from datetime import datetime, timezone
 from pathlib import Path
 
 import streamlit as st
 
 from oshc.coach_lessons import LESSONS, verified_sources
 from oshc.policy_source import CAPTURED_ON, SOURCE_DOC, SOURCE_URL, SourceError
+from oshc.schemas import Event, EventName
+from oshc.telemetry import record
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -19,6 +23,22 @@ def _reset():
 
 
 def render():
+    if "telemetry_session_id" not in st.session_state:
+        st.session_state["telemetry_session_id"] = str(uuid.uuid4())
+
+    if not st.session_state.get("telemetry_coach_open"):
+        record(
+            Event(
+                session_id=st.session_state["telemetry_session_id"],
+                name=EventName.OPEN,
+                at=datetime.now(timezone.utc),
+                page="coach",
+                code=None,
+                detail=None,
+            )
+        )
+        st.session_state["telemetry_coach_open"] = True
+
     st.title("Journey Coach")
     st.caption("One useful idea before you need it | English demo lessons")
     if os.getenv("OSHC_OFFLINE") != "1" or os.getenv("OSHC_ENABLE_LIVE") != "0":
@@ -40,6 +60,17 @@ def render():
         st.session_state.pop("jc_checked", None)
         st.session_state["jc_active"] = lesson.ident
 
+        record(
+            Event(
+                session_id=st.session_state["telemetry_session_id"],
+                name=EventName.SCENARIO_START,
+                at=datetime.now(timezone.utc),
+                page="coach",
+                code=None,
+                detail=None,
+            )
+        )
+
     st.subheader(lesson.title)
     for point in lesson.points:
         st.markdown(f"- {point}")
@@ -57,6 +88,18 @@ def render():
         }
         st.session_state["jc_progress"] = progress
         st.session_state["jc_checked"] = (lesson.ident, choice)
+
+        if selected == lesson.correct and not bool(old and old["passed"]):
+            record(
+                Event(
+                    session_id=st.session_state["telemetry_session_id"],
+                    name=EventName.SCENARIO_COMPLETE,
+                    at=datetime.now(timezone.utc),
+                    page="coach",
+                    code=None,
+                    detail=None,
+                )
+            )
 
     if choice is not None and st.session_state.get("jc_checked") == (lesson.ident, choice):
         if choice == lesson.options[lesson.correct]:

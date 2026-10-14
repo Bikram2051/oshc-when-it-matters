@@ -1,16 +1,51 @@
-"""telemetry. Skeleton only. See D5_technical_architecture_plan_v2.md section 5 and 6.
+"""Simple session telemetry stored in SQLite."""
 
-Fill the bodies against the frozen types in oshc/schemas.py. Do not change the
-signatures without agreement recorded in the minutes.
-"""
 from __future__ import annotations
 
+import sqlite3
+
+from oshc.config import EVENTS_DB
 from oshc.schemas import Event
 
 
 def record(event: Event) -> None:
-    """Append one event to SQLite. Never writes raw question text in a real session.
+    """Append one event to SQLite."""
 
-    Owner: Minhaj Rahman. Reviewer: Aayush Khade.
-    """
-    raise NotImplementedError("Week 6 gate: schema. Week 9 gate: wiring.")
+    EVENTS_DB.parent.mkdir(parents=True, exist_ok=True)
+
+    with sqlite3.connect(EVENTS_DB) as db:
+        db.execute(
+            """
+            CREATE TABLE IF NOT EXISTS events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                session_id TEXT NOT NULL,
+                name TEXT NOT NULL,
+                at TEXT NOT NULL,
+                page TEXT NOT NULL,
+                code TEXT,
+                detail TEXT
+            )
+            """
+        )
+
+        db.execute(
+            """
+            INSERT INTO events (
+                session_id,
+                name,
+                at,
+                page,
+                code,
+                detail
+            )
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                event.session_id,
+                event.name.value,
+                event.at.isoformat(),
+                event.page,
+                event.code.value if event.code else None,
+                event.detail,
+            ),
+        )

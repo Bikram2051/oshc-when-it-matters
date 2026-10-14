@@ -31,7 +31,7 @@ def main():
     with patch("oshc.llm._client", side_effect=AssertionError("Unexpected provider access")) as provider:
         chunks = {chunk.chunk_id: chunk for chunk in build_corpus(ROOT).chunks}
         at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=25).run()
-        at.switch_page("pages/2_Navigator.py").run()
+        at.switch_page("views/2_Navigator.py").run()
         assert not at.exception and not at.error
         assert not at.chat_input and not at.text_input and not at.text_area
         for topic in TOPICS:

@@ -2,13 +2,13 @@
 import streamlit as st
 
 MODULES = (
-    ("Learn the essentials", "Journey Coach", "pages/1_Journey_Coach.py", "home_coach",
+    ("Learn the essentials", "Journey Coach", "views/1_Journey_Coach.py", "home_coach",
      "school", "Three short lessons. Practise what you learn and check the original source."),
-    ("Find it in the guide", "Navigator", "pages/2_Navigator.py", "home_navigator",
+    ("Find it in the guide", "Navigator", "views/2_Navigator.py", "home_navigator",
      "menu_book", "Explore prepared topics, read the source passages, and open the full page."),
-    ("Understand the numbers", "Bill Explainer", "pages/3_Bill_Explainer.py", "home_bill",
+    ("Understand the numbers", "Bill Explainer", "views/3_Bill_Explainer.py", "home_bill",
      "receipt_long", "Explore a synthetic bill and compare its charges with published MBS references."),
-    ("Ask in your own words", "Ask NextBest", "pages/4_Ask.py", "home_ask",
+    ("Ask in your own words", "Ask NextBest", "views/4_Ask.py", "home_ask",
      "forum", "Ask general OSHC questions in a guarded chat, with passages and page references."),
 )
 
@@ -34,7 +34,7 @@ def render():
         with action:
             if st.button("Start a chat", icon=":material/arrow_forward:", type="primary",
                          width="stretch", key="home_start_chat"):
-                st.switch_page("pages/4_Ask.py")
+                st.switch_page("views/4_Ask.py")
 
     st.subheader("Choose where to start")
     for row in (MODULES[:2], MODULES[2:]):
@@ -66,4 +66,4 @@ def render():
     footer, evidence = st.columns([3, 1], vertical_alignment="center")
     footer.caption("Team D5 · Swinburne University of Technology · Industry context: Medibank")
     if evidence.button("View project evidence", key="home_dashboard", width="stretch"):
-        st.switch_page("pages/5_Dashboard.py")
+        st.switch_page("views/5_Dashboard.py")

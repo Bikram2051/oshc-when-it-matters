@@ -101,7 +101,7 @@ def main():
         assert at.title[0].value == "A clearer next step."
         at.button(key="home_coach").click().run()
         assert not at.exception and at.title[0].value == "Journey Coach"
-        at.switch_page("pages/1_Journey_Coach.py").run()
+        at.switch_page("views/1_Journey_Coach.py").run()
         lesson = LESSONS[2]
         at.selectbox(key="jc_moment").select(lesson.moment).run()
         for index in ((lesson.correct + 1) % len(lesson.options), lesson.correct):
@@ -115,7 +115,7 @@ def main():
         checks["home_coach_source_handoff"] = True
         print("Home -> Coach -> original PDF page 28: PASS", flush=True)
 
-        at.switch_page("pages/3_Bill_Explainer.py").run()
+        at.switch_page("views/3_Bill_Explainer.py").run()
         for label in ("GP visit: text example", "GP visit: PDF example", "GP visit: saved AI reading"):
             at.selectbox(key="be_example").select(label).run()
             at.button(key="be_read").click().run()
@@ -130,7 +130,7 @@ def main():
             assert not at.exception and not at.metric
             print(label + ": PASS", flush=True)
         checks["three_bill_flows_and_comparisons"] = True
-        at.switch_page("pages/4_Ask.py").run()
+        at.switch_page("views/4_Ask.py").run()
         assert not at.exception and not at.error and at.session_state["ask_history"] == []
         at.button(key="ask_s1").click().run()
         assert not at.exception and not at.error
@@ -151,7 +151,7 @@ def main():
         checks["guarded_student_chat"] = True
         print("Guarded chat -> source passage -> blocked request -> clear: PASS", flush=True)
 
-        at.switch_page("pages/5_Dashboard.py").run()
+        at.switch_page("views/5_Dashboard.py").run()
         assert not at.exception and not at.error and not at.warning
         assert at.metric[0].value == "7 of 7"
         assert at.metric[1].value == "1 of 6"

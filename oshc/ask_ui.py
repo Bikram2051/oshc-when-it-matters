@@ -79,7 +79,7 @@ def _render_response(response, turn: int, *, source_valid: bool) -> None:
                         if st.button("Read full page", key=f"ask_goto_{turn}_{hit.chunk_id}",
                                      icon=":material/menu_book:"):
                             st.session_state["nv_requested_page"] = page
-                            st.switch_page("pages/2_Navigator.py")
+                            st.switch_page("views/2_Navigator.py")
                         st.link_button("Publisher PDF", hit.source_url,
                                        icon=":material/open_in_new:")
         with st.expander("Response checks"):

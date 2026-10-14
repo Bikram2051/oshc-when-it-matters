@@ -59,7 +59,7 @@ def main(argv=None):
               side_effect=AssertionError("Unexpected budget/ledger access")) as budget,
     ):
         at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=25).run()
-        at.switch_page("pages/5_Dashboard.py").run()
+        at.switch_page("views/5_Dashboard.py").run()
         assert not at.exception and not at.error
         assert at.title[0].value == "Project dashboard"
         assert [tab.label for tab in at.tabs] == [
@@ -85,7 +85,7 @@ def main(argv=None):
     result = {
         "checked_at_utc": datetime.now(UTC).isoformat(),
         "scope": "Current dashboard integration; historical checks and evaluations not rerun.",
-        "dashboard_page": "pages/5_Dashboard.py",
+        "dashboard_page": "views/5_Dashboard.py",
         "tabs": [tab.label for tab in at.tabs],
         "engineering_report_count": len(evidence),
         "recorded_passing_report_count": passing,

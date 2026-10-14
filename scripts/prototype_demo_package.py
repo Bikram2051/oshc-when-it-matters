@@ -28,8 +28,8 @@ from scripts.prototype_verify_demo import (
 ROOT_PACKAGES = ("streamlit==1.64.0", "pydantic==2.13.5", "pymupdf==1.28.2",
                  "rank-bm25==0.2.2", "python-dotenv==1.2.3")
 FILES = (
-    "app/Home.py", "app/pages/1_Journey_Coach.py", "app/pages/2_Navigator.py",
-    "app/pages/3_Bill_Explainer.py", "app/pages/4_Ask.py", "app/pages/5_Dashboard.py",
+    "app/Home.py", "app/views/1_Journey_Coach.py", "app/views/2_Navigator.py",
+    "app/views/3_Bill_Explainer.py", "app/views/4_Ask.py", "app/views/5_Dashboard.py",
     ".streamlit/config.toml",
     "oshc/__init__.py", "oshc/billexplainer/__init__.py",
     "oshc/home_ui.py", "oshc/ask_ui.py", "oshc/student_chat.py", "oshc/guardrail.py",

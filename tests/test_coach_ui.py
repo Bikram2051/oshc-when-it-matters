@@ -38,7 +38,7 @@ def sandbox(tmp_path, monkeypatch):
 
 def app():
     at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=15).run()
-    at.switch_page("pages/1_Journey_Coach.py").run()
+    at.switch_page("views/1_Journey_Coach.py").run()
     assert not at.exception
     return at
 
@@ -124,7 +124,7 @@ def test_original_page_navigation_preserves_practice(sandbox):
     assert not at.exception and not at.error
     assert at.title[0].value == "Navigator"
     assert at.number_input(key="nv_page").value == 28
-    at.switch_page("pages/1_Journey_Coach.py").run()
+    at.switch_page("views/1_Journey_Coach.py").run()
     assert at.session_state["jc_progress"][lesson.ident]["passed"]
 
 

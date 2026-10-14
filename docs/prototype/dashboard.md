@@ -50,7 +50,7 @@ python scripts/prototype_check_dashboard_ui.py --out docs/prototype/dashboard_re
 
 Use a new `--out` path for every run. The script refuses to overwrite any existing
 report, including the historical `dashboard_ui_check.json` default. It follows the
-current `pages/5_Dashboard.py` route, checks tabs and displayed statuses against
+current `views/5_Dashboard.py` route, checks tabs and displayed statuses against
 validated inputs, and verifies that source reports remain unchanged.
 
 The integration check blocks provider calls, model calls and budget construction.

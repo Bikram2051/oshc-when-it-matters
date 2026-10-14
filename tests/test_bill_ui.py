@@ -46,7 +46,7 @@ def sandbox(tmp_path, monkeypatch):
 
 def app():
     at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=15).run()
-    at.switch_page("pages/3_Bill_Explainer.py").run()
+    at.switch_page("views/3_Bill_Explainer.py").run()
     assert not at.exception
     return at
 

@@ -76,7 +76,7 @@ def render():
                f"Saved {CAPTURED_ON}.")
     if st.button("Read the original page in Navigator", key="jc_source"):
         st.session_state["nv_requested_page"] = lesson.page
-        st.switch_page("pages/2_Navigator.py")
+        st.switch_page("views/2_Navigator.py")
     with st.expander("Read the source excerpt"):
         st.text(sources[lesson.ident].text)
         st.markdown(f"[Publisher PDF, page {lesson.page}]({SOURCE_URL}#page={lesson.page})")

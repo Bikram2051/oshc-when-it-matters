@@ -35,7 +35,7 @@ def source(monkeypatch):
 
 def app():
     at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=30).run()
-    at.switch_page("pages/4_Ask.py").run()
+    at.switch_page("views/4_Ask.py").run()
     assert not at.exception
     return at
 

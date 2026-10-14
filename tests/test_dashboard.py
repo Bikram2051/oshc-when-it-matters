@@ -146,7 +146,7 @@ def test_export_excludes_arbitrary_report_fields(tmp_path):
 
 def app():
     at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=15).run()
-    at.switch_page("pages/5_Dashboard.py").run()
+    at.switch_page("views/5_Dashboard.py").run()
     assert not at.exception
     return at
 

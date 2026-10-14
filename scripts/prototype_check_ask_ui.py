@@ -141,7 +141,7 @@ def ui_checks(corpus) -> dict:
 
     def page():
         at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=90).run()
-        at.switch_page("pages/4_Ask.py").run()
+        at.switch_page("views/4_Ask.py").run()
         assert not at.exception and not at.error, "The Ask page did not load clean."
         return at
 

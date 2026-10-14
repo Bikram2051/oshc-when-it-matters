@@ -23,10 +23,10 @@ st.set_page_config(
 
 page = st.navigation([
     st.Page(render, title="Home", icon=":material/home:", default=True),
-    st.Page("pages/1_Journey_Coach.py", title="Journey Coach", icon=":material/school:"),
-    st.Page("pages/2_Navigator.py", title="Navigator", icon=":material/menu_book:"),
-    st.Page("pages/3_Bill_Explainer.py", title="Bill Explainer", icon=":material/receipt_long:"),
-    st.Page("pages/4_Ask.py", title="Ask NextBest", icon=":material/forum:"),
-    st.Page("pages/5_Dashboard.py", title="Project dashboard", icon=":material/dashboard:"),
+    st.Page("views/1_Journey_Coach.py", title="Journey Coach", icon=":material/school:"),
+    st.Page("views/2_Navigator.py", title="Navigator", icon=":material/menu_book:"),
+    st.Page("views/3_Bill_Explainer.py", title="Bill Explainer", icon=":material/receipt_long:"),
+    st.Page("views/4_Ask.py", title="Ask NextBest", icon=":material/forum:"),
+    st.Page("views/5_Dashboard.py", title="Project dashboard", icon=":material/dashboard:"),
 ], position="top")
 page.run()

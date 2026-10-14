@@ -1,0 +1,722 @@
+{
+  "checked_at_utc": "2026-10-13T03:37:46.442802+00:00",
+  "scope": "Retrieval and guardrail checks on the Ask page's own code path. Neither probe set is held out, so these are the optimistic end of the range. Not a measure of whether a student understood the passage.",
+  "source_sha256": "6ca7151567ee2b61f8e6b50340c297d50deb249a013f055ef38f50ed07ec87c7",
+  "top_k": 5,
+  "excerpt_count": 61,
+  "generated_answers": false,
+  "composer_reachable": false,
+  "guardrail_runs_before_retrieval": true,
+  "starter_checks": [
+    {
+      "starter": "How do I claim money back after seeing a doctor?",
+      "answered": true,
+      "no_exception": true
+    },
+    {
+      "starter": "Do I have to wait before I can use my cover?",
+      "answered": true,
+      "no_exception": true
+    },
+    {
+      "starter": "What is not covered at all?",
+      "answered": true,
+      "no_exception": true
+    },
+    {
+      "starter": "What about prescriptions and medicine?",
+      "answered": true,
+      "no_exception": true
+    },
+    {
+      "starter": "How do I get my membership card?",
+      "answered": true,
+      "no_exception": true
+    },
+    {
+      "starter": "Can my husband be on my policy?",
+      "answered": true,
+      "no_exception": true
+    }
+  ],
+  "advice_refused_without_excerpt": true,
+  "clinical_refused_without_excerpt": true,
+  "emergency_escalated_before_source": true,
+  "unmatched_question_warns": true,
+  "question_text_persisted": false,
+  "gold_guide_wording": {
+    "probes": 25,
+    "allowed_and_scored": 24,
+    "refused_at_guardrail": 1,
+    "recall_at_5": 0.9583,
+    "recall_at_3": 0.9167,
+    "recall_at_1": 0.5833,
+    "mrr": 0.7306,
+    "guardrail_decisions_as_expected": false,
+    "unexpected_refusals": [
+      "G-18"
+    ],
+    "expected_refusals": [],
+    "detail": [
+      {
+        "id": "G-01",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 3,
+        "returned_pages": [
+          21,
+          26,
+          3,
+          24,
+          12
+        ],
+        "expected_pages": [
+          3
+        ]
+      },
+      {
+        "id": "G-02",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          3,
+          3,
+          8,
+          15,
+          9
+        ],
+        "expected_pages": [
+          3
+        ]
+      },
+      {
+        "id": "G-03",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          5,
+          14,
+          18,
+          9,
+          24
+        ],
+        "expected_pages": [
+          5
+        ]
+      },
+      {
+        "id": "G-04",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          12,
+          12,
+          8,
+          30,
+          21
+        ],
+        "expected_pages": [
+          12
+        ]
+      },
+      {
+        "id": "G-05",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 3,
+        "returned_pages": [
+          25,
+          25,
+          8,
+          21,
+          12
+        ],
+        "expected_pages": [
+          8,
+          12
+        ]
+      },
+      {
+        "id": "G-06",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          13,
+          3,
+          12,
+          12,
+          20
+        ],
+        "expected_pages": [
+          13
+        ]
+      },
+      {
+        "id": "G-07",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": null,
+        "returned_pages": [
+          32,
+          15,
+          5,
+          26,
+          12
+        ],
+        "expected_pages": [
+          14
+        ]
+      },
+      {
+        "id": "G-08",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 2,
+        "returned_pages": [
+          17,
+          15,
+          25,
+          35,
+          29
+        ],
+        "expected_pages": [
+          15
+        ]
+      },
+      {
+        "id": "G-09",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          15,
+          18,
+          36,
+          17,
+          23
+        ],
+        "expected_pages": [
+          15
+        ]
+      },
+      {
+        "id": "G-10",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 2,
+        "returned_pages": [
+          14,
+          17,
+          17,
+          21,
+          26
+        ],
+        "expected_pages": [
+          17,
+          36
+        ]
+      },
+      {
+        "id": "G-11",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          17,
+          16,
+          36,
+          29,
+          27
+        ],
+        "expected_pages": [
+          17
+        ]
+      },
+      {
+        "id": "G-12",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          17,
+          17,
+          18,
+          24,
+          21
+        ],
+        "expected_pages": [
+          17
+        ]
+      },
+      {
+        "id": "G-13",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          16,
+          16,
+          36,
+          31,
+          30
+        ],
+        "expected_pages": [
+          16,
+          36
+        ]
+      },
+      {
+        "id": "G-14",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 5,
+        "returned_pages": [
+          16,
+          16,
+          4,
+          15,
+          20
+        ],
+        "expected_pages": [
+          20
+        ]
+      },
+      {
+        "id": "G-15",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 2,
+        "returned_pages": [
+          21,
+          22,
+          36,
+          22,
+          26
+        ],
+        "expected_pages": [
+          22
+        ]
+      },
+      {
+        "id": "G-16",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 2,
+        "returned_pages": [
+          21,
+          23,
+          22,
+          14,
+          26
+        ],
+        "expected_pages": [
+          23
+        ]
+      },
+      {
+        "id": "G-17",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          24,
+          24,
+          18,
+          3,
+          36
+        ],
+        "expected_pages": [
+          24
+        ]
+      },
+      {
+        "id": "G-18",
+        "guardrail": "escalate_emergency",
+        "guardrail_as_expected": false,
+        "retrieval_rank": null
+      },
+      {
+        "id": "G-19",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          26,
+          17,
+          18,
+          3,
+          26
+        ],
+        "expected_pages": [
+          26
+        ]
+      },
+      {
+        "id": "G-20",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          27,
+          21,
+          18,
+          15,
+          35
+        ],
+        "expected_pages": [
+          27,
+          28
+        ]
+      },
+      {
+        "id": "G-21",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          29,
+          28,
+          29,
+          10,
+          9
+        ],
+        "expected_pages": [
+          29
+        ]
+      },
+      {
+        "id": "G-22",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 3,
+        "returned_pages": [
+          29,
+          30,
+          10,
+          16,
+          12
+        ],
+        "expected_pages": [
+          10
+        ]
+      },
+      {
+        "id": "G-23",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 3,
+        "returned_pages": [
+          18,
+          5,
+          30,
+          30,
+          26
+        ],
+        "expected_pages": [
+          30
+        ]
+      },
+      {
+        "id": "G-24",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          31,
+          35,
+          27,
+          26,
+          28
+        ],
+        "expected_pages": [
+          31
+        ]
+      },
+      {
+        "id": "G-25",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          17,
+          21,
+          26,
+          18,
+          17
+        ],
+        "expected_pages": [
+          17,
+          36
+        ]
+      }
+    ]
+  },
+  "dev_student_wording": {
+    "probes": 15,
+    "allowed_and_scored": 14,
+    "refused_at_guardrail": 1,
+    "recall_at_5": 0.7857,
+    "recall_at_3": 0.7143,
+    "recall_at_1": 0.5,
+    "mrr": 0.625,
+    "guardrail_decisions_as_expected": true,
+    "unexpected_refusals": [],
+    "expected_refusals": [
+      "AD-05"
+    ],
+    "detail": [
+      {
+        "id": "AD-01",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 2,
+        "returned_pages": [
+          13,
+          29,
+          9,
+          15,
+          28
+        ],
+        "expected_pages": [
+          28,
+          29
+        ]
+      },
+      {
+        "id": "AD-02",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": null,
+        "returned_pages": [
+          12,
+          13,
+          12,
+          8,
+          24
+        ],
+        "expected_pages": [
+          17,
+          35,
+          36
+        ]
+      },
+      {
+        "id": "AD-03",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 2,
+        "returned_pages": [
+          10,
+          21,
+          12,
+          8,
+          13
+        ],
+        "expected_pages": [
+          21,
+          22
+        ]
+      },
+      {
+        "id": "AD-04",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": null,
+        "returned_pages": [
+          36,
+          11,
+          25,
+          34,
+          27
+        ],
+        "expected_pages": [
+          15,
+          16
+        ]
+      },
+      {
+        "id": "AD-05",
+        "guardrail": "escalate_emergency",
+        "guardrail_as_expected": true,
+        "retrieval_rank": null
+      },
+      {
+        "id": "AD-06",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          21,
+          20,
+          15,
+          3,
+          27
+        ],
+        "expected_pages": [
+          21,
+          27,
+          28
+        ]
+      },
+      {
+        "id": "AD-07",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          10,
+          8,
+          30,
+          9,
+          10
+        ],
+        "expected_pages": [
+          8,
+          10
+        ]
+      },
+      {
+        "id": "AD-08",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 2,
+        "returned_pages": [
+          36,
+          24,
+          33,
+          32,
+          34
+        ],
+        "expected_pages": [
+          24
+        ]
+      },
+      {
+        "id": "AD-09",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 4,
+        "returned_pages": [
+          28,
+          27,
+          25,
+          22
+        ],
+        "expected_pages": [
+          22,
+          23
+        ]
+      },
+      {
+        "id": "AD-10",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          28,
+          31,
+          30,
+          10,
+          35
+        ],
+        "expected_pages": [
+          28,
+          29,
+          35,
+          36
+        ]
+      },
+      {
+        "id": "AD-11",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          14,
+          32,
+          10,
+          21,
+          11
+        ],
+        "expected_pages": [
+          5,
+          14
+        ]
+      },
+      {
+        "id": "AD-12",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          28,
+          22,
+          27,
+          25,
+          16
+        ],
+        "expected_pages": [
+          27,
+          28
+        ]
+      },
+      {
+        "id": "AD-13",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          32,
+          17,
+          3,
+          9,
+          17
+        ],
+        "expected_pages": [
+          32
+        ]
+      },
+      {
+        "id": "AD-14",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": 1,
+        "returned_pages": [
+          13,
+          13,
+          3,
+          5,
+          3
+        ],
+        "expected_pages": [
+          13
+        ]
+      },
+      {
+        "id": "AD-15",
+        "guardrail": "allow",
+        "guardrail_as_expected": true,
+        "retrieval_rank": null,
+        "returned_pages": [
+          36,
+          26,
+          32,
+          13,
+          10
+        ],
+        "expected_pages": [
+          15,
+          18
+        ]
+      }
+    ]
+  },
+  "recall_at_5_gap": 0.1726,
+  "additional_api_calls": 0,
+  "protected_files_unchanged": true,
+  "budget_unchanged": true
+}

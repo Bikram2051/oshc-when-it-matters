@@ -20,7 +20,7 @@ ROOT_PACKAGES = ("streamlit==1.64.0", "pydantic==2.13.5", "pymupdf==1.28.2",
                  "rank-bm25==0.2.2", "python-dotenv==1.2.3")
 FILES = (
     "app/Home.py", "app/pages/1_Journey_Coach.py", "app/pages/2_Navigator.py",
-    "app/pages/3_Bill_Explainer.py", "app/pages/4_Dashboard.py",
+    "app/pages/3_Bill_Explainer.py", "app/pages/4_Ask.py", "app/pages/5_Dashboard.py",
     "oshc/__init__.py", "oshc/billexplainer/__init__.py",
     "oshc/schemas.py", "oshc/llm.py", "oshc/llm_budget.py", "oshc/policy_source.py",
     "oshc/policy_search.py", "oshc/navigator_ui.py", "oshc/coach_lessons.py",

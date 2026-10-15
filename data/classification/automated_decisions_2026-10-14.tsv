@@ -1,0 +1,88 @@
+record_id	code1	code2	uncertain	rationale
+PR-001	S		true	Reports dissatisfaction with refund amount without an explicit misunderstanding or question.
+PR-002	S		false	Complaint about an additional administrative document; no explicit comprehension gap.
+PR-003	S		false	Service delay obtaining a certificate.
+PR-004	S		true	Lack of benefits is reported but the snippet does not state why the writer is confused.
+PR-005	S		true	Coverage denial is reported without an explicit misconception or eligibility question.
+PR-006	C4		false	Explicit prior misunderstanding of paying first and claiming later.
+PR-007	S		false	Complaint about automated customer service.
+PR-008	S		true	Dissatisfaction with benefit adequacy does not establish misunderstanding.
+PR-009	S		false	General negative service appraisal with no specific knowledge gap.
+PR-010	S		true	High out-of-pocket costs are reported without an explicit reimbursement question.
+GP-011	S		false	App crash prevents receipt upload; technical failure is the stated barrier.
+GP-012	C3		false	Asks how to find a clinician meeting a language need.
+AS-013	C1		false	Questions the purpose of insurance in relation to visa status.
+PR-014	C2	C4	false	Explicit misconception that emergency hospital care is fully covered.
+PR-015	S		false	Complaint about call waiting time.
+PR-016	C5	C6	false	Explicit uncertainty about appropriate care setting led to emergency attendance.
+GP-017	C2		false	Explicit misunderstanding about ambulance coverage and separate arrangements.
+AS-018	S		false	Complaint about cancellation refund timing.
+PR-019	C2	C1	false	Explicit mistaken belief that benefits are limited to hospitals.
+PR-020	C3		false	Asks how to locate a direct-billing clinic.
+PR-021	C2		false	Explicit misunderstanding of extras and optical coverage.
+GP-022	C4		false	Claim-form complexity is an explicit procedural comprehension barrier.
+AS-023	C6		false	Asks who to contact in an emergency.
+PR-024	S		false	Rude service is the complaint; mentioning a visa does not establish a knowledge gap.
+PR-025	C4		false	Explicitly describes difficulty understanding gap payments, even though later resolved.
+PR-026	C1	C2	false	Misunderstanding insurance as merely a visa requirement is primary; waiting periods secondary.
+GP-027	S		false	Login failure with invalid membership error.
+AS-028	C4	C3	true	Question is about anticipating extra provider charges; locating a clinic is secondary.
+PR-029	S		false	Complaint about claims processing time.
+PR-030	C2	C4	true	Unawareness of MBS-linked benefit limits is primary; the bill is the consequence.
+PR-031	S		true	Emergency attendance and a long wait alone do not establish inappropriate care choice or misunderstanding.
+PR-032	C3	C1	true	Asks how to use existing cover and locate guidance; purpose of cover is not explicitly questioned.
+GP-033	S		false	App freezes while claiming.
+AS-034	C6		true	Asks for an emergency access control; could alternatively concern app navigation.
+PR-035	C2		false	Explicit lack of awareness of a waiting period.
+PR-036	C3		false	Explicit difficulty locating a direct-billing clinician, although subsequently resolved.
+PR-037	C1	C2	false	Asks how the insurance scheme differs from Medicare.
+PR-038	C4		false	Asks why a specific reimbursement is lower than the amount paid.
+GP-039	S		false	Complaint that the app redirects to a website.
+AS-040	S		true	The stated obstacle is a broken map rather than knowing how healthcare access works.
+PR-041	C5	C3	true	Redirection from hospital to GP provides evidence of a service-choice mismatch.
+PR-042	S		false	Complaint about policy-document delivery delay.
+PR-043	C6	C3	false	Asks for an urgent advice pathway other than the emergency number.
+PR-044	C2	C4	true	Misinterpreting the scope of full coverage is primary; resulting gap payment is secondary.
+PR-045	S		false	General customer-service complaint.
+GP-046	C3		false	Explicit difficulty booking a telehealth appointment.
+AS-047	S		false	Reports processing duration without a comprehension problem.
+EX-049	S		false	Login failure is a technical service complaint.
+EX-050	C2		false	Explicit mistaken belief about full dental coverage.
+FM-051	S		true	Summary describes reimbursement and financial burden without an explicit misunderstanding; full context could change this.
+FM-052	S		true	Summary reports separate billing limits and financial burden; comprehension cannot be inferred from cost alone.
+FM-053	S		true	Summary reports disputed claim documentation; no explicit coverage question is preserved.
+FM-054	C2	C1	true	Pre-existing-condition waiting-period and eligibility concerns dominate over the purpose of insurance.
+FM-056	C4	C2	false	Summary explicitly states confusion about the reimbursement calculation.
+FM-057	S		true	Summary reports medicine benefit caps and high cost without a preserved comprehension question.
+FM-051-C1	C4	C2	false	Third-party explanation of pay-and-claim workflow; topical label only, not student gap evidence.
+FM-051-C2	C4	C2	false	Third-party explanation of reimbursement shortfall and gap payment; topical label only.
+FM-051-C3	S		true	Rhetorical responsibility dispute without a substantive educational explanation.
+FM-051-C4	S		true	Responsibility dispute without a substantive educational explanation.
+FM-051-C5	C2		true	Third-party explanation of insufficient coverage; topical label only.
+FM-051-C6	C4	C2	false	Third-party explanation that administrative recording does not change reimbursement; topical label only.
+FM-051-C7	C4		true	Third-party statement of a gap amount; topical label only and limited context.
+FM-051-C8	S		true	Consumer-responsibility dispute; insufficient information to infer comprehension.
+FM-052-C1	C4		true	Third-party discussion of bill negotiation and payment liability; topical label only.
+FM-052-C2	C1		false	Third-party explanation of Medicare eligibility and private-patient status; topical label only.
+FM-052-C3	C4	C2	false	Third-party explanation of the difference between provider charge and MBS reimbursement; topical label only.
+FM-052-C4	C2		false	Third-party explanation of contractual benefit limits; topical label only.
+FM-052-C5	C3	C4	true	Third-party local-service billing example; topical label only with uncertain dominant category.
+FM-052-C6	C4	C2	false	Third-party explanation of a provider-dependent gap payment; topical label only.
+FM-052-C7	C4	C2	false	Third-party MBS reimbursement comparison; topical label only.
+FM-052-C8	S		true	Vague insurer criticism without enough detail to support a specific knowledge-gap category.
+FM-052-C9	C2	C4	false	Third-party explanation of policy exclusions and reading policy terms; topical label only.
+FM-053-C1	C2	C6	false	Third-party explanation of ambulance transport coverage conditions; topical label only.
+FM-053-C2	C2		true	Third-party discussion of separate ambulance membership; topical label only, not endorsed advice.
+FM-053-C3	C2		false	Third-party comparison of ambulance benefit scope; topical label only, not a verified policy claim.
+FM-053-C4	C2	C6	false	Comment asks about the policy meaning of medical necessity; not first-person student-gap prevalence evidence.
+FM-053-C5	S		false	Policy dissatisfaction rather than a request to understand an insurance rule.
+FM-053-C6	S		false	Complaint about differences between jurisdictions.
+FM-053-C7	S		true	Dismissive response contains insufficient educational detail.
+FM-053-C8	C4		true	Third-party instructions for correcting invoice documentation; procedural topic, not student-gap evidence.
+FM-053-C9	S		true	Anecdotal service outcome without an explicit comprehension question.
+FM-053-C10	C2	C4	false	Third-party coverage condition and claim-review explanation; topical label only.
+FM-054-C1	C1		true	Third-party comment on visa obligations; topical label only.
+FM-054-C2	C2		false	Third-party waiting-period explanation; topical label only, not endorsed clinical or legal advice.
+FM-054-C3	S		false	Accusatory response without a substantive educational explanation.
+FM-054-C4	S		false	Admonition about dishonest disclosure; no student-comprehension inference.
+FM-054-C5	C2	C1	true	Discussion concerns pre-existing-condition timing and disclosure; speaker remains a commenter under source metadata.

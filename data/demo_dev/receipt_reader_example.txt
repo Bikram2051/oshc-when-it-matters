@@ -1,0 +1,8 @@
+SYNTHETIC TEACHING RECEIPT
+Date | MBS Item | Description | Fee | GST
+14/10/2026 | 23 | Short consultation | $95.00 | $0.00
+14/10/2026 | 36 | Extended consultation | $150.00 | $0.00
+Total Gross Amount: $245.00
+Amount Settled: $245.00
+Balance Remaining: $0.00
+Total GST: $0.00

@@ -99,6 +99,19 @@ def test_custom_input_and_confirmation_changes_invalidate_results(sandbox):
     assert not at.exception
 
 
+def test_uploaded_narrative_is_not_retained_or_rendered(sandbox):
+    at = app()
+    at.selectbox(key="be_example").select(ui.CUSTOM).run()
+    at.text_area(key="be_text").set_value(TEXT.replace("Short consultation", "Secret Person 999999999")).run()
+    at.checkbox(key="be_synthetic").check().run()
+    at.button(key="be_read").click().run()
+    assert not at.exception
+    assert "Secret Person" not in repr(at.session_state["be_result"])
+    assert "999999999" not in repr(at.session_state["be_result"])
+    assert "text" not in at.session_state["be_result"]
+    assert "Secret Person" not in repr([item.value for item in at.dataframe])
+
+
 def test_cache_miss_stays_offline_and_shows_no_amounts(sandbox):
     at = app()
     at.selectbox(key="be_example").select("GP visit: saved AI reading").run()

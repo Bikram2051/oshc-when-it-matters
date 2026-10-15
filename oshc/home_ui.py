@@ -3,13 +3,13 @@ import streamlit as st
 
 MODULES = (
     ("Learn the essentials", "Journey Coach", "views/1_Journey_Coach.py", "home_coach",
-     "school", "Three short lessons. Practise what you learn and check the original source."),
+     "school", "Three short lessons, practice scenarios, and a checklist you can take away."),
     ("Find it in the guide", "Navigator", "views/2_Navigator.py", "home_navigator",
      "menu_book", "Explore prepared topics, read the source passages, and open the full page."),
     ("Understand the numbers", "Bill Explainer", "views/3_Bill_Explainer.py", "home_bill",
      "receipt_long", "Explore a synthetic bill and compare its charges with published MBS references."),
     ("Ask in your own words", "Ask NextBest", "views/4_Ask.py", "home_ask",
-     "forum", "Ask general OSHC questions in a guarded chat, with passages and page references."),
+     "forum", "Get curated answers to general OSHC questions, with supporting guide passages."),
 )
 
 

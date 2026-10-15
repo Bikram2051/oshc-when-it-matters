@@ -11,7 +11,9 @@ from pathlib import Path
 import streamlit as st
 
 from oshc.billexplainer.extract_llm import extract as extract_saved
-from oshc.billexplainer.extract_rules import extract as extract_local
+from oshc.billexplainer.extract_document import ReceiptFacts, extract as extract_local, read_document
+from oshc.billexplainer.explanation import explain
+from oshc.billexplainer.privacy import minimise, retained_fields
 from oshc.billexplainer.mbs_reference import SourceError, compare_bill, load_snapshot
 from oshc.billexplainer.read import MAX_BYTES, MAX_CHARS, read_pdf, read_text
 from oshc.llm_budget import MODEL
@@ -22,6 +24,7 @@ EXAMPLES = {
     "GP visit: text example": ("rules_reader_example.txt", "text", "rules"),
     "GP visit: PDF example": ("rules_reader_example.pdf", "pdf", "rules"),
     "GP visit: saved AI reading": ("llm_reader_example.txt", "text", "llm"),
+    "Paid receipt: dated service lines": ("receipt_reader_example.txt", "text", "rules"),
 }
 CUSTOM = "Try an invented bill"
 BASES = {"No comparison": None, "MBS schedule fee": "ScheduleFee",
@@ -35,7 +38,7 @@ def require_offline():
         raise RuntimeError("Start the demo with the model used for the saved examples.")
 
 
-def read_bill(data: bytes, kind: str, reader: str) -> tuple[ExtractionResult, str]:
+def read_bill(data: bytes, kind: str, reader: str) -> tuple[ExtractionResult, ReceiptFacts]:
     require_offline()
     if kind not in ("text", "pdf") or reader not in ("rules", "llm"):
         raise ValueError("Unsupported bill input.")
@@ -45,9 +48,10 @@ def read_bill(data: bytes, kind: str, reader: str) -> tuple[ExtractionResult, st
             raise ValueError("The saved AI example is text only.")
         # Offline adapter returns a cache hit or a visible abstention, never a live call.
         result = extract_saved(source)
+        _, receipt = read_document(source)
     else:
-        result = extract_local(source)
-    return result, source.text
+        result, receipt = read_document(source)
+    return minimise(result), receipt
 
 
 def money(value, missing="Not shown"):
@@ -62,7 +66,7 @@ def money(value, missing="Not shown"):
 
 def clear_result():
     for key in list(st.session_state):
-        if key == "be_result" or key.startswith("be_basis_"):
+        if key in ("be_result", "be_line", "be_check_amounts", "be_check_gap") or key.startswith("be_basis_"):
             del st.session_state[key]
 
 
@@ -89,7 +93,7 @@ def _input():
         data = text.encode("utf-8")
     else:
         upload = st.file_uploader("Synthetic PDF with selectable text", type=["pdf"],
-                                  max_upload_size=10, key="be_pdf")
+                                  max_upload_size=10, key=f"be_pdf_{st.session_state.get('be_upload_epoch', 0)}")
         if upload is not None and upload.size > MAX_BYTES:
             st.error("The PDF must be 10 MiB or smaller.")
             data = b""
@@ -105,6 +109,15 @@ def render():
     st.title("Make sense of a bill")
     st.write("See what the document says, understand the numbers, and identify what still needs checking.")
     st.caption("University prototype | Synthetic bills only | Offline demonstration")
+    with st.expander("How your bill is protected"):
+        st.markdown("**Processed on this computer.** No bill is sent to an AI provider. "
+                    "The app retains only service dates, item numbers and amounts for this session. "
+                    "Names, contact and membership details, provider identities and free-text descriptions "
+                    "are removed from the displayed result and download.")
+        st.caption("The selected upload temporarily lives in browser/server memory until cleared. "
+                   "Clear removes the app's retained result and upload widget. No bill database, "
+                   "application file storage or bill-content logging is used. This local demo is "
+                   "for invented data; it is not approved for real patient records or public hosting.")
     if st.session_state.get("lang") == "hi":
         st.info("This prototype screen currently uses English.")
     try:
@@ -133,9 +146,9 @@ def render():
         clear_result()
         try:
             with st.spinner("Reading the example..."):
-                result, source_text = read_bill(data, kind, reader)
+                result, receipt = read_bill(data, kind, reader)
             st.session_state["be_result"] = {"identity": identity, "result": result.model_dump(),
-                                            "text": source_text, "label": label, "reader": reader}
+                                            "receipt": asdict(receipt), "label": label, "reader": reader}
         except (OSError, ValueError, RuntimeError):
             st.error("This example could not be read. Check the file and use the local text example.")
             return
@@ -143,11 +156,16 @@ def render():
     if not stored:
         return
     result = ExtractionResult.model_validate(stored["result"])
+    # Old sessions from an earlier app version must not retain their original text.
+    stored.pop("text", None)
+    result = minimise(result)
+    stored["result"] = result.model_dump()
+    receipt = ReceiptFacts(**stored.get("receipt", {}))
     st.divider()
     st.subheader("2. Check what was read")
     st.caption(stored["label"] + " | Service date: " + (result.service_date or "Not shown"))
-    with st.expander("View source text"):
-        st.code(stored["text"], language=None)
+    with st.expander("View only the retained fields"):
+        st.json(retained_fields(result, receipt), expanded=False)
     if result.warnings:
         with st.expander("Reading notes", expanded=not result.line_items):
             for warning in result.warnings:
@@ -161,10 +179,30 @@ def render():
     columns[1].metric("Insurer benefit shown", money(result.total_benefit))
     columns[2].metric("Gap shown", money(result.total_gap))
     st.caption("Not shown means unknown. It does not mean zero or that a claim was refused.")
+    with st.container(border=True):
+        st.subheader("Your bill, explained")
+        for message in explain(result, receipt):
+            st.markdown(message)
+        st.caption("Reading method: local labelled-table extraction. Original narrative is omitted for privacy.")
     st.dataframe([{"Line": i, "Description": line.raw_description,
                    "MBS item shown": line.item_number or "Not shown", "Charge": money(line.charged),
                    "Insurer benefit shown": money(line.benefit_paid), "Gap shown": money(line.gap)}
                   for i, line in enumerate(result.line_items, 1)], hide_index=True, width="stretch")
+    if receipt.amount_settled is not None or receipt.balance_remaining is not None:
+        st.caption("Receipt amounts: " + " · ".join((
+            "Settled " + money(receipt.amount_settled),
+            "Balance " + money(receipt.balance_remaining),
+            "GST " + money(receipt.total_gst))))
+
+    with st.expander("Walk through one service line", expanded=True):
+        chosen = st.selectbox("Choose a service line", list(range(len(result.line_items))),
+                              format_func=lambda i: f"Line {i + 1} · MBS item {result.line_items[i].item_number or 'not printed'}",
+                              key="be_line")
+        line = result.line_items[chosen]
+        st.write(f"This line shows a provider charge of {money(line.charged)}. "
+                 f"Its printed insurer benefit is {money(line.benefit_paid).lower()} "
+                 f"and its printed gap is {money(line.gap).lower()}.")
+        st.caption("An MBS item identifies a service category. It does not prove the service was billed correctly or is payable under your policy.")
 
     st.subheader("3. Explore an MBS comparison")
     st.write("An MBS reference and a provider's charge can be different amounts. "
@@ -199,13 +237,16 @@ def render():
             st.caption("MBS August 2026 snapshot | Captured 28 Sep 2026 | Later revisions are not checked")
             st.link_button("Open the MBS source page", comparison.source_page)
 
-    with st.expander("Questions to take to your insurer"):
+    with st.expander("Your next steps", expanded=True):
+        st.checkbox("I have checked the retained amounts against the original invoice.", key="be_check_amounts")
+        st.checkbox("I understand that the receipt balance and insurance gap are different.", key="be_check_gap")
         st.write("Which documents should I provide with this claim?")
         st.write("Which policy conditions affect these charges?")
         st.write("Does this document show an insurer payment, or only a payment made to the provider?")
     summary = {"purpose": "Synthetic teaching example; not a claim or eligibility decision",
                "reading_method": "saved AI response" if stored["reader"] == "llm" else "local rules",
-               "document_reading": result.model_dump(mode="json"),
+               **retained_fields(result, receipt),
+               "explanation": explain(result, receipt),
                "mbs_comparison": asdict(comparison) if comparison else None}
     st.download_button("Download this teaching summary", json.dumps(summary, indent=2, default=str),
                        file_name="synthetic_bill_summary.json", mime="application/json", key="be_download")

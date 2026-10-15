@@ -1,0 +1,47 @@
+{
+  "kind": "automated adjudication and grouped classifier development baseline",
+  "created_at_utc": "2026-10-14T09:32:43.723707+00:00",
+  "n": 53,
+  "groups": 53,
+  "label_counts": {
+    "S": 27,
+    "C4": 6,
+    "C3": 5,
+    "C1": 3,
+    "C2": 9,
+    "C6": 2,
+    "C5": 1
+  },
+  "uncertain_labels": 18,
+  "adjudicated_records": 87,
+  "human_consensus": false,
+  "limitations": [
+    "Derived labels are automated judgments, not reconciled human consensus.",
+    "Historical human kappa remains 0.4173; this does not improve that agreement.",
+    "The available coder-pack file is blank; original disagreement counts come from the separate historical agreement report, not this dataset.",
+    "All seven classes retained in macro-F1, including unsupported rare classes.",
+    "Five folds are grouped; tiny classes cannot be stratified across every fold.",
+    "Bootstrap uses saved out-of-fold predictions; it does not refit models.",
+    "No independently labelled student-question set exists; shift gap unmeasured.",
+    "Embedding and LLM baselines not run; no downloaded model or paid call."
+  ],
+  "full_report_sha256": "4ea01f91d3695a21908b070438e9b072e5eb434d568b5b8c6ae23aca5545020d",
+  "results": {
+    "majority": {
+      "macro_f1_fixed_seven_classes": 0.09642857142857143,
+      "macro_f1_ci95_group_bootstrap": [
+        0.07827788649706457,
+        0.1116584564860427
+      ],
+      "accuracy": 0.5094339622641509
+    },
+    "tfidf_logreg": {
+      "macro_f1_fixed_seven_classes": 0.3011750154607298,
+      "macro_f1_ci95_group_bootstrap": [
+        0.21685881129829862,
+        0.3521511445636122
+      ],
+      "accuracy": 0.5849056603773585
+    }
+  }
+}

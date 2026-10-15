@@ -37,7 +37,7 @@ def main():
         # Pin AppTest's page for subsequent widget reruns after programmatic navigation.
         at.switch_page("views/1_Journey_Coach.py").run()
         for lesson in LESSONS:
-            at.selectbox(key="jc_moment").select(lesson.moment).run()
+            at.segmented_control(key="jc_moment").select(lesson.moment).run()
             assert at.radio(key="jc_choice").value is None
             assert at.button(key="jc_check").disabled
             assert any(text.value == sources[lesson.ident].text for text in at.text)

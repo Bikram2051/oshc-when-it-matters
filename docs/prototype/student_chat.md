@@ -1,5 +1,26 @@
 # Guarded guide chat
 
+## Curated direct answers (implementation specification)
+
+The supported general topics now receive a short authored answer above their exact
+source passages: claims, waiting periods, membership cards, the MBS, gap payments,
+direct billing, prescription medicines and exclusions. These are fixed editorial
+cards, not model-written responses. Every sentence has a physical PDF page/column
+and an exact source-text anchor. Before returning a card, the service verifies all
+anchors in the hash-verified corpus and validates every displayed source excerpt.
+A missing or changed anchor fails closed; no card is returned. The UI also hides
+the authored answer when the saved source changes during transcript replay.
+
+`ChatResponse` adds optional `answer`, `answer_title`, `answer_id`, and
+`answer_source_ids`. Existing callers can continue using `status`, `message`, and
+`hits`. Emergency-first screening, privacy/instruction checks, bounded inputs,
+offline-only operation and no implicit conversation context remain required.
+Administrative wording and courtesy forms can vary, but personalised medical or
+benefit decisions cannot select a card. Unknown supported-language questions may
+still return passages without an authored answer; uncertain or mixed requests
+abstain. This finite set is not an open-domain assistant or a measured clinical
+classifier. Development checks do not establish held-out safety performance.
+
 The student can submit their own general OSHC question and continue asking questions
 in a session-only transcript. Each submitted message, including starter questions,
 runs through the same service before any source loading or search. A refusal has no
@@ -36,6 +57,13 @@ administrative first-person forms. Unknown words, mixed requests and ambiguous
 followups deliberately abstain; these restrictions are not a measured clinical
 classifier. Explicit offline configuration is required. Input is never truncated
 before checking, so an unsafe tail cannot be silently removed.
+
+The final chat adds deterministic immediate-danger descriptions and normalises
+typographic apostrophes before emergency screening. Polite informational requests
+do not bypass the clinical-care check. Administrative exceptions are anchored
+forms, and unknown vocabulary still abstains. Final separate automated probes
+recorded 24/24 required refusals, 6/6 emergencies and 6/20 false refusals. See the
+15 October release record for earlier failed candidates and uncertainty intervals.
 
 The default loader calls `build_corpus(root)`, which verifies the frozen guide hash.
 The injectable `source_loader` is trusted application/test code and must fulfill

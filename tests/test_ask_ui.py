@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 @pytest.fixture
 def source(monkeypatch):
+    monkeypatch.setattr("oshc.student_chat.CURATED_CARDS", {})
     monkeypatch.setenv("OSHC_OFFLINE", "1")
     monkeypatch.setenv("OSHC_ENABLE_LIVE", "0")
     corpus = PolicyCorpus((

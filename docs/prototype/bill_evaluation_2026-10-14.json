@@ -1,0 +1,439 @@
+{
+  "kind": "new separately authored automated synthetic evaluation",
+  "historical_human_heldout": false,
+  "created_at_utc": "2026-10-14T09:19:22.997809+00:00",
+  "source_hashes": {
+    "oshc/billexplainer/extract_document.py": "38827b3166568581a338bf3394635eb2a98b7392fe187a84466485780954d9ce",
+    "oshc/billexplainer/extract_rules.py": "f1a942c4d8a81ce0edaab7bf3570e7faefb0d4e026c1914df8c4372fd314b071",
+    "oshc/billexplainer/read.py": "045dd5bc1b7f0adaab6b785876c98c2d6040074b9237c8916878102052a3a5ad",
+    "oshc/schemas.py": "eb5dc61240ba005c622fd59a3ee58d9cf4f35e5b7656982775d29b8542ed8de0",
+    "eval/extraction.py": "76e8eac666ee97440c29e0308aae7427dfd11be8e624d0ce41497324b44c5d0c"
+  },
+  "documents": 20,
+  "provider_calls": 0,
+  "paid_llm_pipeline": "not run; offline only",
+  "limitations": [
+    "Synthetic layouts; no real-patient accuracy claim.",
+    "Automated custodian authored truth without reading extractor code.",
+    "Historical exposed family parameters were not used.",
+    "Privacy minimisation is tested separately; extraction scoring precedes UI minimisation."
+  ],
+  "results": {
+    "frozen_baseline": {
+      "protocol": "docs/prototype/extraction_protocol.md",
+      "scored_at_utc": "2026-10-14T09:19:23.015658+00:00",
+      "map_sha256": "246bde8749368d98f51aaa55df1d214dfd3999579a0419d9ec3f33729c529575",
+      "run_record_sha256": "256e57541632c2739909ad6629abc95fbdaa7bcb86df6246ba6dbcf262396c7e",
+      "documents": 20,
+      "families": {
+        "compact_receipt": 5,
+        "ledger_grid": 5,
+        "narrative_treatment": 5,
+        "split_account": 5
+      },
+      "pipelines": {
+        "rules": {
+          "documents": 20,
+          "status": {
+            "ok": 19,
+            "empty": 1,
+            "failed": 0
+          },
+          "micro": {
+            "tp": 35,
+            "fp": 0,
+            "fn": 147,
+            "precision": 1.0,
+            "recall": 0.1923,
+            "f1": 0.3226,
+            "f1_ci95": [
+              0.2768,
+              0.3729
+            ]
+          },
+          "invented_values": 0,
+          "document_exact_match": {
+            "count": 0,
+            "rate": 0.0,
+            "ci95": [
+              0.0,
+              0.1611
+            ]
+          },
+          "per_field": {
+            "provider": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 20,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 20,
+              "correct_abstentions": 0,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "service_date": {
+              "tp": 15,
+              "fp": 0,
+              "fn": 5,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 5,
+              "correct_abstentions": 0,
+              "precision": 1.0,
+              "recall": 0.75,
+              "f1": 0.8571
+            },
+            "total_charged": {
+              "tp": 16,
+              "fp": 0,
+              "fn": 0,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 0,
+              "correct_abstentions": 4,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "total_benefit": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 12,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 12,
+              "correct_abstentions": 8,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "total_gap": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 0,
+              "correct_abstentions": 16,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "item_number": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 32,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 32,
+              "correct_abstentions": 0,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "charged": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 37,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 37,
+              "correct_abstentions": 0,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "benefit_paid": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 24,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 24,
+              "correct_abstentions": 0,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "gap": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 17,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 17,
+              "correct_abstentions": 0,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            }
+          },
+          "per_family": {
+            "compact_receipt": {
+              "documents": 5,
+              "precision": 1.0,
+              "recall": 0.2128,
+              "f1": 0.3509,
+              "f1_ci95": [
+                0.2769,
+                0.44
+              ]
+            },
+            "ledger_grid": {
+              "documents": 5,
+              "precision": 1.0,
+              "recall": 0.2128,
+              "f1": 0.3509,
+              "f1_ci95": [
+                0.2647,
+                0.45
+              ]
+            },
+            "narrative_treatment": {
+              "documents": 5,
+              "precision": 1.0,
+              "recall": 0.119,
+              "f1": 0.2128,
+              "f1_ci95": [
+                0.1277,
+                0.3158
+              ]
+            },
+            "split_account": {
+              "documents": 5,
+              "precision": 1.0,
+              "recall": 0.2174,
+              "f1": 0.3571,
+              "f1_ci95": [
+                0.2941,
+                0.4762
+              ]
+            }
+          },
+          "rows": {
+            "expected": 41,
+            "output": 0,
+            "matched": 0,
+            "missing": 41,
+            "extra": 0
+          },
+          "descriptions": {
+            "matched_rows": 0,
+            "correct": 0,
+            "rate": null
+          }
+        }
+      }
+    },
+    "current_prototype": {
+      "protocol": "docs/prototype/extraction_protocol.md",
+      "scored_at_utc": "2026-10-14T09:19:23.072665+00:00",
+      "map_sha256": "246bde8749368d98f51aaa55df1d214dfd3999579a0419d9ec3f33729c529575",
+      "run_record_sha256": "668115b4b401e3a7af6c00ed92554dd43111baf8a1ff5b86aba0a88ed4f352c0",
+      "documents": 20,
+      "families": {
+        "compact_receipt": 5,
+        "ledger_grid": 5,
+        "narrative_treatment": 5,
+        "split_account": 5
+      },
+      "pipelines": {
+        "rules": {
+          "documents": 20,
+          "status": {
+            "ok": 19,
+            "empty": 1,
+            "failed": 0
+          },
+          "micro": {
+            "tp": 35,
+            "fp": 0,
+            "fn": 147,
+            "precision": 1.0,
+            "recall": 0.1923,
+            "f1": 0.3226,
+            "f1_ci95": [
+              0.2768,
+              0.3729
+            ]
+          },
+          "invented_values": 0,
+          "document_exact_match": {
+            "count": 0,
+            "rate": 0.0,
+            "ci95": [
+              0.0,
+              0.1611
+            ]
+          },
+          "per_field": {
+            "provider": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 20,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 20,
+              "correct_abstentions": 0,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "service_date": {
+              "tp": 15,
+              "fp": 0,
+              "fn": 5,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 5,
+              "correct_abstentions": 0,
+              "precision": 1.0,
+              "recall": 0.75,
+              "f1": 0.8571
+            },
+            "total_charged": {
+              "tp": 16,
+              "fp": 0,
+              "fn": 0,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 0,
+              "correct_abstentions": 4,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "total_benefit": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 12,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 12,
+              "correct_abstentions": 8,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "total_gap": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 0,
+              "correct_abstentions": 16,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "item_number": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 32,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 32,
+              "correct_abstentions": 0,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "charged": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 37,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 37,
+              "correct_abstentions": 0,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "benefit_paid": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 24,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 24,
+              "correct_abstentions": 0,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "gap": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 17,
+              "invented": 0,
+              "wrong": 0,
+              "missed": 17,
+              "correct_abstentions": 0,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            }
+          },
+          "per_family": {
+            "compact_receipt": {
+              "documents": 5,
+              "precision": 1.0,
+              "recall": 0.2128,
+              "f1": 0.3509,
+              "f1_ci95": [
+                0.2769,
+                0.44
+              ]
+            },
+            "ledger_grid": {
+              "documents": 5,
+              "precision": 1.0,
+              "recall": 0.2128,
+              "f1": 0.3509,
+              "f1_ci95": [
+                0.2647,
+                0.45
+              ]
+            },
+            "narrative_treatment": {
+              "documents": 5,
+              "precision": 1.0,
+              "recall": 0.119,
+              "f1": 0.2128,
+              "f1_ci95": [
+                0.1277,
+                0.3158
+              ]
+            },
+            "split_account": {
+              "documents": 5,
+              "precision": 1.0,
+              "recall": 0.2174,
+              "f1": 0.3571,
+              "f1_ci95": [
+                0.2941,
+                0.4762
+              ]
+            }
+          },
+          "rows": {
+            "expected": 41,
+            "output": 0,
+            "matched": 0,
+            "missing": 41,
+            "extra": 0
+          },
+          "descriptions": {
+            "matched_rows": 0,
+            "correct": 0,
+            "rate": null
+          }
+        }
+      }
+    }
+  }
+}

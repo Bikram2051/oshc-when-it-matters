@@ -1,0 +1,688 @@
+{
+  "kind": "automated adjudication and grouped classifier development baseline",
+  "created_at_utc": "2026-10-14T09:22:01.129764+00:00",
+  "dataset_sha256": "17db789f8c54b6ce590e8856ac5e3c711dfa572a727eafdee2183beab0349194",
+  "source_hashes": {
+    "oshc-master-data-v7-final.xlsx": "095d304ccaaf1a92356f96162636ae413479baaad490f63212c12865bf96722b",
+    "coder_pack_minhaj.xlsx": "166dfda4e3e48c74a23c892e7e92055b0043713b1b058e04591e1f3c9dd6fe69",
+    "automated_decisions.tsv": "f370a2589dacb3ac509a524fe9b37d2c7363f6ba816b314ddac0aba82cd51e0b"
+  },
+  "n": 53,
+  "groups": 53,
+  "label_counts": {
+    "S": 27,
+    "C4": 6,
+    "C3": 5,
+    "C1": 3,
+    "C2": 9,
+    "C6": 2,
+    "C5": 1
+  },
+  "uncertain_labels": 18,
+  "original_disagreements": 0,
+  "adjudicated_records": 87,
+  "human_consensus": false,
+  "excluded_anchor_ids": [
+    "PR-016",
+    "AS-023",
+    "FM-051-C1",
+    "FM-051-C3",
+    "FM-051-C5",
+    "FM-052-C2",
+    "FM-052-C5"
+  ],
+  "folds": [
+    {
+      "train_n": 42,
+      "test_n": 11,
+      "test_ids": [
+        "PR-004",
+        "PR-005",
+        "GP-017",
+        "PR-025",
+        "PR-029",
+        "PR-030",
+        "PR-031",
+        "PR-036",
+        "PR-037",
+        "EX-049",
+        "FM-053"
+      ],
+      "missing_training_classes": []
+    },
+    {
+      "train_n": 42,
+      "test_n": 11,
+      "test_ids": [
+        "PR-001",
+        "PR-002",
+        "PR-009",
+        "PR-010",
+        "GP-011",
+        "GP-012",
+        "PR-019",
+        "PR-038",
+        "PR-041",
+        "PR-044",
+        "AS-047"
+      ],
+      "missing_training_classes": [
+        "C5"
+      ]
+    },
+    {
+      "train_n": 43,
+      "test_n": 10,
+      "test_ids": [
+        "PR-008",
+        "PR-020",
+        "AS-028",
+        "AS-034",
+        "PR-035",
+        "AS-040",
+        "PR-042",
+        "PR-045",
+        "EX-050",
+        "FM-051"
+      ],
+      "missing_training_classes": []
+    },
+    {
+      "train_n": 43,
+      "test_n": 10,
+      "test_ids": [
+        "PR-003",
+        "AS-013",
+        "PR-014",
+        "AS-018",
+        "GP-022",
+        "GP-039",
+        "PR-043",
+        "GP-046",
+        "FM-052",
+        "FM-057"
+      ],
+      "missing_training_classes": []
+    },
+    {
+      "train_n": 42,
+      "test_n": 11,
+      "test_ids": [
+        "PR-006",
+        "PR-007",
+        "PR-015",
+        "PR-021",
+        "PR-024",
+        "PR-026",
+        "GP-027",
+        "PR-032",
+        "GP-033",
+        "FM-054",
+        "FM-056"
+      ],
+      "missing_training_classes": []
+    }
+  ],
+  "results": {
+    "majority": {
+      "macro_f1_fixed_seven_classes": 0.09642857142857143,
+      "macro_f1_ci95_group_bootstrap": [
+        0.07827788649706457,
+        0.1116584564860427
+      ],
+      "accuracy": 0.5094339622641509,
+      "predictions": [
+        {
+          "id": "PR-001",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-002",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-003",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-004",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-005",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-006",
+          "expected": "C4",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-007",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-008",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-009",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-010",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "GP-011",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "GP-012",
+          "expected": "C3",
+          "predicted": "S"
+        },
+        {
+          "id": "AS-013",
+          "expected": "C1",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-014",
+          "expected": "C2",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-015",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "GP-017",
+          "expected": "C2",
+          "predicted": "S"
+        },
+        {
+          "id": "AS-018",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-019",
+          "expected": "C2",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-020",
+          "expected": "C3",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-021",
+          "expected": "C2",
+          "predicted": "S"
+        },
+        {
+          "id": "GP-022",
+          "expected": "C4",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-024",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-025",
+          "expected": "C4",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-026",
+          "expected": "C1",
+          "predicted": "S"
+        },
+        {
+          "id": "GP-027",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "AS-028",
+          "expected": "C4",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-029",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-030",
+          "expected": "C2",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-031",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-032",
+          "expected": "C3",
+          "predicted": "S"
+        },
+        {
+          "id": "GP-033",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "AS-034",
+          "expected": "C6",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-035",
+          "expected": "C2",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-036",
+          "expected": "C3",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-037",
+          "expected": "C1",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-038",
+          "expected": "C4",
+          "predicted": "S"
+        },
+        {
+          "id": "GP-039",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "AS-040",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-041",
+          "expected": "C5",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-042",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-043",
+          "expected": "C6",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-044",
+          "expected": "C2",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-045",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "GP-046",
+          "expected": "C3",
+          "predicted": "S"
+        },
+        {
+          "id": "AS-047",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "EX-049",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "EX-050",
+          "expected": "C2",
+          "predicted": "S"
+        },
+        {
+          "id": "FM-051",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "FM-052",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "FM-053",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "FM-054",
+          "expected": "C2",
+          "predicted": "S"
+        },
+        {
+          "id": "FM-056",
+          "expected": "C4",
+          "predicted": "S"
+        },
+        {
+          "id": "FM-057",
+          "expected": "S",
+          "predicted": "S"
+        }
+      ]
+    },
+    "tfidf_logreg": {
+      "macro_f1_fixed_seven_classes": 0.3011750154607298,
+      "macro_f1_ci95_group_bootstrap": [
+        0.21685881129829862,
+        0.3521511445636122
+      ],
+      "accuracy": 0.5849056603773585,
+      "predictions": [
+        {
+          "id": "PR-001",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-002",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-003",
+          "expected": "S",
+          "predicted": "C2"
+        },
+        {
+          "id": "PR-004",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-005",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-006",
+          "expected": "C4",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-007",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-008",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-009",
+          "expected": "S",
+          "predicted": "C1"
+        },
+        {
+          "id": "PR-010",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "GP-011",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "GP-012",
+          "expected": "C3",
+          "predicted": "C3"
+        },
+        {
+          "id": "AS-013",
+          "expected": "C1",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-014",
+          "expected": "C2",
+          "predicted": "C2"
+        },
+        {
+          "id": "PR-015",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "GP-017",
+          "expected": "C2",
+          "predicted": "C2"
+        },
+        {
+          "id": "AS-018",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-019",
+          "expected": "C2",
+          "predicted": "C2"
+        },
+        {
+          "id": "PR-020",
+          "expected": "C3",
+          "predicted": "C3"
+        },
+        {
+          "id": "PR-021",
+          "expected": "C2",
+          "predicted": "C2"
+        },
+        {
+          "id": "GP-022",
+          "expected": "C4",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-024",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-025",
+          "expected": "C4",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-026",
+          "expected": "C1",
+          "predicted": "C2"
+        },
+        {
+          "id": "GP-027",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "AS-028",
+          "expected": "C4",
+          "predicted": "C3"
+        },
+        {
+          "id": "PR-029",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-030",
+          "expected": "C2",
+          "predicted": "C5"
+        },
+        {
+          "id": "PR-031",
+          "expected": "S",
+          "predicted": "C5"
+        },
+        {
+          "id": "PR-032",
+          "expected": "C3",
+          "predicted": "C6"
+        },
+        {
+          "id": "GP-033",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "AS-034",
+          "expected": "C6",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-035",
+          "expected": "C2",
+          "predicted": "C2"
+        },
+        {
+          "id": "PR-036",
+          "expected": "C3",
+          "predicted": "C3"
+        },
+        {
+          "id": "PR-037",
+          "expected": "C1",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-038",
+          "expected": "C4",
+          "predicted": "S"
+        },
+        {
+          "id": "GP-039",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "AS-040",
+          "expected": "S",
+          "predicted": "C4"
+        },
+        {
+          "id": "PR-041",
+          "expected": "C5",
+          "predicted": "C2"
+        },
+        {
+          "id": "PR-042",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "PR-043",
+          "expected": "C6",
+          "predicted": "C3"
+        },
+        {
+          "id": "PR-044",
+          "expected": "C2",
+          "predicted": "C2"
+        },
+        {
+          "id": "PR-045",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "GP-046",
+          "expected": "C3",
+          "predicted": "C3"
+        },
+        {
+          "id": "AS-047",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "EX-049",
+          "expected": "S",
+          "predicted": "S"
+        },
+        {
+          "id": "EX-050",
+          "expected": "C2",
+          "predicted": "C2"
+        },
+        {
+          "id": "FM-051",
+          "expected": "S",
+          "predicted": "C4"
+        },
+        {
+          "id": "FM-052",
+          "expected": "S",
+          "predicted": "C2"
+        },
+        {
+          "id": "FM-053",
+          "expected": "S",
+          "predicted": "C2"
+        },
+        {
+          "id": "FM-054",
+          "expected": "C2",
+          "predicted": "S"
+        },
+        {
+          "id": "FM-056",
+          "expected": "C4",
+          "predicted": "S"
+        },
+        {
+          "id": "FM-057",
+          "expected": "S",
+          "predicted": "S"
+        }
+      ]
+    }
+  },
+  "review_to_question_shift_gap": null,
+  "limitations": [
+    "Derived labels are automated judgments, not reconciled human consensus.",
+    "Historical human kappa remains 0.4173; this does not improve that agreement.",
+    "All seven classes retained in macro-F1, including unsupported rare classes.",
+    "Five folds are grouped; tiny classes cannot be stratified across every fold.",
+    "Bootstrap uses saved out-of-fold predictions; it does not refit models.",
+    "No independently labelled student-question set exists; shift gap unmeasured.",
+    "Embedding and LLM baselines not run; no downloaded model or paid call."
+  ]
+}

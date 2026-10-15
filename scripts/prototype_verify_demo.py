@@ -103,7 +103,7 @@ def main():
         assert not at.exception and at.title[0].value == "Journey Coach"
         at.switch_page("views/1_Journey_Coach.py").run()
         lesson = LESSONS[2]
-        at.selectbox(key="jc_moment").select(lesson.moment).run()
+        at.segmented_control(key="jc_moment").select(lesson.moment).run()
         for index in ((lesson.correct + 1) % len(lesson.options), lesson.correct):
             at.radio(key="jc_choice").set_value(lesson.options[index]).run()
             at.button(key="jc_check").click().run()
@@ -130,12 +130,22 @@ def main():
             assert not at.exception and not at.metric
             print(label + ": PASS", flush=True)
         checks["three_bill_flows_and_comparisons"] = True
+        at.selectbox(key="be_example").select("Paid receipt: dated service lines").run()
+        at.button(key="be_read").click().run()
+        assert not at.exception and at.metric[0].value == "AUD 245.00"
+        retained = at.session_state["be_result"]
+        assert "text" not in retained and retained["result"]["provider"] is None
+        assert retained["receipt"]["amount_settled"] == 245
+        assert retained["receipt"]["balance_remaining"] == 0
+        assert retained["result"]["total_benefit"] is None
+        at.button(key="be_clear").click().run()
         at.switch_page("views/4_Ask.py").run()
         assert not at.exception and not at.error and at.session_state["ask_history"] == []
         at.button(key="ask_s1").click().run()
         assert not at.exception and not at.error
         assert len(at.session_state["ask_history"]) == 1
         assert at.session_state["ask_history"][0]["response"].status == "answered"
+        assert at.session_state["ask_history"][0]["response"].answer
         at.run()
         assert not at.exception and len(at.session_state["ask_history"]) == 1
         at.button(key="ask_clear").click().run()
@@ -157,6 +167,16 @@ def main():
         assert at.metric[1].value == "1 of 6"
         assert {tab.label for tab in at.tabs} == {"Overview", "Results", "Safety", "Evidence & sources"}
         assert set(at.dataframe[1].value["Status"]) == {"Not linked here", "Recorded result"}
+        from oshc.final_results import load_final
+        final = load_final(root)
+        assert final is not None and final["classifier_n"] == 53
+        release = json.loads((root / "docs/prototype/release_summary_2026-10-15.json").read_text(encoding="utf-8"))
+        for row in release["runtime_files"]:
+            assert signature(root / row["path"])["sha256"] == row["sha256"]
+        assert final["release_chat"]["refusal_recall"]["n"] == 24
+        assert any(m.label == "Unseen false refusals" for m in at.metric)
+        assert any(m.label == "Development refusal recall" for m in at.metric)
+        assert any(m.label == "TF-IDF + logistic regression" for m in at.metric)
         checks["dashboard_scope"] = True
         try:
             adapter.complete("Packaged offline cache miss check", max_tokens=16)

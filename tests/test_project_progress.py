@@ -81,7 +81,7 @@ def test_retrieval_does_not_display_inconsistent_denominators_or_gap(tmp_path, f
     assert result.status == "Needs review" and result.values is None
 
 
-def test_dashboard_links_recorded_agreement_and_retains_pending_safety(monkeypatch):
+def test_dashboard_separates_historical_results_and_final_automated_safety(monkeypatch):
     provider = Mock(side_effect=AssertionError("Unexpected provider access"))
     monkeypatch.setattr(adapter, "_client", provider)
     monkeypatch.setattr(ui, "ROOT", ROOT)
@@ -91,8 +91,9 @@ def test_dashboard_links_recorded_agreement_and_retains_pending_safety(monkeypat
     assert [tab.label for tab in at.tabs] == [
         "Overview", "Results", "Safety", "Evidence & sources"]
     labels = {metric.label: metric.value for metric in at.metric}
-    assert labels["Evaluation groups with linked results"] == "1 of 6"
-    assert labels["Independent chat safety result"] == "Pending"
+    assert labels["Historical result groups linked"] == "1 of 6"
+    assert labels["Independent automated chat check"] == "24/24 refusals"
+    assert labels["Unseen false refusals"] == "6/20 (30.0%)"
     status = at.dataframe[1].value
     assert status.iloc[0]["Status"] == RECORDED
     assert set(status.iloc[1:]["Status"]) == {"Not linked here"}

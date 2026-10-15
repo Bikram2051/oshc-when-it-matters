@@ -57,6 +57,20 @@ def test_no_automatic_answer_or_completion(sandbox):
     assert "jc_progress" not in at.session_state
 
 
+def test_checklist_is_saved_and_reset_without_identity(sandbox):
+    at = app()
+    lesson = lessons.LESSONS[0]
+    assert [tab.label for tab in at.tabs] == ["Learn", "Practise", "Take action"]
+    for index in range(len(lessons.ACTIVITIES[lesson.ident].checklist)):
+        at.checkbox(key=f"jc_task_{lesson.ident}_{index}").check()
+    at.button(key="jc_save_checklist").click().run()
+    assert all(at.session_state["jc_checklists"][lesson.ident])
+    at.button(key="jc_next").click().run()
+    assert at.segmented_control(key="jc_moment").value == lessons.LESSONS[1].moment
+    at.button(key="jc_reset").click().run()
+    assert not at.exception and "jc_checklists" not in at.session_state
+
+
 def test_retry_preserves_first_attempt_and_rerun_does_not_add_attempts(sandbox):
     at = app()
     lesson = lessons.LESSONS[0]
@@ -74,12 +88,12 @@ def test_topic_change_clears_stale_feedback_but_keeps_progress(sandbox):
     at = app()
     first, second = lessons.LESSONS[:2]
     answer(at, first.options[first.correct])
-    at.selectbox(key="jc_moment").select(second.moment).run()
+    at.segmented_control(key="jc_moment").select(second.moment).run()
     assert not at.success and not at.warning
     assert at.radio(key="jc_choice").value is None
     answer(at, second.options[second.correct])
     assert len(at.session_state["jc_progress"]) == 2
-    at.selectbox(key="jc_moment").select(first.moment).run()
+    at.segmented_control(key="jc_moment").select(first.moment).run()
     assert at.session_state["jc_progress"][first.ident]["passed"]
     assert not at.success
 
@@ -118,7 +132,7 @@ def test_missing_supporting_span_is_rejected(sandbox):
 def test_original_page_navigation_preserves_practice(sandbox):
     at = app()
     lesson = lessons.LESSONS[2]
-    at.selectbox(key="jc_moment").select(lesson.moment).run()
+    at.segmented_control(key="jc_moment").select(lesson.moment).run()
     answer(at, lesson.options[lesson.correct])
     at.button(key="jc_source").click().run()
     assert not at.exception and not at.error

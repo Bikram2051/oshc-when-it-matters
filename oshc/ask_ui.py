@@ -61,13 +61,18 @@ def _render_response(response, turn: int, *, source_valid: bool) -> None:
         elif not response.hits:
             st.warning(response.message, icon=":material/info:")
         else:
-            st.markdown(response.message)
-            st.caption("Possible source matches · ranked by wording, not confidence. "
-                       "Read the conditions on the full page.")
             if not source_valid:
                 st.warning("The saved guide has changed or is unavailable. Earlier excerpts "
                            "are hidden. Restore the verified guide and ask again.")
                 return
+            if response.answer:
+                st.markdown(f"**{response.answer_title}**")
+                st.markdown(response.answer)
+                st.caption("Curated general answer · checked against the saved guide · personal benefits are not assessed.")
+            else:
+                st.markdown(response.message)
+                st.caption("Possible source matches · ranked by wording, not confidence. "
+                           "Read the conditions on the full page.")
             for hit in response.hits:
                 page = _page_of(hit)
                 with st.expander(f"Source {hit.rank} · {hit.section}", expanded=hit.rank == 1):
@@ -86,7 +91,7 @@ def _render_response(response, turn: int, *, source_valid: bool) -> None:
             st.caption(
                 f"Boundary: {response.decision.verdict.value.replace('_', ' ')} · "
                 f"Response: {status.replace('_', ' ')} · "
-                "Local processing · No generated policy answer"
+                "Local processing · Fixed responses and verified source passages"
             )
             if response.hits:
                 st.caption("Source passages checked against the verified guide. "
@@ -96,10 +101,10 @@ def _render_response(response, turn: int, *, source_valid: bool) -> None:
 def render():
     st.caption("NEXTBEST / ASK THE GUIDE")
     st.title("Ask NextBest")
-    st.markdown("Your question. The source passage. A clearer next step.")
+    st.markdown("A direct answer, the supporting passage, and a clearer next step.")
     with st.container(horizontal=True):
         st.badge("Every message checked", icon=":material/verified_user:")
-        st.badge("Source passages only", icon=":material/menu_book:")
+        st.badge("Curated answers + sources", icon=":material/menu_book:")
         st.badge("Session-only chat", icon=":material/chat:")
 
     if os.getenv("OSHC_OFFLINE") != "1" or os.getenv("OSHC_ENABLE_LIVE") != "0":

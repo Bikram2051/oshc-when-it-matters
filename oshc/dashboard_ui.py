@@ -3,8 +3,9 @@ from pathlib import Path
 
 import streamlit as st
 
-from oshc.evidence_dashboard import PASSED, SCOPE, load_evidence, summary_bytes
+from oshc.evidence_dashboard import PASSED, load_evidence, summary_bytes
 from oshc.project_progress import RECORDED, evaluation_rows, load_measurements
+from oshc.final_results import load_final
 
 ROOT = Path(__file__).resolve().parents[1]
 STATUS_MARK = {PASSED: "recorded pass", "Missing report": "missing", "Needs review": "review"}
@@ -14,13 +15,16 @@ def _overview(evidence, measurements):
     passing = sum(item.status == PASSED for item in evidence)
     results = evaluation_rows(measurements)
     linked = sum(row["Status"] == RECORDED for row in results)
+    final = load_final(ROOT)
     with st.container(horizontal=True):
         st.metric("Saved checks with recorded passes", f"{passing} of {len(evidence)}",
                   border=True, help="Saved checkpoint reports, not a fresh test of today's code.")
-        st.metric("Evaluation groups with linked results", f"{linked} of {len(results)}",
-                  border=True, help="Includes coding agreement; does not establish product safety.")
-        st.metric("Independent chat safety result", "Pending", border=True,
-                  help="No held-out evaluation of the current chat is linked here.")
+        st.metric("Historical result groups linked", f"{linked} of {len(results)}",
+                  border=True, help="Earlier report linkage only. Final chat, retrieval, classifier and bill scores appear in Results.")
+        st.metric("Independent automated chat check",
+                  (f"{final['release_chat']['refusal_recall']['k']}/{final['release_chat']['refusal_recall']['n']} refusals"
+                   if final else "Unavailable"), border=True,
+                  help="Separately authored automated probes; false refusals and emergency results are in Results. No human safety validation.")
 
     if passing != len(evidence):
         st.warning("Some saved reports are missing or need review. Their outcomes remain unknown.")
@@ -48,16 +52,14 @@ def _overview(evidence, measurements):
                "Passing does not establish unseen-document accuracy or learning impact.")
 
     with st.container(border=True):
-        st.markdown("### :material/flag: Remaining evaluation work")
+        st.markdown("### :material/flag: Final demo checkpoint")
         st.markdown(
-            "1. **Freeze and evaluate the current chat.** Keep unseen probes separate and "
-            "report refusal recall alongside false refusals.\n"
-            "2. **Complete the bill handoff.** Evaluation invoices, separate expected outputs "
-            "and their file map are still required by the recorded protocol.\n"
-            "3. **Finish research evaluation.** Resolve coding disagreements, complete "
-            "classifier baselines and obtain independent retrieval labels.\n"
-            "4. **Package the final demonstration.** Rehearse offline using the final version "
-            "and carry the measured limitations into the pitch."
+            "**Implemented:** curated guide answers, interactive learning checklists, "
+            "dated invoice-table reading and privacy minimisation.\n\n"
+            "**Evaluation:** current development checks, local classifier baselines and a "
+            "separately authored synthetic invoice handoff are recorded in Results when verified.\n\n"
+            "**Independent automated checks:** separate unseen chat probes and source-only retrieval labels. "
+            "**Unmeasured:** human safety validation, real-student learning impact and production security."
         )
 
 
@@ -117,6 +119,59 @@ def _results(measurements):
     st.dataframe(evaluation_rows(measurements), hide_index=True, width="stretch")
     _agreement(measurements["agreement"])
     _retrieval(measurements["retrieval"])
+    _final_results()
+
+
+def _final_results():
+    st.subheader("Final prototype evaluation")
+    saved = load_final(ROOT)
+    if saved is None:
+        st.info("The final evaluation reports are missing or do not match their manifest.")
+        return
+    st.caption("Frozen implementation · independent automated assessors · no production safety claim")
+    st.markdown("**Fresh unseen chat check**")
+    with st.container(horizontal=True):
+        for key, label in (("refusal_recall", "Unseen refusal recall"),
+                           ("false_refusal_rate", "Unseen false refusals"),
+                           ("emergency_recall", "Unseen emergency recall")):
+            value = saved["release_chat"][key]
+            st.metric(label, f"{value['k']}/{value['n']} ({value['rate']:.1%})", border=True,
+                      help=f"Wilson 95% interval {value['ci95'][0]:.1%} to {value['ci95'][1]:.1%}; automated assessor, selected probes only.")
+    st.caption("Earlier candidate failures are retained in the release record. These finite probes "
+               "do not establish clinical safety; unsupported wording can still abstain.")
+    independent = saved["independent_retrieval"]
+    st.markdown(f"**Independent source labels:** correct column in the top five for "
+                f"{independent['k']}/{independent['n']} guide questions; "
+                f"MRR@5 {saved['independent_retrieval_mrr']:.2f}. "
+                "One source-only automated assessor; known queries, ambiguity and duplicates retained. "
+                f"Including unsupported MBS questions: {saved['all_50_retrieval']['k']}/50.")
+    with st.expander("Visible development checks"):
+        st.caption("These cases were visible during development and remain separate from unseen probes.")
+        _development_metrics(saved)
+    _other_final_metrics(saved)
+
+
+def _development_metrics(saved):
+    with st.container(horizontal=True):
+        for key, label in (("refusal_recall", "Development refusal recall"),
+                           ("false_refusal_rate", "Development false refusals"),
+                           ("emergency_recall", "Development emergency recall")):
+            value = saved["chat"][key]
+            st.metric(label, f"{value['k']}/{value['n']} ({value['rate']:.1%})", border=True,
+                      help=f"Wilson 95% interval {value['ci95'][0]:.1%} to {value['ci95'][1]:.1%}; selected probes only.")
+
+
+def _other_final_metrics(saved):
+    st.markdown("**Bill extraction exposes a format limitation.** The separate automated custodian "
+                f"provided {saved['bill_n']} synthetic invoices; field micro-F1 was {saved['bill_f1']:.3f}. "
+                "Many narrative layouts are unsupported. Use labelled tables and check the retained numbers.")
+    with st.container(horizontal=True):
+        st.metric("Majority classifier: macro-F1", f"{saved['classifier']['majority']:.3f}", border=True)
+        st.metric("TF-IDF + logistic regression", f"{saved['classifier']['tfidf_logreg']:.3f}", border=True)
+        st.metric("Guide page hit@5", f"{saved['retrieval']['k']}/{saved['retrieval']['n']}", border=True)
+    st.caption(f"Classifier: {saved['classifier_n']} first-person records, automated adjudication, "
+               "grouped five-fold predictions; seven classes retained, rare-class uncertainty. "
+               "Retrieval uses in-house labels; 25 MBS questions are outside the guide-only pipeline.")
 
 
 def _safety(measurement):
@@ -135,8 +190,8 @@ def _safety(measurement):
             with st.container(border=True):
                 st.markdown(f"**{title}**")
                 st.caption(text)
-    st.info("The current conversational safety score is pending. Historical retrieval checks "
-            "and tests of individual rules do not establish a safe chatbot.")
+    st.info("Results includes current unseen automated chat checks and separate development checks. "
+            "Small synthetic probe sets do not establish a clinically safe or production-ready chatbot.")
 
     with st.expander("What the earlier seminar experiment showed"):
         st.markdown("This experiment used **seminar.demo_guardrail**, a separate frozen rules "
@@ -165,6 +220,13 @@ def _safety(measurement):
         st.markdown("Synthetic bills and public sources only. No clinical assessment, "
                     "personal coverage decisions, product recommendations or visa advice. "
                     "Practice completion is session progress, rather than a learning outcome.")
+        st.markdown("Bill processing stays on this computer. The displayed/downloaded result "
+                    "omits names, identifiers, provider identities and original descriptions. "
+                    "Uploads temporarily occupy session memory; Clear removes the app result and upload widget. "
+                    "There is no bill database or bill-content logging, and telemetry is disabled.")
+        st.caption("Bound to 127.0.0.1; CORS/XSRF enabled; 10 MiB/20-page bounds; image-only PDFs rejected. "
+                   "No OCR or cloud transfer. Real-patient use would need authenticated hosting, transport encryption, "
+                   "access controls, retention controls and independent security review.")
 
 
 def _provenance(evidence, measurements):
@@ -188,7 +250,8 @@ def _provenance(evidence, measurements):
 def render():
     st.title("Project dashboard")
     st.caption("NEXTBEST · Evidence and project progress")
-    st.info(SCOPE)
+    st.info("Saved project evidence and frozen automated evaluations. Opening this page does not "
+            "rerun checks. Each result retains its scope, uncertainty and limitations.")
 
     evidence = load_evidence(ROOT)
     measurements = load_measurements(ROOT)

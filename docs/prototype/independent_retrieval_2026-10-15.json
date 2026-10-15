@@ -1,0 +1,527 @@
+{
+  "kind": "Frozen automated source-only independent labels; deployed guide-column BM25",
+  "created_at_utc": "2026-10-15T08:49:40.570946+00:00",
+  "label_provenance": "One automated assessor, independent of implementation and rankings; not human consensus.",
+  "queries_unseen_by_implementation_developers": false,
+  "labels_frozen_before_first_scoring": true,
+  "label_sha256": "a97a5105fd99a3d7f0a1c9c21e0e5a254fbfe0d8f03f5f9129b1e024349f24b1",
+  "assessor_freeze_sha256": "aebedad58ee46d3d8259c1f22783f7cee59729d769296329013753dc9b891ca9",
+  "source_sha256": "6ca7151567ee2b61f8e6b50340c297d50deb249a013f055ef38f50ed07ec87c7",
+  "implementation_sha256": {
+    "oshc/policy_search.py": "520095a1f01d57073cf5e873225ca541ee8a5282db2ba526ec5f457e6ae82943",
+    "oshc/policy_source.py": "d351c871b6db024748e98e2dc866edd78a8ab1d26a3c56556f10b76c2fa99699",
+    "oshc/schemas.py": "eb5dc61240ba005c622fd59a3ee58d9cf4f35e5b7656982775d29b8542ed8de0",
+    "scripts/evaluate_independent_retrieval.py": "58e4fbc28d079ea2438b580ddb8ca7730d4755abfadc68fd837adcc9a435ec3e",
+    "docs/prototype/independent_retrieval_protocol.md": "3e7a9b2406bc342a7a03c60857941c835e74e8d23a71accb3c8177e4fa431c6b"
+  },
+  "first_predictions_sha256": "2d4ba55ce2290a719af66b29f8e57de64fba82edc899ad2ac059f8175512b67c",
+  "locator_map_sha256": "de15245079a7fabb064a13145b94248a1d6937af524a3c3581a7f66bae5f9c18",
+  "k": 5,
+  "total_queries": 50,
+  "exceptions": 0,
+  "guide_queries": 25,
+  "mbs_queries_outside_guide_pipeline": 25,
+  "guide_exact_column": {
+    "hit_at_1": {
+      "k": 18,
+      "n": 25,
+      "rate": 0.72,
+      "ci95": [
+        0.5242,
+        0.8572
+      ]
+    },
+    "hit_at_5": {
+      "k": 23,
+      "n": 25,
+      "rate": 0.92,
+      "ci95": [
+        0.7503,
+        0.9778
+      ]
+    },
+    "mrr_at_5": 0.8
+  },
+  "guide_page_relaxation_secondary": {
+    "hit_at_1": {
+      "k": 19,
+      "n": 25,
+      "rate": 0.76,
+      "ci95": [
+        0.5657,
+        0.885
+      ]
+    },
+    "hit_at_5": {
+      "k": 24,
+      "n": 25,
+      "rate": 0.96,
+      "ci95": [
+        0.8046,
+        0.9929
+      ]
+    },
+    "mrr_at_5": 0.84
+  },
+  "all_50_exact_column_unsupported_as_misses": {
+    "hit_at_1": {
+      "k": 18,
+      "n": 50,
+      "rate": 0.36,
+      "ci95": [
+        0.2414,
+        0.4986
+      ]
+    },
+    "hit_at_5": {
+      "k": 23,
+      "n": 50,
+      "rate": 0.46,
+      "ci95": [
+        0.3297,
+        0.596
+      ]
+    },
+    "mrr_at_5": 0.4
+  },
+  "ambiguity": {
+    "guide_queries": 7,
+    "mbs_queries": 24,
+    "total_queries": 31
+  },
+  "duplicates": {
+    "exact_query_groups": 2,
+    "queries_in_exact_duplicate_groups": 4,
+    "distinct_query_texts": 48,
+    "assessor_near_duplicate_groups": 3,
+    "assessor_overlapping_groups": 1
+  },
+  "relevant_source_locators_omitted_from_deployed_index": [
+    "guide:p019:left",
+    "guide:p019:right"
+  ],
+  "research_hybrid": {
+    "status": "not_run",
+    "model": "BAAI/bge-small-en-v1.5",
+    "reason": "Dense model was not provisioned locally. No model download or provider call was authorised for this evaluation."
+  },
+  "research_full_corpus_bm25": {
+    "status": "not_run",
+    "reason": "Raw XML item locators are not uniquely bound to the flattened implementation chunks by this scoring protocol."
+  },
+  "provider_calls": 0,
+  "model_downloads": 0,
+  "tuning_performed": false,
+  "outcomes": [
+    {
+      "id": 1,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 3,
+      "page_rank_at_5": 3,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 2,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 3,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 4,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 5,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 3,
+      "page_rank_at_5": 3,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 6,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 7,
+      "source_family": "guide",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 8,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 2,
+      "page_rank_at_5": 2,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 9,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 10,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 2,
+      "page_rank_at_5": 2,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 11,
+      "source_family": "guide",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 12,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 13,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 14,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 15,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 16,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 17,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 18,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 19,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 20,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 21,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 22,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 23,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 3,
+      "page_rank_at_5": 3,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 24,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 25,
+      "source_family": "guide",
+      "exact_column_rank_at_5": 1,
+      "page_rank_at_5": 1,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 26,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 27,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 28,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 29,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 30,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 31,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 32,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 33,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 34,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 35,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 36,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 37,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 38,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 39,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": false
+    },
+    {
+      "id": 40,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 41,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 42,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 43,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 44,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 45,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 46,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 47,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 48,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 49,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    },
+    {
+      "id": 50,
+      "source_family": "mbs",
+      "exact_column_rank_at_5": null,
+      "page_rank_at_5": null,
+      "error": false,
+      "ambiguous": true
+    }
+  ],
+  "limitations": [
+    "Queries were previously known; only relevance annotation was independent of implementation and rankings.",
+    "One automated assessor is not a blinded human panel or an inter-rater reliability study.",
+    "Any labelled answer-bearing column counts as a hit; this does not establish complete answers or semantic correctness.",
+    "Ambiguous and duplicate queries remain in the main denominators; annotations were not changed after scoring.",
+    "The deployed index deliberately omits tables and some non-body pages; unmapped relevant locators remain misses unless another labelled locator is retrieved.",
+    "Wilson intervals describe this selected query set, not a representative population; duplicate queries can be correlated.",
+    "The deployed browser searches only the guide. MBS queries are retained as unsupported misses in the all-50 result.",
+    "The research hybrid retriever and synthetic-to-public degradation were not evaluated by this run."
+  ]
+}

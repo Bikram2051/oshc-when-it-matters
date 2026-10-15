@@ -6,15 +6,16 @@ Bikram Bhattarai, Md Minhaj Rahman, Aayush Khade. Supervisor: Dr Eureka Priyadar
 
 **NextBest** is an offline Streamlit learning prototype with top navigation:
 
-- **Journey Coach:** three sourced lessons and practice feedback.
+- **Journey Coach:** three sourced lessons, practice scenarios and saved action checklists.
 - **Navigator:** saved guide passages alongside the original PDF pages.
-- **Bill Explainer:** synthetic invoices and published MBS reference comparisons.
-- **Ask NextBest:** students ask general questions in a session-only, guarded guide chat.
+- **Bill Explainer:** labelled synthetic invoice tables, receipt explanations, privacy minimisation and MBS comparisons.
+- **Ask NextBest:** guarded general questions, curated answers and verified supporting passages.
 - **Project dashboard:** Overview, Results, Safety, and Evidence & sources tabs.
 
-The [14 October project review](docs/prototype/project_progress_2026-10-14.md) records
-what works, which results exist, and which evaluations are still pending. Development
-tests and saved demonstration checks do not replace independent evaluation.
+The [frozen demo release](docs/prototype/final_demo_2026-10-15.md) records the
+features, measured results, reproduction steps and research limitations. Read the
+[implemented security controls](docs/prototype/security.md) before demonstrating
+bill uploads. Visible development tests do not replace independent validation.
 
 ---
 

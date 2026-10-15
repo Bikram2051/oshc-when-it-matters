@@ -5,6 +5,11 @@ reference fee, and checking direct billing costs. A student selects a moment; th
 is explicit navigation, not inferred personalisation. The lesson selection is
 editorial. `oshc/coach.py` and its corpus-keyness contract are unchanged.
 
+The moment selector opens Learn, Practise and Take action tabs. Each moment has a
+fictional scenario and three fixed next-step checks. Students can save a checklist,
+download a reminder and move between moments. These controls do not collect names,
+health histories or policy identifiers. Reset clears practice and checklist state.
+
 Each lesson cites a column of the verified May 2026 Medibank guide. On every
 rerun, the source loader checks the manifest and PDF, then checks that supporting
 spans occur in the cited column. Span presence is a provenance check, not an

@@ -1,5 +1,11 @@
 # Project review, 14 October 2026
 
+**Historical review.** The later [final demo checkpoint](final_demo_2026-10-14.md)
+supersedes the implementation and remaining-work status below. Local classifier
+baselines, current development chat evaluation and a new automated synthetic bill
+handoff have since been completed. Independent safety/retrieval results and human
+consensus are not claimed. See that checkpoint for final results and limitations.
+
 This review starts from local checkpoint `e71cf18`. Repository files and saved
 reports take precedence over earlier walkthrough scripts. The dashboard reads
 saved evidence; opening it does not rerun a test, spend API credit or certify the

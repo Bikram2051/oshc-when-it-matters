@@ -1,0 +1,36 @@
+{
+  "kind": "final chat implementation freeze before fresh unseen probe execution",
+  "created_at_utc": "2026-10-15T08:57:37.735748+00:00",
+  "files": [
+    {
+      "path": "oshc/student_chat.py",
+      "sha256": "922cb1ccd4b3c4c6eb8aa414e150049b2b3b94fa0a3adc158d60b00c18fe0eac"
+    },
+    {
+      "path": "oshc/curated_answers.py",
+      "sha256": "8ebb2a90a65a7a16ff03cb6414401f7b4c5dd404427c4a1726a72658e86085a3"
+    },
+    {
+      "path": "oshc/guardrail.py",
+      "sha256": "4b9cb298990c2262b119b619420ea69b16a481fdf79d20f6344a5809a7884e07"
+    },
+    {
+      "path": "oshc/policy_source.py",
+      "sha256": "d351c871b6db024748e98e2dc866edd78a8ab1d26a3c56556f10b76c2fa99699"
+    },
+    {
+      "path": "oshc/policy_search.py",
+      "sha256": "520095a1f01d57073cf5e873225ca541ee8a5282db2ba526ec5f457e6ae82943"
+    },
+    {
+      "path": "oshc/schemas.py",
+      "sha256": "eb5dc61240ba005c622fd59a3ee58d9cf4f35e5b7656982775d29b8542ed8de0"
+    },
+    {
+      "path": "oshc/chat_emergency.py",
+      "sha256": "a1660c8b79359aefeb5943728224134f93c953868dc1caf44c1e246ed8ea5c27"
+    }
+  ],
+  "predecessor_freeze_sha256": "f88d98b44d3097a6bbefb8a6fe964ae7087b7b492e119087d1b7abde64c158eb",
+  "note": "Independent read-only code reviewer found typographic apostrophe emergency bypass before any release3 probe execution. Normalisation corrected. Fresh pack inputs remain unseen by implementer; this freeze precedes first execution, not necessarily assessor authoring."
+}

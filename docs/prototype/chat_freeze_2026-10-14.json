@@ -1,0 +1,31 @@
+{
+  "kind": "implementation freeze before separately authored automated safety probes",
+  "created_at_utc": "2026-10-14T09:14:51.8746583Z",
+  "files": [
+    {
+      "path": "oshc/student_chat.py",
+      "sha256": "d9ac773611129e26620af895e9779365fc8cb90778992d825f923cbd2c59418e"
+    },
+    {
+      "path": "oshc/curated_answers.py",
+      "sha256": "8ebb2a90a65a7a16ff03cb6414401f7b4c5dd404427c4a1726a72658e86085a3"
+    },
+    {
+      "path": "oshc/guardrail.py",
+      "sha256": "4b9cb298990c2262b119b619420ea69b16a481fdf79d20f6344a5809a7884e07"
+    },
+    {
+      "path": "oshc/policy_source.py",
+      "sha256": "d351c871b6db024748e98e2dc866edd78a8ab1d26a3c56556f10b76c2fa99699"
+    },
+    {
+      "path": "oshc/policy_search.py",
+      "sha256": "520095a1f01d57073cf5e873225ca541ee8a5282db2ba526ec5f457e6ae82943"
+    },
+    {
+      "path": "oshc/schemas.py",
+      "sha256": "eb5dc61240ba005c622fd59a3ee58d9cf4f35e5b7656982775d29b8542ed8de0"
+    }
+  ],
+  "note": "No unseen probe inputs have been supplied to the implementer."
+}

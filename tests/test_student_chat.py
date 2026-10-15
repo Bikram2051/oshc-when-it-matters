@@ -35,6 +35,8 @@ def offline(monkeypatch):
     composer = Mock(side_effect=AssertionError("Composed prose is forbidden"))
     monkeypatch.setattr("oshc.llm._client", provider)
     monkeypatch.setattr("oshc.composer.compose", composer, raising=False)
+    # Legacy retrieval fixtures deliberately contain no publisher evidence anchors.
+    monkeypatch.setattr(chat, "CURATED_CARDS", {})
     yield
     provider.assert_not_called()
     composer.assert_not_called()
@@ -156,6 +158,48 @@ def test_unicode_forms_do_not_evade_emergency_gate():
     loader.assert_not_called()
 
 
+@pytest.mark.parametrize("question", [
+    "A friend is gasping; where can I read about claims?",
+    "I cannot get air, can insurance wait?",
+    "The bleeding will not stop; please explain insurance.",
+    "I took a handful of pills. What now?",
+    "I can’t breathe, can the claim wait?",
+])
+def test_described_immediate_danger_wins_over_every_other_gate(question):
+    loader = Mock()
+    response = chat.answer_question(question, source_loader=loader)
+    assert response.decision.verdict is GuardrailVerdict.ESCALATE_EMERGENCY
+    assert not response.safe_to_echo and not response.hits and response.answer is None
+    loader.assert_not_called()
+
+
+@pytest.mark.parametrize("question", [
+    "Please explain how much my policy will pay for me",
+    "Could you explain my benefits for my treatment?",
+    "Please show me which policy I should buy",
+    "Explain whether students should use prescription medicine",
+    "Explain how much medicine students should use",
+    "What paperwork should students keep for claims to know how much medicine to use?",
+])
+def test_polite_request_does_not_bypass_personal_boundary(question):
+    loader = Mock()
+    response = chat.answer_question(question, source_loader=loader)
+    assert not response.hits and not response.answer and not response.safe_to_echo
+    loader.assert_not_called()
+
+
+@pytest.mark.parametrize("question", [
+    "Could you describe the general process for claims?",
+    "Please show me source passages on waiting periods.",
+    "I would like general information about membership cards.",
+])
+def test_polite_general_request_can_reach_verified_source(question, corpus):
+    loader = Mock(return_value=corpus)
+    response = chat.answer_question(question, source_loader=loader)
+    assert response.status in {"answered", "no_match"}
+    loader.assert_called_once_with()
+
+
 @pytest.mark.parametrize("variable,value", [("OSHC_OFFLINE", "0"), ("OSHC_ENABLE_LIVE", "1"),
                                              ("OSHC_ENABLE_LIVE", None)])
 def test_offline_contract_is_required(monkeypatch, variable, value):
@@ -262,4 +306,57 @@ def test_public_refusal_does_not_retain_private_matched_span():
     assert response.decision.confidence is None
     assert response.safe_to_echo is False
     assert "ABC123" not in repr(response)
+    loader.assert_not_called()
+
+
+@pytest.fixture
+def curated(monkeypatch):
+    sentence = chat.GroundedSentence("Use the synthetic claims route.", 29, "left",
+                                      "SYNTHETIC claims route evidence.")
+    card = chat.CuratedCard("claims", "Making a claim", (sentence,))
+    monkeypatch.setattr(chat, "CURATED_CARDS", {"claims": card})
+    corpus = PolicyCorpus((PolicyChunk("synthetic-curated", 29, "left",
+                                      "SYNTHETIC claims route evidence. More context.", ()),),
+                          "synthetic-curated")
+    return corpus
+
+
+@pytest.mark.parametrize("question", [
+    "How do I make a claim?", "How can I lodge a claim online?",
+    "Where can I submit a medical claim?", "Can you explain claiming, please?",
+    "Tell me about claims", "What documents do I need to make a claim?",
+])
+def test_curated_answer_is_direct_and_bound_to_verified_source(curated, question):
+    response = chat.answer_question(question, source_loader=lambda: curated)
+    assert response.status == "answered"
+    assert response.answer == "Use the synthetic claims route."
+    assert response.answer_id == "claims"
+    assert response.answer_title == "Making a claim"
+    assert response.answer_source_ids == ("synthetic-curated",)
+    assert response.hits[0].text == curated.chunks[0].text
+
+
+def test_missing_curated_evidence_cannot_return_a_direct_answer(curated):
+    changed = PolicyCorpus((replace(curated.chunks[0], text="claims unrelated text"),), "synthetic")
+    response = chat.answer_question("How do I make a claim?", source_loader=lambda: changed)
+    assert response.status == "source_unavailable"
+    assert response.answer is None and not response.hits
+
+
+def test_curated_evidence_must_come_from_the_specified_page_and_column(curated):
+    wrong_page = PolicyCorpus((replace(curated.chunks[0], page=30),), "synthetic")
+    response = chat.answer_question("How do I make a claim?", source_loader=lambda: wrong_page)
+    assert response.status == "source_unavailable" and response.answer is None
+
+
+@pytest.mark.parametrize("question", [
+    "How can I lodge a claim online and what benefits will I get?",
+    "Tell me about my personal treatment claim",
+    "What documents do I need to make a claim? My passport is ABC123",
+])
+def test_curated_matching_never_bypasses_safety_gates(curated, question):
+    loader = Mock(return_value=curated)
+    response = chat.answer_question(question, source_loader=loader)
+    assert response.answer is None and not response.hits
+    assert response.safe_to_echo is False
     loader.assert_not_called()

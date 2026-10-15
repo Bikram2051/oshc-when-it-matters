@@ -5,7 +5,12 @@ param(
 $ErrorActionPreference = "Stop"
 if (-not $Python) {
     $localPython = Join-Path $PSScriptRoot ".venv\Scripts\python.exe"
-    $Python = if (Test-Path -LiteralPath $localPython -PathType Leaf) { $localPython } else { "python" }
+    $activePython = if ($env:VIRTUAL_ENV) { Join-Path $env:VIRTUAL_ENV "Scripts\python.exe" } else { "" }
+    $Python = if ($activePython -and (Test-Path -LiteralPath $activePython -PathType Leaf)) {
+        $activePython
+    } elseif (Test-Path -LiteralPath $localPython -PathType Leaf) {
+        $localPython
+    } else { "python" }
 }
 
 $env:OSHC_OFFLINE = "0"

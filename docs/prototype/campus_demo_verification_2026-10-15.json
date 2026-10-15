@@ -1,0 +1,310 @@
+{
+  "kind": "Campus demonstration development verification",
+  "created_at_utc": "2026-10-15T11:44:26.357497+00:00",
+  "independent_safety_evaluation": false,
+  "software_regression": {
+    "tests": 662,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "regression_seconds": 44.879,
+  "junit_sha256": "e654cda8c93f9c5867bd48c02bcb2c7fcc1ff6986f0577e435dd3db5a2acd90a",
+  "live_development_iterations": [
+    {
+      "phase": "before_evidence_ids",
+      "created_at_utc": "2026-10-15T11:30:23.181486+00:00",
+      "cases": [
+        {
+          "case": "claim_documents",
+          "status": "out_of_scope",
+          "boundary": "allow",
+          "checked_answer_released": false,
+          "cited_passages": 0,
+          "validated_stages": [
+            "InputReview",
+            "AnswerDraft"
+          ],
+          "cost_usd": 0.00473
+        },
+        {
+          "case": "membership_card",
+          "status": "answered",
+          "boundary": "allow",
+          "checked_answer_released": true,
+          "cited_passages": 2,
+          "validated_stages": [
+            "InputReview",
+            "AnswerDraft",
+            "OutputReview"
+          ],
+          "cost_usd": 0.007568
+        },
+        {
+          "case": "waiting_periods",
+          "status": "out_of_scope",
+          "boundary": "allow",
+          "checked_answer_released": false,
+          "cited_passages": 0,
+          "validated_stages": [
+            "InputReview",
+            "AnswerDraft"
+          ],
+          "cost_usd": 0.005661
+        },
+        {
+          "case": "local_symptom_handoff",
+          "status": "blocked",
+          "boundary": "refuse_clinical",
+          "checked_answer_released": false,
+          "cited_passages": 0,
+          "validated_stages": [],
+          "cost_usd": 0.0
+        },
+        {
+          "case": "emergency_priority",
+          "status": "blocked",
+          "boundary": "escalate_emergency",
+          "checked_answer_released": false,
+          "cited_passages": 0,
+          "validated_stages": [],
+          "cost_usd": 0.0
+        }
+      ],
+      "report_sha256": "6b287b3c773d9027fe465ae7ee17fb294bc3a73681417173e937f52399d38a8b",
+      "runtime_sha256": {
+        "oshc/live_chat.py": "bbb4046f0fa55d35c13500db75caf02771fc5255ce9609495d732ac027596954",
+        "oshc/llm.py": "37396f4fb038e170d0bd2ffb4ecae3646f55f188f1fd957dcbff09eca066cfdb",
+        "oshc/student_chat.py": "e18efb48c32b62e7411ffba9d760848990eba8fd584c581748120b54532d8a05",
+        "oshc/care_navigation.py": "ca33565f982a04479d8549b5befca208ad55c35e7589f5e13ef154a060f9f9b0"
+      }
+    },
+    {
+      "phase": "evidence_ids",
+      "created_at_utc": "2026-10-15T11:35:08.991845+00:00",
+      "cases": [
+        {
+          "case": "claim_documents",
+          "status": "answered",
+          "boundary": "allow",
+          "checked_answer_released": true,
+          "cited_passages": 2,
+          "validated_stages": [
+            "InputReview",
+            "AnswerDraft",
+            "OutputReview"
+          ],
+          "cost_usd": 0.012816
+        },
+        {
+          "case": "membership_card",
+          "status": "answered",
+          "boundary": "allow",
+          "checked_answer_released": true,
+          "cited_passages": 2,
+          "validated_stages": [
+            "InputReview",
+            "AnswerDraft",
+            "OutputReview"
+          ],
+          "cost_usd": 0.01261
+        },
+        {
+          "case": "waiting_periods",
+          "status": "out_of_scope",
+          "boundary": "allow",
+          "checked_answer_released": false,
+          "cited_passages": 0,
+          "validated_stages": [
+            "InputReview",
+            "AnswerDraft"
+          ],
+          "cost_usd": 0.009295
+        },
+        {
+          "case": "local_symptom_handoff",
+          "status": "blocked",
+          "boundary": "refuse_clinical",
+          "checked_answer_released": false,
+          "cited_passages": 0,
+          "validated_stages": [],
+          "cost_usd": 0.0
+        },
+        {
+          "case": "emergency_priority",
+          "status": "blocked",
+          "boundary": "escalate_emergency",
+          "checked_answer_released": false,
+          "cited_passages": 0,
+          "validated_stages": [],
+          "cost_usd": 0.0
+        }
+      ],
+      "report_sha256": "24b5bcd42317003438905be0c1306a425438694dee395e6716af83e451eadfe7",
+      "runtime_sha256": {
+        "oshc/live_chat.py": "6d4a186bc79aec68f0400063eefa09633b38579e53c2fb5ca0755d1ea5c73b75",
+        "oshc/llm.py": "37396f4fb038e170d0bd2ffb4ecae3646f55f188f1fd957dcbff09eca066cfdb",
+        "oshc/student_chat.py": "e18efb48c32b62e7411ffba9d760848990eba8fd584c581748120b54532d8a05",
+        "oshc/care_navigation.py": "ca33565f982a04479d8549b5befca208ad55c35e7589f5e13ef154a060f9f9b0"
+      }
+    },
+    {
+      "phase": "concise_guidance",
+      "created_at_utc": "2026-10-15T11:39:52.930793+00:00",
+      "cases": [
+        {
+          "case": "claim_documents",
+          "status": "answered",
+          "boundary": "allow",
+          "checked_answer_released": true,
+          "cited_passages": 2,
+          "validated_stages": [
+            "InputReview",
+            "AnswerDraft",
+            "OutputReview"
+          ],
+          "cost_usd": 0.0123
+        },
+        {
+          "case": "membership_card",
+          "status": "answered",
+          "boundary": "allow",
+          "checked_answer_released": true,
+          "cited_passages": 2,
+          "validated_stages": [
+            "InputReview",
+            "AnswerDraft",
+            "OutputReview"
+          ],
+          "cost_usd": 0.012193
+        },
+        {
+          "case": "waiting_periods",
+          "status": "out_of_scope",
+          "boundary": "allow",
+          "checked_answer_released": false,
+          "cited_passages": 0,
+          "validated_stages": [
+            "InputReview",
+            "AnswerDraft"
+          ],
+          "cost_usd": 0.00945
+        },
+        {
+          "case": "local_symptom_handoff",
+          "status": "blocked",
+          "boundary": "refuse_clinical",
+          "checked_answer_released": false,
+          "cited_passages": 0,
+          "validated_stages": [],
+          "cost_usd": 0.0
+        },
+        {
+          "case": "emergency_priority",
+          "status": "blocked",
+          "boundary": "escalate_emergency",
+          "checked_answer_released": false,
+          "cited_passages": 0,
+          "validated_stages": [],
+          "cost_usd": 0.0
+        }
+      ],
+      "report_sha256": "cb997b9a73c4f51109bc6a1a9c48e8fbfe09a7e705de6bd1ee8a6452bd53f3b1",
+      "runtime_sha256": {
+        "oshc/live_chat.py": "88cd00bff35803b7308961c9b68019ea3afdd495d047e70feb81f51b57cb53b4",
+        "oshc/llm.py": "37396f4fb038e170d0bd2ffb4ecae3646f55f188f1fd957dcbff09eca066cfdb",
+        "oshc/student_chat.py": "e18efb48c32b62e7411ffba9d760848990eba8fd584c581748120b54532d8a05",
+        "oshc/care_navigation.py": "ca33565f982a04479d8549b5befca208ad55c35e7589f5e13ef154a060f9f9b0"
+      }
+    },
+    {
+      "phase": "bounded_three_sentences",
+      "created_at_utc": "2026-10-15T11:43:16.876362+00:00",
+      "cases": [
+        {
+          "case": "claim_documents",
+          "status": "answered",
+          "boundary": "allow",
+          "checked_answer_released": true,
+          "cited_passages": 2,
+          "validated_stages": [
+            "InputReview",
+            "AnswerDraft",
+            "OutputReview"
+          ],
+          "cost_usd": 0.012207
+        },
+        {
+          "case": "membership_card",
+          "status": "answered",
+          "boundary": "allow",
+          "checked_answer_released": true,
+          "cited_passages": 2,
+          "validated_stages": [
+            "InputReview",
+            "AnswerDraft",
+            "OutputReview"
+          ],
+          "cost_usd": 0.012193
+        },
+        {
+          "case": "waiting_periods",
+          "status": "answered",
+          "boundary": "allow",
+          "checked_answer_released": true,
+          "cited_passages": 1,
+          "validated_stages": [
+            "InputReview",
+            "AnswerDraft",
+            "OutputReview"
+          ],
+          "cost_usd": 0.012295
+        },
+        {
+          "case": "local_symptom_handoff",
+          "status": "blocked",
+          "boundary": "refuse_clinical",
+          "checked_answer_released": false,
+          "cited_passages": 0,
+          "validated_stages": [],
+          "cost_usd": 0.0
+        },
+        {
+          "case": "emergency_priority",
+          "status": "blocked",
+          "boundary": "escalate_emergency",
+          "checked_answer_released": false,
+          "cited_passages": 0,
+          "validated_stages": [],
+          "cost_usd": 0.0
+        }
+      ],
+      "report_sha256": "7f0b404a2e77f9db62951053e74ee2d3a9e88e4bebf6afa7eb0e541949ee62f9",
+      "runtime_sha256": {
+        "oshc/live_chat.py": "0eccf14b7b37d84e396cc2bd410f479d3cae176382e8e2dfdb12916791826388",
+        "oshc/llm.py": "37396f4fb038e170d0bd2ffb4ecae3646f55f188f1fd957dcbff09eca066cfdb",
+        "oshc/student_chat.py": "e18efb48c32b62e7411ffba9d760848990eba8fd584c581748120b54532d8a05",
+        "oshc/care_navigation.py": "ca33565f982a04479d8549b5befca208ad55c35e7589f5e13ef154a060f9f9b0"
+      }
+    }
+  ],
+  "final_live_outcome": {
+    "general_questions_checked_and_answered": 3,
+    "local_symptom_handoff": true,
+    "local_emergency_handoff": true
+  },
+  "checks": [
+    "Coach and Navigator work alongside live chat without model calls.",
+    "All eight Navigator topic starting columns verified against exact guide anchors.",
+    "Complete source columns remain in draft and output review.",
+    "Quote IDs bind to exact server evidence; unknown, cross-source or conflicting selections reject.",
+    "Emergency routing precedes the fixed symptom handoff.",
+    "Windows setup fails early and launcher respects an active environment."
+  ],
+  "limitations": [
+    "Development prompts were used to improve the runtime; these are not unseen probes or model accuracy estimates.",
+    "Prior source-only evaluation results describe their original runtime.",
+    "Independent human validation and the original controlled extraction study are not claimed complete.",
+    "Real patient data and production deployment remain outside prototype approval."
+  ]
+}

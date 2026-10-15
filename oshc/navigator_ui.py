@@ -1,14 +1,14 @@
-"""Offline topic browser for the frozen guide; no generated or personal answers."""
+"""Fixed service navigation and verified guide browsing; never assess symptoms."""
 from __future__ import annotations
 
 import hashlib
 import io
-import os
 from pathlib import Path
 
 import pymupdf
 import streamlit as st
 
+from oshc.care_navigation import HEALTHDIRECT_NUMBER, SERVICE_FINDER_URL, SYMPTOM_CHECKER_URL
 from oshc.policy_search import PolicySearch
 from oshc.policy_source import (
     CAPTURED_ON, OMITTED_PAGES, SOURCE_DOC, SOURCE_SHA256, SOURCE_URL,
@@ -23,9 +23,136 @@ TOPICS = {
     "Direct billing": "direct billing",
     "Ambulance services": "ambulance services",
     "Medicare Benefits Schedule": "Medicare Benefits Schedule",
+    "GP services": "general practitioner",
+    "Medicines": "prescription medicines",
+}
+# Authored navigation anchors for this pinned PDF, independent of BM25 ranking.
+# Keeping a full source column preserves conditions around each starting section.
+TOPIC_STARTS = {
+    "Making a claim": (28, "right", (
+        "Making a claim.", "There are a number of ways you can make a claim",
+    )),
+    "Waiting periods": (21, "right", (
+        "Waiting periods.", "A Waiting period is a set amount of time",
+    )),
+    "Membership card": (8, "left", (
+        "Your membership card.", "You will also receive a membership card",
+    )),
+    "Direct billing": (28, "right", (
+        "Direct Billing providers", "an agreement with Medibank to send the bill directly to us",
+    )),
+    "Ambulance services": (25, "left", (
+        "Ambulance services.", "When are Benefits payable?",
+    )),
+    "Medicare Benefits Schedule": (17, "left", (
+        "Medicare Benefits Schedule (MBS).", "purpose of calculating the Medicare benefit",
+    )),
+    "GP services": (17, "right", (
+        "Out-of-hospital medical services.", "general practitioner (GP) consultations",
+    )),
+    "Medicines": (24, "left", (
+        "Prescription medicines.", "What Benefits are payable?", "Refer to your Cover Summary",
+    )),
 }
 TOPIC_VIEW = "Find a topic"
 PAGE_VIEW = "Read a page"
+SERVICES = {
+    "GP appointment": {
+        "icon": ":material/stethoscope:",
+        "title": "Prepare to contact a general practice",
+        "steps": (
+            "Open the official Service Finder and choose a GP service and location there.",
+            "Ask the clinic about new-patient bookings, opening hours and appointment options.",
+            "Ask about the consultation fee, direct billing and any amount you may need to pay. "
+            "A directory listing does not confirm OSHC cover.",
+        ),
+        "topic": "GP services",
+    },
+    "Phone or video appointment": {
+        "icon": ":material/video_call:",
+        "title": "Ask about a phone or video appointment",
+        "steps": (
+            "Contact a practice or your existing provider to ask whether they offer telehealth.",
+            "Let the provider explain appointment requirements and whether that format is appropriate.",
+            "Confirm fees, billing arrangements and any OSHC requirements before booking.",
+        ),
+        "topic": "GP services",
+        "note": "The saved guide has no dedicated telehealth section. The related GP excerpt "
+                "does not establish telehealth cover; check directly with Medibank and the provider.",
+    },
+    "Pharmacy": {
+        "icon": ":material/local_pharmacy:",
+        "title": "Find a pharmacy and check its services",
+        "steps": (
+            "Open the official Service Finder and search for a pharmacy in your chosen location.",
+            "Ask the pharmacist about their services, opening hours and medicine costs.",
+            "Ask Medibank about applicable medicine benefits and required documents. "
+            "This page cannot confirm whether a medicine is covered.",
+        ),
+        "topic": "Medicines",
+    },
+    "Making a claim": {
+        "icon": ":material/receipt_long:",
+        "title": "Get ready to check the claim process",
+        "steps": (
+            "Keep an itemised invoice and any receipt; check what Medibank asks you to submit.",
+            "Read the guide's claim instructions and use your official Medibank member account.",
+            "Only Medibank can confirm the claim outcome and benefit. "
+            "Do not upload a real bill or identifying details to this research prototype.",
+        ),
+        "topic": "Making a claim",
+    },
+    "Membership card": {
+        "icon": ":material/badge:",
+        "title": "Prepare your membership details",
+        "steps": (
+            "Read the membership-card instructions in the guide.",
+            "Use your official Medibank member account or contact Medibank to manage your card.",
+            "Ask your provider which membership details they need. "
+            "Do not enter your member number or identity details here.",
+        ),
+        "topic": "Membership card",
+    },
+}
+
+
+def _select_topic(topic):
+    if topic in TOPICS:
+        st.session_state["nv_view"] = TOPIC_VIEW
+        st.session_state["nv_topic"] = topic
+        st.session_state.pop("nv_match", None)
+
+
+def _service_navigation():
+    """Show fixed options and official handoffs without collecting a location or symptoms."""
+    st.badge("Services + verified guide", icon=":material/explore:", color="blue")
+    st.caption("Choose the task you want help with. Navigator does not assess symptoms, "
+               "choose your urgency level or confirm personal cover.")
+    left, right = st.columns([1.35, 1])
+    with left, st.container(border=True):
+        selected = st.selectbox("What would you like to do?", list(SERVICES), key="nv_service")
+        service = SERVICES[selected]
+        st.subheader(service["title"], icon=service["icon"])
+        for number, step in enumerate(service["steps"], start=1):
+            st.markdown(f"**{number}.** {step}")
+        if service.get("note"):
+            st.caption(service["note"])
+        st.button("Read related OSHC guide topic", key="nv_related_topic",
+                  on_click=_select_topic, args=(service["topic"],),
+                  icon=":material/menu_book:")
+    with right, st.container(border=True):
+        st.subheader("Connect with an official service", icon=":material/open_in_new:")
+        st.link_button("Open healthdirect Service Finder", SERVICE_FINDER_URL,
+                       icon=":material/location_on:", type="primary", width="stretch")
+        st.caption("Search for services yourself. Navigator does not retrieve locations, "
+                   "check appointment availability or book a visit.")
+        st.link_button("Open healthdirect Symptom Checker", SYMPTOM_CHECKER_URL,
+                       icon=":material/health_and_safety:", width="stretch")
+        st.markdown(f"For health advice, call **healthdirect {HEALTHDIRECT_NUMBER}**, "
+                    "available 24 hours a day. If this is an emergency, call **000**.")
+        st.caption("Links open the official service in a new tab. Your question, location and "
+                   "personal details are not sent by this app. Information you enter there "
+                   "is handled under that service's privacy terms.")
 
 
 def load_source(root: Path):
@@ -39,6 +166,23 @@ def load_source(root: Path):
     if hashlib.sha256(raw).hexdigest() != SOURCE_SHA256:
         raise SourceError("The saved guide changed before previewing.")
     return corpus, raw
+
+
+def topic_sources(corpus, topic):
+    """Verify an authored starting section; BM25 can only supply related columns."""
+    if topic not in TOPICS or topic not in TOPIC_STARTS:
+        raise SourceError("Choose a known guide topic.")
+    page, column, anchors = TOPIC_STARTS[topic]
+    primary = next((chunk for chunk in corpus.chunks
+                    if (chunk.page, chunk.column) == (page, column)), None)
+    if primary is None or any(anchor not in " ".join(primary.text.split()) for anchor in anchors):
+        raise SourceError("The topic's starting section could not be verified.")
+    by_id = {primary.chunk_id: primary}
+    chunks = {chunk.chunk_id: chunk for chunk in corpus.chunks}
+    hits = PolicySearch(corpus).search(TOPICS[topic], k=5)
+    for hit in hits:
+        by_id.setdefault(hit.chunk_id, chunks[hit.chunk_id])
+    return primary, by_id, {hit.chunk_id: hit.rank for hit in hits}
 
 
 def page_png(verified_pdf: bytes, number: int) -> bytes:
@@ -62,10 +206,8 @@ def _preview(raw: bytes, page: int, *, width):
 
 def render():
     st.title("Navigator")
-    st.caption("Read the policy source")
-    if os.getenv("OSHC_OFFLINE") != "1" or os.getenv("OSHC_ENABLE_LIVE") != "0":
-        st.error("Start this prototype in offline mode before browsing.")
-        return
+    st.caption("Find a practical next step, then check the original OSHC source.")
+    _service_navigation()
     try:
         corpus, raw = load_source(ROOT)
     except SourceError:
@@ -77,6 +219,7 @@ def render():
         st.session_state["nv_view"] = PAGE_VIEW
         st.session_state["nv_page"] = requested_page
 
+    st.subheader("Check the policy source", icon=":material/menu_book:")
     st.caption("Medibank OSHC Member Guide | Effective May 2026 | Saved 28 September 2026")
     st.info("Browse the guide for general information. Excerpts do not determine your cover. "
             "Read the original page and surrounding conditions before relying on an excerpt.")
@@ -87,29 +230,32 @@ def render():
             if st.session_state.get("nv_previous_topic") != topic:
                 st.session_state.pop("nv_match", None)
                 st.session_state["nv_previous_topic"] = topic
-            hits = PolicySearch(corpus).search(TOPICS[topic], k=5)
-            if not hits:
-                st.warning("No source matches. Use Read a page to inspect the saved guide.")
-            else:
-                by_id = {hit.chunk_id: hit for hit in hits}
-                chunks = {chunk.chunk_id: chunk for chunk in corpus.chunks}
-                st.caption("Search matches may include passing mentions. Check the page itself.")
-                selected = st.selectbox(
-                    "Source match", list(by_id), key="nv_match",
-                    format_func=lambda ident: f"{by_id[ident].rank}. {by_id[ident].section}",
-                )
-                hit, chunk = by_id[selected], chunks[selected]
-                left, right = st.columns([1, 1.15])
-                with left:
-                    st.subheader("Extracted column")
-                    st.caption(f"{hit.section} | Source saved {hit.captured_on}")
-                    with st.container(height=600, border=True):
-                        st.text(hit.text)
-                    st.caption("Text keeps its source wording and line breaks. A condition may "
-                               "continue in the other column or on another page.")
-                with right:
-                    st.subheader("Original page")
-                    _preview(raw, chunk.page, width="stretch")
+            primary, by_id, ranks = topic_sources(corpus, topic)
+            starting_section = (topic, primary.chunk_id)
+            if st.session_state.get("nv_starting_section") != starting_section:
+                # Existing sessions may still have selected an old passing mention.
+                st.session_state.pop("nv_match", None)
+                st.session_state["nv_starting_section"] = starting_section
+            st.caption("Start here opens an authored guide section checked against the source. "
+                       "Related matches use BM25 and may include passing mentions.")
+            selected = st.selectbox(
+                "Source match", list(by_id), key="nv_match",
+                format_func=lambda ident: (
+                    "Start here" if ident == primary.chunk_id else f"Related match {ranks[ident]}"
+                ) + f" | PDF page {by_id[ident].page}, {by_id[ident].column} column",
+            )
+            chunk = by_id[selected]
+            left, right = st.columns([1, 1.15])
+            with left:
+                st.subheader("Extracted column")
+                st.caption(f"PDF page {chunk.page}, {chunk.column} column | Source saved {CAPTURED_ON}")
+                with st.container(height=600, border=True):
+                    st.text(chunk.text)
+                st.caption("Text keeps its source wording and line breaks. A condition may "
+                           "continue in the other column or on another page.")
+            with right:
+                st.subheader("Original page")
+                _preview(raw, chunk.page, width="stretch")
         else:
             st.caption("All 37 physical pages are available. Page 19 contains the hospital "
                        "benefits table, which is excluded from text search.")
@@ -117,7 +263,8 @@ def render():
                                    step=1, key="nv_page")
             _preview(raw, page, width=900)
     except SourceError:
-        st.error("The original page is unavailable. Download the saved guide to inspect it.")
+        st.error("The selected guide section could not be verified or displayed. "
+                 "Use Read a page or download the saved guide to inspect it.")
 
     st.caption("The publisher link may show a newer edition. Previews and the download below "
                "use this saved guide.")
@@ -125,6 +272,7 @@ def render():
                        mime="application/pdf", key="nv_download", on_click="ignore")
     with st.expander("Source details"):
         st.text(f"Source: {SOURCE_DOC}\nSaved: {CAPTURED_ON}\nSHA-256: {SOURCE_SHA256}")
-        st.caption(f"Text search: BM25, {len(corpus.chunks)} column excerpts. "
+        st.caption(f"Authored starting sections with exact source anchors; related matches use "
+                   f"BM25 across {len(corpus.chunks)} column excerpts. "
                    "Ranking is not confidence. No generated answer is produced.")
         st.text("Pages excluded from text search: " + ", ".join(str(p) for p, _ in OMITTED_PAGES))

@@ -156,6 +156,56 @@ def test_failed_call_keeps_reservation_across_restart(runtime):
     assert len(fake.requests) == 1
 
 
+@pytest.mark.parametrize("stage", ["count", "message"])
+@pytest.mark.parametrize("status,kind", [
+    (401, "authentication"), (403, "permission"), (429, "rate_limit"),
+    (500, "provider"), (400, "provider"),
+])
+def test_provider_failure_category_never_exposes_provider_body(runtime, stage, status, kind):
+    import anthropic
+    import httpx2
+
+    fake, budget = runtime
+    request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+    error = anthropic.APIStatusError(
+        "SECRET provider body including private prompt",
+        response=httpx2.Response(status, request=request), body={"secret": "PRIVATE"})
+    if stage == "count":
+        def fail_count(**kwargs):
+            raise error
+        fake.count_tokens = fail_count
+    else:
+        fake.responses = [error]
+    with pytest.raises(llm.ProviderError) as captured:
+        llm.complete("private question", cache=False)
+    assert captured.value.kind == kind
+    assert "SECRET" not in str(captured.value) and "PRIVATE" not in str(captured.value)
+    assert "private question" not in str(captured.value)
+    assert captured.value.__suppress_context__
+    assert budget.status()["unsettled_calls"] == (1 if stage == "message" else 0)
+    assert not llm.CACHE_DIR.exists()
+
+
+@pytest.mark.parametrize("timeout", [False, True])
+def test_connection_and_timeout_failures_have_safe_category(runtime, timeout):
+    import anthropic
+    import httpx2
+
+    request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+    error_type = anthropic.APITimeoutError if timeout else anthropic.APIConnectionError
+    runtime[0].responses = [error_type(request=request)]
+    with pytest.raises(llm.ProviderError) as captured:
+        llm.complete("private question", cache=False)
+    assert captured.value.kind == "connection"
+    assert runtime[1].status()["unsettled_calls"] == 1
+
+
+def test_missing_key_is_a_configuration_failure(monkeypatch):
+    monkeypatch.setattr(llm, "_api_key", lambda: None)
+    with pytest.raises(llm.ConfigurationError):
+        llm._client()
+
+
 @pytest.mark.parametrize("stop", ["max_tokens", "refusal", "tool_use"])
 def test_incomplete_or_refused_output_is_billed_but_not_cached(runtime, stop):
     runtime[0].responses = [response(stop=stop)]

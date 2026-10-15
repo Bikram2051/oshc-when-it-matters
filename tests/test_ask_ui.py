@@ -79,7 +79,7 @@ def test_blocked_message_never_reads_source_even_when_unavailable(source, questi
     source.side_effect = SourceError("missing guide")
     at = submit(app(), question)
     source.assert_not_called()
-    assert at.error
+    assert at.error or at.warning
     assert "SYNTHETIC" not in text(at)
     assert not any("covered, rather" in item.label for item in at.expander)
 
@@ -185,3 +185,26 @@ def test_source_page_number_parser():
 
     assert ui._page_of(Hit()) == 28
     assert ui._page_of(None) == 0
+
+
+@pytest.mark.parametrize("question", [
+    "I am having caught and mild headache where should I go?",
+    "I have a cough and a mild headache. Where should I go?",
+])
+def test_live_symptom_question_has_useful_local_handoff(source, monkeypatch, question):
+    from oshc.care_navigation import SERVICE_FINDER_URL, SYMPTOM_CHECKER_URL
+    live = Mock(side_effect=AssertionError("Symptom disclosures must not generate an answer"))
+    monkeypatch.setattr("oshc.live_chat.answer_live", live)
+    monkeypatch.setattr(ui, "api_key_configured", lambda: True)
+    monkeypatch.setenv("OSHC_OFFLINE", "0")
+    monkeypatch.setenv("OSHC_ENABLE_LIVE", "1")
+    at = submit(app(), question)
+    assert at.warning and "1800 022 222" in text(at)
+    assert "Your next step" in text(at) and question not in text(at)
+    urls = {button.url for button in at.get("link_button")}
+    assert {SERVICE_FINDER_URL, SYMPTOM_CHECKER_URL} <= urls
+    source.assert_not_called()
+    live.assert_not_called()
+    at.button(key="ask_care_0").click().run()
+    assert not at.exception
+    assert any(title.value == "Navigator" for title in at.title)

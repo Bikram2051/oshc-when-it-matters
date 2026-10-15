@@ -19,6 +19,13 @@ output checks → separate Haiku safety/faithfulness review → complete answer.
 Local privacy screening is best effort, not an anonymisation guarantee. The provider
 receives locally admitted question text. Do not include private or health details.
 
+Clear personal symptom disclosures receive a fixed clinical handoff locally before
+live provider or guide access. Emergency rules take priority. Healthdirect links
+contain no question, location or identity parameters; details entered on the external
+service are covered by its privacy terms. The app does not assess symptom severity
+or select a healthcare service from symptoms. Navigator choices are selected by
+the student, and Coach practice and checklists do not make model calls.
+
 ## Implemented measures
 
 - The server binds to 127.0.0.1. CORS and XSRF checks are enabled. Usage telemetry

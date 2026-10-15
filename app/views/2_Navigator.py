@@ -1,4 +1,4 @@
-"""Navigator: offline browsing of the verified public policy guide."""
+"""Navigator: fixed service handoffs and browsing of the verified public policy guide."""
 import sys
 from pathlib import Path
 

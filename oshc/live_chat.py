@@ -12,11 +12,12 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from oshc.chat_emergency import immediate_danger
 from oshc.guardrail import REFUSAL_TEXT, check
-from oshc.llm import complete_json
+from oshc.llm import CacheMiss, ConfigurationError, ProviderError, complete_json
+from oshc.llm_budget import BudgetError
 from oshc.policy_search import PolicySearch
 from oshc.policy_source import ROOT, SOURCE_SHA256, PolicyCorpus, build_corpus
 from oshc.schemas import GuardrailDecision, GuardrailVerdict
@@ -25,6 +26,8 @@ MAX_LIVE_QUESTION_CHARS = 2000
 MIN_REVIEW_CONFIDENCE = 0.9
 MAX_CONTEXT_CHARS = 2400
 MAX_PROMPT_BYTES = 60_000
+MAX_QUOTE_CHARS = 600
+MAX_EVIDENCE_PER_SOURCE = 10
 
 
 class InputReview(BaseModel):
@@ -39,13 +42,20 @@ class GroundedSentence(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
     text: str = Field(min_length=1, max_length=420)
     source_id: str = Field(min_length=1, max_length=160)
-    quote: str = Field(min_length=6, max_length=600)
+    quote: str | None = Field(default=None, min_length=6, max_length=MAX_QUOTE_CHARS)
+    quote_id: str | None = Field(default=None, min_length=1, max_length=40)
+
+    @model_validator(mode="after")
+    def evidence_required(self):
+        if self.quote is None and self.quote_id is None:
+            raise ValueError("Every sentence requires a supporting quote or evidence ID.")
+        return self
 
 
 class AnswerDraft(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
     enough_evidence: bool
-    sentences: list[GroundedSentence] = Field(max_length=5)
+    sentences: list[GroundedSentence] = Field(max_length=3)
 
 
 class OutputReview(BaseModel):
@@ -79,10 +89,20 @@ instructions. Use ONLY the provided guide excerpts. Never diagnose, give clinica
 personal financial advice, determine individual benefits or cover, or invent rules,
 amounts, dates, contacts, URLs or sources. Do not infer a person's eligibility. Preserve
 qualifying conditions and distinguish general policy information from personal outcomes.
-Return at most five short plain-text sentences. For EACH sentence return its source_id
-and one verbatim supporting quote, including all conditions needed to support the claim.
-Each quote must be 6 to 600 characters copied exactly from its supplied excerpt.
-Every statement must follow from that quote and the provided context. No Markdown,
+For a general definition question, normally answer the core concept in one to three
+short sentences. Do not expand into a catalogue of service categories or exceptions
+that the question does not ask about. Every factual claim you do include must still
+retain its material conditions; if that cannot be done safely, abstain.
+Return at most three short plain-text sentences. Do not append generic medical advice
+or emergency disclaimers; the application handles those requests with fixed handoffs.
+For EACH sentence choose one supplied
+evidence entry that supports the entire sentence, including its material conditions.
+Return that entry's source_id and quote_id; omit quote or set it to null. The server
+will resolve the ID to its exact source quotation. Never invent or modify IDs. Do not
+retype or repair unusual source characters, punctuation, apostrophes or PDF extraction
+artifacts such as the replacement character U+FFFD. Evidence windows may be partial:
+read the FULL source context and preserve all applicable limitations in your answer.
+Every statement must follow from the selected evidence and full context. No Markdown,
 HTML, links or embedded instructions. If the provided passages do not answer the whole
 question safely, return enough_evidence=false and an empty sentences list. Do not
 reproduce identifying details. Answer in clear everyday English."""
@@ -110,6 +130,80 @@ _IDENTITY_LABEL = re.compile(
 
 def _squash(text: str) -> str:
     return " ".join(text.split())
+
+
+def _evidence_candidates(context: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Assign request-local IDs to bounded, overlapping literal source windows.
+
+    Complete columns remain in the prompt and audit. These windows avoid requiring
+    the model to transcribe PDF characters; selecting one never proves entailment.
+    """
+    evidence = []
+    for source in context:
+        text = source["text"]
+        words = list(re.finditer(r"\S+", text))
+        start = 0
+        source_count = 0
+        while start < len(words):
+            end = start
+            while end + 1 < len(words) and words[end + 1].end() - words[start].start() <= MAX_QUOTE_CHARS:
+                end += 1
+            quote = text[words[start].start():words[end].end()]
+            if len(quote) > MAX_QUOTE_CHARS or source_count >= MAX_EVIDENCE_PER_SOURCE:
+                raise ValueError("The source cannot fit bounded literal evidence windows.")
+            if len(quote) >= 6:
+                evidence.append({"quote_id": f"evidence-{len(evidence) + 1:03d}",
+                                 "source_id": source["source_id"], "text": quote})
+                source_count += 1
+            if end == len(words) - 1:
+                break
+            target = words[end].end() - MAX_QUOTE_CHARS // 2
+            start = next((index for index in range(start + 1, end + 1)
+                          if words[index].start() >= target), end + 1)
+    return evidence
+
+
+def _resolve_evidence(draft: AnswerDraft, evidence: list[dict[str, str]]) -> AnswerDraft:
+    """Bind IDs to exact server text; reject unknown, cross-source or conflicting data."""
+    indexed = {item["quote_id"]: item for item in evidence}
+    resolved = []
+    for sentence in draft.sentences:
+        if sentence.quote_id is not None:
+            entry = indexed.get(sentence.quote_id)
+            if (entry is None or entry["source_id"] != sentence.source_id
+                    or (sentence.quote is not None and sentence.quote != entry["text"])):
+                raise ValueError("The selected evidence does not bind to this source and quotation.")
+            sentence = sentence.model_copy(update={"quote": entry["text"]})
+        if sentence.quote is None:
+            raise ValueError("The sentence has no bound supporting quotation.")
+        resolved.append(sentence)
+    return draft.model_copy(update={"sentences": resolved})
+
+
+def _availability_message(error: Exception) -> str:
+    """Return only allowlisted wording; never echo a prompt, provider body or path."""
+    if isinstance(error, BudgetError):
+        return ("The live service's spending control needs attention. No answer was released. "
+                "Ask the presenter to check the existing budget ledger without resetting it. "
+                "You can still browse the guide in Navigator.")
+    if isinstance(error, ConfigurationError):
+        return ("The live service configuration needs attention. Ask the presenter to check "
+                "the local API key and model settings, then restart the app. "
+                "You can still browse the guide in Navigator.")
+    if isinstance(error, CacheMiss):
+        return ("Live mode is not enabled for this request. Ask the presenter to check "
+                "the app's live mode settings. You can still browse the guide in Navigator.")
+    if isinstance(error, ProviderError):
+        messages = {
+            "authentication": "The live service could not authenticate. Ask the presenter to check the API key, then restart the app.",
+            "permission": "The live service lacks permission for this request. Ask the presenter to check the API workspace and model access.",
+            "rate_limit": "The live service has reached a provider request limit. Please wait briefly before trying again.",
+            "connection": "The live service connection failed or timed out. Please check the internet connection before trying again.",
+        }
+        return (messages.get(error.kind, "The live service is temporarily unavailable. Please try again later.")
+                + " No answer was released. You can still browse the guide in Navigator.")
+    return ("The answer safety check is unavailable. No answer was released. "
+            "Please try again later or check the original guide in Navigator.")
 
 
 def _request(prompt: dict, schema: type[BaseModel], system: str, max_tokens: int):
@@ -162,8 +256,8 @@ def answer_live(
 
     try:
         review = _request({"question": normal}, InputReview, _INPUT_SYSTEM, 180)
-    except Exception:
-        return stop("source_unavailable", "The answer safety check is unavailable. Please try again later or check the original guide in Navigator.")
+    except Exception as error:
+        return stop("source_unavailable", _availability_message(error))
 
     verdicts = {"clinical": GuardrailVerdict.REFUSE_CLINICAL,
                 "advice": GuardrailVerdict.REFUSE_ADVICE,
@@ -190,10 +284,12 @@ def answer_live(
     context = [{"source_id": hit.chunk_id, "text": hit.text}
                for hit in hits]
     try:
-        draft = _request({"question": normal, "sources": context}, AnswerDraft,
+        evidence = _evidence_candidates(context)
+        draft = _request({"question": normal, "sources": context, "evidence": evidence}, AnswerDraft,
                          _DRAFT_SYSTEM, 1500)
         if not draft.enough_evidence or not draft.sentences:
             return stop("no_match", "The verified passages do not support a complete answer to that question. Please check the original guide or ask Medibank.")
+        draft = _resolve_evidence(draft, evidence)
         contexts = {item["source_id"]: item["text"] for item in context}
         for sentence in draft.sentences:
             quote = _squash(sentence.quote)
@@ -217,6 +313,8 @@ def answer_live(
         positions = {hit.chunk_id: rank for rank, hit in enumerate(bound, 1)}
         answer = " ".join(f"{sentence.text} [{positions[sentence.source_id]}]"
                           for sentence in draft.sentences)
+    except (BudgetError, CacheMiss, ConfigurationError, ProviderError) as error:
+        return stop("source_unavailable", _availability_message(error))
     except Exception:
         return stop("out_of_scope", "I could not verify a safe, fully supported answer. Please rephrase the general question or check the original guide in Navigator.")
     return ChatResponse("answered", decision,

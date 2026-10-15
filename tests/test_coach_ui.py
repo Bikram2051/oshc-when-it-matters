@@ -15,10 +15,11 @@ from oshc.policy_source import PolicyChunk, PolicyCorpus, SourceError
 ROOT = Path(__file__).resolve().parents[1]
 
 
-@pytest.fixture
-def sandbox(tmp_path, monkeypatch):
-    monkeypatch.setenv("OSHC_OFFLINE", "1")
-    monkeypatch.setenv("OSHC_ENABLE_LIVE", "0")
+@pytest.fixture(params=[("1", "0"), ("0", "1")], ids=["source-mode", "live-mode"])
+def sandbox(tmp_path, monkeypatch, request):
+    offline, live = request.param
+    monkeypatch.setenv("OSHC_OFFLINE", offline)
+    monkeypatch.setenv("OSHC_ENABLE_LIVE", live)
     provider = Mock(side_effect=AssertionError("Unexpected provider access"))
     monkeypatch.setattr(adapter, "_client", provider)
     chunks = tuple(PolicyChunk(item.ident, item.page, item.column,
@@ -115,12 +116,54 @@ def test_invalid_source_hides_previously_shown_lesson(sandbox):
     assert not at.radio and not at.selectbox and not at.button
 
 
-@pytest.mark.parametrize("name,value", [("OSHC_OFFLINE", "0"), ("OSHC_ENABLE_LIVE", "1")])
-def test_offline_flags_checked_before_loading(sandbox, monkeypatch, name, value):
-    monkeypatch.setenv(name, value)
+def test_lessons_are_available_in_both_runtime_modes(sandbox):
     at = app()
-    sandbox.assert_not_called()
-    assert at.error and not at.radio
+    assert sandbox.called
+    assert not at.error and at.radio
+    assert any("No lesson or checklist details are sent" in item.value for item in at.caption)
+
+
+def test_resume_chooses_first_unfinished_moment(sandbox):
+    at = app()
+    first = lessons.LESSONS[0]
+    answer(at, first.options[first.correct])
+    for index in range(len(lessons.ACTIVITIES[first.ident].checklist)):
+        at.checkbox(key=f"jc_task_{first.ident}_{index}").check()
+    at.button(key="jc_save_checklist").click().run()
+    assert any("This moment is complete" in item.value for item in at.success)
+    at.button(key="jc_resume").click().run()
+    assert not at.exception
+    assert at.segmented_control(key="jc_moment").value == lessons.LESSONS[1].moment
+    assert at.radio(key="jc_choice").value is None
+
+
+def test_saved_checklist_returns_after_switching_moments(sandbox):
+    at = app()
+    first = lessons.LESSONS[0]
+    at.checkbox(key=f"jc_task_{first.ident}_0").check()
+    at.button(key="jc_save_checklist").click().run()
+    at.button(key="jc_next").click().run()
+    at.button(key="jc_previous").click().run()
+    assert at.checkbox(key=f"jc_task_{first.ident}_0").value is True
+    assert at.checkbox(key=f"jc_task_{first.ident}_1").value is False
+
+
+def test_full_journey_completion_and_reset(sandbox):
+    at = app()
+    for lesson in lessons.LESSONS:
+        at.segmented_control(key="jc_moment").select(lesson.moment).run()
+        answer(at, lesson.options[lesson.correct])
+        for index in range(len(lessons.ACTIVITIES[lesson.ident].checklist)):
+            at.checkbox(key=f"jc_task_{lesson.ident}_{index}").check()
+        at.button(key="jc_save_checklist").click().run()
+    assert not at.exception
+    assert any("Your three preparation moments are complete" in item.value for item in at.success)
+    assert at.button(key="jc_resume").disabled
+    at.button(key="jc_reset").click().run()
+    assert not at.exception and not at.success
+    assert "jc_progress" not in at.session_state
+    assert "jc_checklists" not in at.session_state
+    assert at.segmented_control(key="jc_moment").value == lessons.LESSONS[0].moment
 
 
 def test_missing_supporting_span_is_rejected(sandbox):

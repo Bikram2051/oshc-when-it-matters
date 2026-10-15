@@ -6,8 +6,8 @@ Bikram Bhattarai, Md Minhaj Rahman, Aayush Khade. Supervisor: Dr Eureka Priyadar
 
 **NextBest** is a Streamlit learning prototype with guarded live Haiku chat:
 
-- **Journey Coach:** three sourced lessons, practice scenarios and saved action checklists.
-- **Navigator:** saved guide passages alongside the original PDF pages.
+- **Journey Coach:** three sourced lessons, practice scenarios, resumable progress and saved action checklists.
+- **Navigator:** practical service-navigation steps and official links, plus guide passages alongside original PDF pages.
 - **Bill Explainer:** labelled synthetic invoice tables, receipt explanations, privacy minimisation and MBS comparisons.
 - **Ask NextBest:** custom Haiku answers with input screening, verified citations and output safety review.
 - **Project dashboard:** Overview, Results, Safety, and Evidence & sources tabs.

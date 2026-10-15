@@ -6,6 +6,8 @@ import pytest
 from pydantic import ValidationError
 
 import oshc.live_chat as live
+from oshc.llm import CacheMiss, ConfigurationError, OutputValidationError, ProviderError
+from oshc.llm_budget import BudgetError
 from oshc.policy_source import PolicyChunk, PolicyCorpus, SourceError
 from oshc.schemas import GuardrailVerdict
 
@@ -194,6 +196,126 @@ def test_generation_or_review_error_never_releases_partial_draft(monkeypatch, co
     assert "SECRET" not in response.message
 
 
+@pytest.mark.parametrize("stage", ["input", "draft", "audit"])
+@pytest.mark.parametrize("error,expected", [
+    (ProviderError("SECRET provider body", kind="authentication"), "authenticate"),
+    (ProviderError("SECRET provider body", kind="permission"), "permission"),
+    (ProviderError("SECRET provider body", kind="rate_limit"), "request limit"),
+    (ProviderError("SECRET provider body", kind="connection"), "connection"),
+    (ProviderError("SECRET provider body"), "temporarily unavailable"),
+    (ConfigurationError("SECRET local setting"), "configuration"),
+    (CacheMiss("SECRET private request hash"), "live mode"),
+    (BudgetError("SECRET ledger path"), "spending control"),
+])
+def test_availability_failures_are_distinct_from_rejected_answers(monkeypatch, corpus, stage, error, expected):
+    key = {"input": "input_review", "draft": "answer", "audit": "output_review"}[stage]
+    calls = pipeline(monkeypatch, **{key: error})
+    response = live.answer_live("How can a student submit a claim?", source_loader=lambda: corpus)
+    assert response.status == "source_unavailable" and expected in response.message
+    assert len(calls) == {"input": 1, "draft": 2, "audit": 3}[stage]
+    assert "SECRET" not in response.message and not response.safe_to_echo
+    assert response.answer is None and not response.hits and response.source_sha256 is None
+
+
+@pytest.mark.parametrize("stage", ["draft", "audit"])
+def test_invalid_model_schema_still_discards_the_entire_answer(monkeypatch, corpus, stage):
+    key = "answer" if stage == "draft" else "output_review"
+    pipeline(monkeypatch, **{key: OutputValidationError("SECRET invalid generated content")})
+    response = live.answer_live("How can a student submit a claim?", source_loader=lambda: corpus)
+    assert response.status == "out_of_scope" and "SECRET" not in response.message
+    assert response.answer is None and not response.hits and not response.safe_to_echo
+
+
+def test_unusual_source_characters_must_be_copied_without_repair(monkeypatch, corpus):
+    text = "Making a claim. A claim\ufffds receipt can be submitted through Online Member Services."
+    changed = PolicyCorpus((PolicyChunk("synthetic-claim", 29, "left", text, ()),
+                            *corpus.chunks[1:]), "synthetic-test")
+    exact = draft().sentences[0].model_copy(update={"quote": text})
+    calls = pipeline(monkeypatch, answer=draft().model_copy(update={"sentences": [exact]}))
+    response = live.answer_live("How can a student submit a claim?", source_loader=lambda: changed)
+    assert response.status == "answered" and len(calls) == 3
+    assert "U+FFFD" in calls[1][2]["system"] and "retype or repair" in calls[1][2]["system"]
+
+    repaired = exact.model_copy(update={"quote": text.replace("\ufffd", "'")})
+    calls = pipeline(monkeypatch, answer=draft().model_copy(update={"sentences": [repaired]}))
+    response = live.answer_live("How can a student submit a claim?", source_loader=lambda: changed)
+    assert response.status == "out_of_scope" and len(calls) == 2
+    assert response.answer is None and not response.hits
+
+
+def evidence_pipeline(monkeypatch, choose):
+    """Choose from the actual server candidates, then capture the resolved audit."""
+    calls = []
+
+    def complete(prompt, schema, **kwargs):
+        payload = json.loads(prompt)
+        calls.append((schema, payload, kwargs))
+        if schema is live.InputReview:
+            return allowed()
+        if schema is live.AnswerDraft:
+            candidate = next(item for item in payload["evidence"]
+                             if item["source_id"] == "synthetic-claim")
+            sentence = {"text": "You can submit a claim through Online Member Services.",
+                        "source_id": "synthetic-claim", "quote_id": candidate["quote_id"]}
+            sentence.update(choose(candidate, payload))
+            return live.AnswerDraft(enough_evidence=True, sentences=[live.GroundedSentence(**sentence)])
+        return approved()
+
+    monkeypatch.setattr(live, "complete_json", complete)
+    return calls
+
+
+def test_quote_id_resolves_exact_unicode_source_before_mandatory_audit(monkeypatch, corpus):
+    raw = "Making a claim. A claim\ufffds receipt can be submitted through Online Member Services."
+    changed = PolicyCorpus((PolicyChunk("synthetic-claim", 29, "left", raw, ()),
+                            *corpus.chunks[1:]), "synthetic-test")
+    calls = evidence_pipeline(monkeypatch, lambda candidate, payload: {})
+    response = live.answer_live("How can a student submit a claim?", source_loader=lambda: changed)
+    assert response.status == "answered" and len(calls) == 3
+    audit = calls[2][1]
+    assert audit["draft"]["sentences"][0]["quote"] == raw
+    assert audit["sources"] == calls[1][1]["sources"]
+    assert next(source["text"] for source in audit["sources"]
+                if source["source_id"] == "synthetic-claim") == raw
+    assert all(item[2]["cache"] is False and item[2]["repair"] is False for item in calls)
+
+
+@pytest.mark.parametrize("failure", ["unknown", "cross_source", "conflict"])
+def test_invalid_quote_ids_or_conflicting_text_discard_draft_before_audit(monkeypatch, corpus, failure):
+    def choose(candidate, payload):
+        if failure == "unknown":
+            return {"quote_id": "invented-evidence"}
+        if failure == "cross_source":
+            other = next(item for item in payload["evidence"]
+                         if item["source_id"] != "synthetic-claim")
+            return {"quote_id": other["quote_id"]}
+        return {"quote": "This conflicting text does not match the selected evidence."}
+
+    calls = evidence_pipeline(monkeypatch, choose)
+    response = live.answer_live("How can a student submit a claim?", source_loader=lambda: corpus)
+    assert response.status == "out_of_scope" and len(calls) == 2
+    assert response.answer is None and not response.hits and not response.safe_to_echo
+
+
+def test_candidate_windows_are_bounded_literal_and_keep_full_qualifying_context(monkeypatch, corpus):
+    raw = ("Making a claim. Conditions apply to all claims. " + "Supporting documentation is required. " * 32
+           + "Some claims require further information before payment.")
+    changed = PolicyCorpus((PolicyChunk("synthetic-claim", 29, "left", raw, ()),
+                            *corpus.chunks[1:]), "synthetic-test")
+    calls = evidence_pipeline(monkeypatch, lambda candidate, payload: {})
+    response = live.answer_live("How can a student submit a claim?", source_loader=lambda: changed)
+    assert response.status == "answered"
+    payload = calls[1][1]
+    assert next(item["text"] for item in payload["sources"]
+                if item["source_id"] == "synthetic-claim") == raw
+    assert calls[2][1]["sources"] == payload["sources"]
+    assert len({item["quote_id"] for item in payload["evidence"]}) == len(payload["evidence"])
+    for item in payload["evidence"]:
+        source = next(source["text"] for source in payload["sources"]
+                      if source["source_id"] == item["source_id"])
+        assert 6 <= len(item["text"]) <= 600 and item["text"] in source
+
+
 def test_insufficient_evidence_abstains_before_output_review(monkeypatch, corpus):
     calls = pipeline(monkeypatch, answer=live.AnswerDraft(enough_evidence=False, sentences=[]))
     response = live.answer_live("How can a student submit a claim?", source_loader=lambda: corpus)
@@ -208,6 +330,8 @@ def test_strict_review_schema_rejects_coerced_or_extra_fields():
         live.OutputReview.model_validate({**approved().model_dump(), "reason": "untrusted private text"})
     with pytest.raises(ValidationError):
         live.AnswerDraft.model_validate({"enough_evidence": "true", "sentences": []})
+    with pytest.raises(ValidationError):
+        live.AnswerDraft(enough_evidence=True, sentences=draft().sentences * 4)
 
 
 def test_oversized_source_never_loses_conditions_to_truncation(monkeypatch, corpus):

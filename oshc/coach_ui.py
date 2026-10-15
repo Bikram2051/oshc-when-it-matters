@@ -1,7 +1,6 @@
 """Interactive, session-only practice around fixed source-grounded lessons."""
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 import streamlit as st
@@ -49,14 +48,39 @@ def _save_checklist(ident):
     st.session_state["jc_saved_checklist"] = ident
 
 
+def _moment_complete(lesson):
+    """Combine explicit practice and saved self-checks; never infer readiness."""
+    passed = st.session_state.get("jc_progress", {}).get(lesson.ident, {}).get("passed")
+    saved = st.session_state.get("jc_checklists", {}).get(lesson.ident, ())
+    return bool(passed) and len(saved) == len(ACTIVITIES[lesson.ident].checklist) and all(saved)
+
+
+def _journey_plan():
+    unfinished = next((lesson for lesson in LESSONS if not _moment_complete(lesson)), None)
+    if unfinished is None:
+        st.success("Your three preparation moments are complete. Keep your next-step cards "
+                   "and revisit a moment whenever you need a reminder.")
+    with st.expander("My journey plan"):
+        for lesson in LESSONS:
+            practice = st.session_state.get("jc_progress", {}).get(lesson.ident, {}).get("passed")
+            saved = st.session_state.get("jc_checklists", {}).get(lesson.ident, ())
+            st.markdown(f"**{lesson.moment}** — {lesson.title}")
+            st.caption(f"Practice: {'checked correctly' if practice else 'to do'} · "
+                       f"Saved preparation ticks: {sum(saved)} of "
+                       f"{len(ACTIVITIES[lesson.ident].checklist)}")
+        st.button("Continue my next unfinished moment", key="jc_resume",
+                  disabled=unfinished is None, on_click=_select_moment,
+                  args=((unfinished or LESSONS[0]).moment,),
+                  icon=":material/arrow_forward:")
+
+
 def _progress():
     progress = st.session_state.get("jc_progress", {})
     checklists = st.session_state.get("jc_checklists", {})
     practised = len(progress)
     passed = sum(bool(item["passed"]) for item in progress.values())
     checked = sum(all(checklists.get(item.ident, (False,))) for item in LESSONS)
-    complete = sum(bool(progress.get(item.ident, {}).get("passed"))
-                   and all(checklists.get(item.ident, (False,))) for item in LESSONS)
+    complete = sum(_moment_complete(item) for item in LESSONS)
     with st.container(horizontal=True):
         st.metric("Lessons practised", f"{practised} of {len(LESSONS)}", border=True)
         st.metric("Correct at least once", f"{passed} of {len(LESSONS)}", border=True)
@@ -119,14 +143,18 @@ def _action(lesson):
                        key="jc_card", icon=":material/download:")
     st.caption("The card contains this lesson's fixed reminders and your saved checklist ticks. "
                "It contains no identity, policy number or medical information.")
+    if _moment_complete(lesson):
+        st.success("This moment is complete: you checked the scenario correctly and saved "
+                   "all preparation ticks. Continue to another moment when you are ready.")
+    elif saved:
+        st.caption("To complete this moment, check the scenario correctly in Practise and "
+                   "save all three preparation ticks. You can keep a reminder at any time.")
 
 
 def render():
     st.title("Journey Coach")
     st.caption("Learn one idea. Try a scenario. Leave with a practical next step.")
-    if os.getenv("OSHC_OFFLINE") != "1" or os.getenv("OSHC_ENABLE_LIVE") != "0":
-        st.error("Start this prototype in offline mode before practising.")
-        return
+    st.badge("Guided preparation", icon=":material/route:")
     try:
         sources = verified_sources(ROOT)
     except SourceError:
@@ -135,7 +163,10 @@ def render():
 
     st.caption("Based on the Medibank OSHC Member Guide, effective May 2026. "
                "General education in English, rather than a decision about your benefits.")
+    st.caption("No lesson or checklist details are sent to the AI provider. "
+               "Your progress stays in this browser session; Start again clears it.")
     _progress()
+    _journey_plan()
     moment = st.segmented_control(
         "Choose your moment", [lesson.moment for lesson in LESSONS],
         default=LESSONS[0].moment, required=True, key="jc_moment", persist_state="session",

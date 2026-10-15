@@ -14,7 +14,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from pydantic import BaseModel, ValidationError
 
-from oshc.llm_budget import Budget, MODEL
+from oshc.llm_budget import Budget, BudgetError, MODEL
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = ROOT / "cache/llm/v2"
@@ -33,8 +33,18 @@ class CacheError(LLMError):
     pass
 
 
-class ProviderError(LLMError):
+class ConfigurationError(LLMError):
     pass
+
+
+class ProviderError(LLMError):
+    """Sanitised provider failure with a fixed category, never a response body."""
+
+    def __init__(self, message, *, kind="provider"):
+        super().__init__(message)
+        self.kind = kind if kind in {
+            "authentication", "permission", "rate_limit", "connection", "provider"
+        } else "provider"
 
 
 class OutputValidationError(LLMError):
@@ -66,9 +76,24 @@ def _client():
     from anthropic import Anthropic
     key = _api_key()
     if not key:
-        raise LLMError("OSHC_API_KEY is missing from the local environment.")
+        raise ConfigurationError("OSHC_API_KEY is missing from the local environment.")
     return Anthropic(api_key=key, base_url="https://api.anthropic.com",
                      max_retries=0, timeout=30.0)
+
+
+def _provider_failure(exc, *, counting=False):
+    """Classify SDK failures without retaining or inspecting their private text."""
+    from anthropic import APIConnectionError, APIStatusError
+
+    kind = "provider"
+    if isinstance(exc, APIConnectionError):
+        kind = "connection"
+    elif isinstance(exc, APIStatusError):
+        kind = {401: "authentication", 403: "permission", 429: "rate_limit"}.get(
+            exc.status_code, "provider")
+    message = ("Token counting failed; no paid call sent." if counting else
+               "API request failed; reservation retained.")
+    return ProviderError(message, kind=kind)
 
 
 def _read_cache(path, key):
@@ -117,7 +142,7 @@ def complete(prompt: str, *, model=None, temperature=0.0, max_tokens=1024,
              image_path=None, system="", cache=True, cache_only=False) -> str:
     model = model or os.getenv("OSHC_MODEL") or MODEL
     if model != MODEL:
-        raise LLMError(f"This budget permits only {MODEL}. Set OSHC_MODEL accordingly.")
+        raise ConfigurationError(f"This budget permits only {MODEL}. Set OSHC_MODEL accordingly.")
     if image_path is not None:
         raise LLMError("This adapter accepts extracted text only; image input is not implemented.")
     if type(cache) is not bool or type(cache_only) is not bool:
@@ -150,14 +175,14 @@ def complete(prompt: str, *, model=None, temperature=0.0, max_tokens=1024,
     budget = Budget()
     state = budget.status()
     if state["blocked_for_review"] or state["remaining"] <= 0:
-        raise LLMError("Spending allowance is unavailable. Check python -m oshc.llm_budget status.")
+        raise BudgetError("Spending allowance is unavailable. Check python -m oshc.llm_budget status.")
     if cache:
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
     with _client() as client:
         try:
             count = client.messages.count_tokens(**request).input_tokens
         except Exception as exc:
-            raise ProviderError(f"Token counting failed ({type(exc).__name__}); no paid call sent.") from None
+            raise _provider_failure(exc, counting=True) from None
         if type(count) is not int or not 0 <= count <= 12_000:
             raise LLMError("Invalid count or more than 12,000 input tokens. Split the input.")
         # Token counting is approximate. Reserve padding plus the full output limit.
@@ -168,7 +193,7 @@ def complete(prompt: str, *, model=None, temperature=0.0, max_tokens=1024,
                                              extra_body={"temperature": 0},
                                              service_tier="standard_only")
         except Exception as exc:
-            raise ProviderError(f"API request failed ({type(exc).__name__}); reservation retained.") from None
+            raise _provider_failure(exc) from None
 
     input_tokens, output_tokens = _usage(message)
     budget.settle(ticket, input_tokens, output_tokens)

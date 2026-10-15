@@ -16,6 +16,10 @@ from oshc.navigator_ui import load_source
 from oshc.policy_source import CAPTURED_ON, SOURCE_DOC, SOURCE_SHA256
 from oshc.student_chat import MAX_QUESTION_CHARS, answer_question
 from oshc.llm import api_key_configured
+from oshc.schemas import GuardrailVerdict
+from oshc.care_navigation import (
+    CLINICAL_HANDOFF, SERVICE_FINDER_URL, SYMPTOM_CHECKER_URL,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_TURNS = 10
@@ -55,7 +59,20 @@ def _clear() -> None:
 def _render_response(response, turn: int, *, source_valid: bool) -> None:
     with st.chat_message("assistant", avatar=":material/health_and_safety:"):
         status = response.status
-        if response.decision.blocked:
+        if response.decision.verdict == GuardrailVerdict.REFUSE_CLINICAL:
+            st.warning(CLINICAL_HANDOFF, icon=":material/health_and_safety:")
+            st.markdown("**Your next step**")
+            with st.container(horizontal=True):
+                st.link_button("Open healthdirect Symptom Checker", SYMPTOM_CHECKER_URL,
+                               icon=":material/open_in_new:")
+                st.link_button("Find a health service", SERVICE_FINDER_URL,
+                               icon=":material/location_on:")
+            st.caption("These open official external services. Your message is not included in the links. "
+                       "Their privacy policies apply after you open them.")
+            if st.button("Understand GP, pharmacy and telehealth options", key=f"ask_care_{turn}",
+                         icon=":material/map:"):
+                st.switch_page("views/2_Navigator.py")
+        elif response.decision.blocked:
             st.error(response.message, icon=":material/health_and_safety:")
         elif status in ("source_unavailable", "offline_required"):
             st.error(response.message, icon=":material/error:")

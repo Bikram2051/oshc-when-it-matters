@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import re
+import secrets
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -44,9 +45,26 @@ def _digest(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def _api_key():
+    load_dotenv(ROOT / ".env", override=False)
+    key = os.getenv("OSHC_API_KEY") or os.getenv("ANTHROPIC_API_KEY")
+    if not key:
+        try:
+            import streamlit as st
+            key = st.secrets.get("OSHC_API_KEY") or st.secrets.get("ANTHROPIC_API_KEY")
+        except (FileNotFoundError, KeyError):
+            key = None
+    return key if isinstance(key, str) and key.strip() else None
+
+
+def api_key_configured():
+    """Return presence only; credentials are never included in UI diagnostics."""
+    return bool(_api_key())
+
+
 def _client():
     from anthropic import Anthropic
-    key = os.getenv("OSHC_API_KEY")
+    key = _api_key()
     if not key:
         raise LLMError("OSHC_API_KEY is missing from the local environment.")
     return Anthropic(api_key=key, base_url="https://api.anthropic.com",
@@ -96,12 +114,14 @@ def _usage(message):
 
 
 def complete(prompt: str, *, model=None, temperature=0.0, max_tokens=1024,
-             image_path=None, system="") -> str:
+             image_path=None, system="", cache=True, cache_only=False) -> str:
     model = model or os.getenv("OSHC_MODEL") or MODEL
     if model != MODEL:
         raise LLMError(f"This budget permits only {MODEL}. Set OSHC_MODEL accordingly.")
     if image_path is not None:
         raise LLMError("This adapter accepts extracted text only; image input is not implemented.")
+    if type(cache) is not bool or type(cache_only) is not bool:
+        raise LLMError("Cache controls must be boolean")
     if temperature != 0:
         raise LLMError("This prototype uses temperature=0 only.")
     if type(max_tokens) is not int or not 1 <= max_tokens <= 4096:
@@ -117,17 +137,22 @@ def complete(prompt: str, *, model=None, temperature=0.0, max_tokens=1024,
     key = _digest(json.dumps({"version": 2, "request": request,
                               "max_tokens": max_tokens, "temperature": 0},
                              sort_keys=True, ensure_ascii=False))
+    # Private chat has no replay cache. Use an unlinkable accounting identifier,
+    # rather than a stable hash of a student's question, in its spending ledger.
+    if not cache:
+        key = secrets.token_hex(32)
     path = CACHE_DIR / f"{key}.json"
-    if path.exists():
+    if cache and path.exists():
         return _read_cache(path, key)
-    if os.getenv("OSHC_OFFLINE", "1") != "0" or os.getenv("OSHC_ENABLE_LIVE") != "1":
+    if cache_only or os.getenv("OSHC_OFFLINE", "1") != "0" or os.getenv("OSHC_ENABLE_LIVE") != "1":
         raise CacheMiss(f"Offline cache miss: {key[:12]}. No API request was sent.")
 
     budget = Budget()
     state = budget.status()
     if state["blocked_for_review"] or state["remaining"] <= 0:
         raise LLMError("Spending allowance is unavailable. Check python -m oshc.llm_budget status.")
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    if cache:
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
     with _client() as client:
         try:
             count = client.messages.count_tokens(**request).input_tokens
@@ -154,7 +179,8 @@ def complete(prompt: str, *, model=None, temperature=0.0, max_tokens=1024,
     text = "\n".join(block.text for block in message.content)
     if not text.strip():
         raise ProviderError("Empty output. Usage has been recorded.")
-    _write_cache(path, {"version": 2, "request_sha256": key, "model": model,
+    if cache:
+        _write_cache(path, {"version": 2, "request_sha256": key, "model": model,
                         "created_at": datetime.now(timezone.utc).isoformat(),
                         "message_id": message.id, "stop_reason": message.stop_reason,
                         "input_tokens": input_tokens, "output_tokens": output_tokens,
@@ -174,14 +200,15 @@ def _json_payload(response: str) -> str:
 
 
 def complete_json(prompt: str, schema: type[BaseModel], *, system="",
-                  max_tokens=2048, repair=False):
+                  max_tokens=2048, repair=False, cache=True, cache_only=False):
     '''Validate cached and live output. One separately budgeted repair is opt-in.'''
     schema_text = json.dumps(schema.model_json_schema(), sort_keys=True)
     instruction = (system + "\nReturn only one JSON value matching this schema. "
                    "Do not include markdown fences.\n" + schema_text)
     original = prompt
     for attempt in range(2 if repair else 1):
-        response = complete(prompt, system=instruction, max_tokens=max_tokens)
+        response = complete(prompt, system=instruction, max_tokens=max_tokens,
+                            cache=cache, cache_only=cache_only)
         try:
             return schema.model_validate_json(_json_payload(response), strict=True)
         except ValidationError:

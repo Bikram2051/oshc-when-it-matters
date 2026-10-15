@@ -1,8 +1,8 @@
 """Session-only guide chat. Every new turn uses the same guarded service.
 
 No source lookup runs on opening the page. Refusals never offer a search bypass.
-Previously checked responses live only in bounded session memory; they are never
-sent to a provider, logged, exported or used as implicit prompt context.
+Previously checked responses live only in bounded session memory. Live questions
+and selected public passages go to Haiku; transcripts are not logged or cached.
 """
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ import streamlit as st
 from oshc.navigator_ui import load_source
 from oshc.policy_source import CAPTURED_ON, SOURCE_DOC, SOURCE_SHA256
 from oshc.student_chat import MAX_QUESTION_CHARS, answer_question
+from oshc.llm import api_key_configured
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_TURNS = 10
@@ -67,8 +68,11 @@ def _render_response(response, turn: int, *, source_valid: bool) -> None:
                 return
             if response.answer:
                 st.markdown(f"**{response.answer_title}**")
-                st.markdown(response.answer)
-                st.caption("Curated general answer · checked against the saved guide · personal benefits are not assessed.")
+                # No unreviewed draft is ever streamed. The service returns only
+                # complete answers that passed its input and output checks.
+                st.text(response.answer)
+                st.caption("Haiku answer · input and output checked · cited guide evidence" if response.response_mode == "haiku"
+                           else "Curated general answer · checked against the saved guide · personal benefits are not assessed.")
             else:
                 st.markdown(response.message)
                 st.caption("Possible source matches · ranked by wording, not confidence. "
@@ -91,7 +95,8 @@ def _render_response(response, turn: int, *, source_valid: bool) -> None:
             st.caption(
                 f"Boundary: {response.decision.verdict.value.replace('_', ' ')} · "
                 f"Response: {status.replace('_', ' ')} · "
-                "Local processing · Fixed responses and verified source passages"
+                + ("Haiku · input screening, cited evidence and output review"
+                   if response.response_mode == "haiku" else "Local rules · verified source passages")
             )
             if response.hits:
                 st.caption("Source passages checked against the verified guide. "
@@ -99,24 +104,33 @@ def _render_response(response, turn: int, *, source_valid: bool) -> None:
 
 
 def render():
+    live = os.getenv("OSHC_OFFLINE") == "0" and os.getenv("OSHC_ENABLE_LIVE") == "1"
+    source_mode = os.getenv("OSHC_OFFLINE") == "1" and os.getenv("OSHC_ENABLE_LIVE") == "0"
     st.caption("NEXTBEST / ASK THE GUIDE")
     st.title("Ask NextBest")
     st.markdown("A direct answer, the supporting passage, and a clearer next step.")
     with st.container(horizontal=True):
         st.badge("Every message checked", icon=":material/verified_user:")
-        st.badge("Curated answers + sources", icon=":material/menu_book:")
+        st.badge("Haiku + verified sources" if live else "Curated answers + sources", icon=":material/menu_book:")
         st.badge("Session-only chat", icon=":material/chat:")
 
-    if os.getenv("OSHC_OFFLINE") != "1" or os.getenv("OSHC_ENABLE_LIVE") != "0":
+    if not live and not source_mode:
         _clear()
-        st.error("Start this prototype in offline mode before asking a question.")
+        st.error("The chat mode is inconsistent. Set OSHC_OFFLINE=0 and OSHC_ENABLE_LIVE=1 for Haiku.")
         return
 
-    st.info("Ask general OSHC questions. For each question, I can find passages in the saved "
+    st.info("Ask general OSHC questions. For each question, I use passages in the saved "
             "Medibank guide. I cannot assess symptoms, decide your cover or confirm claim "
             "payments. In an emergency call 000.", icon=":material/info:")
     st.caption(f"Guide effective May 2026 · Saved {CAPTURED_ON} · "
                "Avoid personal details. Chat stays in this session; Clear chat removes it.")
+    if live:
+        st.caption("Your general question and relevant public guide passages are sent to Anthropic's Haiku API "
+                   "for safety checks and an answer. Bill uploads and chat history are not sent. "
+                   "Questions and drafts are not saved in the app's disk cache.")
+        if not api_key_configured():
+            st.warning("Haiku is not connected yet. Configure OSHC_API_KEY in the server environment or "
+                       "Streamlit secrets. Emergency and privacy checks remain available.")
     history = st.session_state.setdefault("ask_history", [])
     toolbar, reset = st.columns([4, 1], vertical_alignment="center")
     toolbar.caption("Name the topic in each follow-up; earlier messages are not used to infer "
@@ -133,14 +147,16 @@ def render():
                 pending = starter
 
     submitted = st.chat_input("Ask a general OSHC question…", key="ask_box",
-                              max_chars=MAX_QUESTION_CHARS)
+                              max_chars=2000 if live else MAX_QUESTION_CHARS, submit_mode="disable")
     question = submitted if submitted is not None else pending
     if question is not None and question.strip():
         # The service checks this complete message before invoking the loader.
-        response = answer_question(question, root=ROOT, source_loader=lambda: load_source(ROOT)[0])
+        with st.spinner("Checking your question, finding evidence and checking the answer…"):
+            response = answer_question(question, root=ROOT, source_loader=lambda: load_source(ROOT)[0])
         safe_to_echo = response.safe_to_echo
         history = [*st.session_state["ask_history"], {
-            "question": question if safe_to_echo else "[Question withheld for privacy]",
+            "question": question if safe_to_echo else (
+                "[Personal details removed]" if response.status == "privacy" else "[Question not retained]"),
             "response": response,
         }][-MAX_TURNS:]
         st.session_state["ask_history"] = history
@@ -154,4 +170,4 @@ def render():
         _render_response(turn["response"], index, source_valid=source_valid)
     if history:
         st.caption(f"Showing the latest {len(history)} of up to {MAX_TURNS} turns. "
-                   "No chat transcript is written to disk or sent to an AI provider.")
+                   "The transcript stays in session memory. Previous turns are not sent to the model.")

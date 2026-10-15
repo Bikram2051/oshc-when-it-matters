@@ -385,16 +385,40 @@ def test_heldout_files_stay_out_of_tracked_folders(tmp_path, unfrozen):
     assert not (ROOT / "docs/heldout-run").exists()
 
 
-def test_extraction_code_is_still_the_frozen_version():
+def test_archived_extraction_pins_survive_and_current_drift_is_refused():
     try:
         commit = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"],
                                 capture_output=True, text=True, check=True).stdout
     except (OSError, subprocess.CalledProcessError):
         pytest.skip("No git metadata in this copy.")
     assert commit
+    frozen_commit = "40e04f811ac23be00883ff00b789682314e305ad"
+    current_matches = True
     for path, expected in runner.FROZEN.items():
+        archived = subprocess.run(["git", "-C", str(ROOT), "rev-parse", f"{frozen_commit}:{path}"],
+                                capture_output=True, text=True, check=False).stdout.strip()
+        assert archived == expected, f"The archived extraction pin changed: {path}"
         actual = subprocess.run(["git", "-C", str(ROOT), "rev-parse", f"HEAD:{path}"],
                                 capture_output=True, text=True, check=False).stdout.strip()
-        assert actual == expected, (
-            f"{path} changed after the 1 October freeze. No extraction changes until the "
-            "held-out run is recorded (docs/prototype/extraction_protocol.md).")
+        current_matches = current_matches and actual == expected
+    dirty = subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain", "--", *runner.FROZEN],
+                           capture_output=True, text=True, check=True).stdout.strip()
+    if not current_matches or dirty:
+        with pytest.raises(SystemExit, match="not the frozen version|local changes"):
+            runner.verify_freeze()
+    else:
+        assert runner.verify_freeze()["frozen_paths"] == runner.FROZEN
+
+
+@pytest.mark.parametrize("changed,dirty", [(True, False), (False, True)])
+def test_historical_runner_never_accepts_changed_pins_or_dirty_files(monkeypatch, changed, dirty):
+    def git(*args):
+        if args[0] == "rev-parse" and args[1].startswith("HEAD:"):
+            path = args[1].removeprefix("HEAD:")
+            return "changed-object" if changed else runner.FROZEN[path]
+        if args[0] == "status":
+            return " M frozen-file" if dirty else ""
+        raise AssertionError("Freeze validation must stop before a run is recorded")
+    monkeypatch.setattr(runner, "_git", git)
+    with pytest.raises(SystemExit, match="not the frozen version|local changes"):
+        runner.verify_freeze()

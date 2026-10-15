@@ -1,0 +1,16 @@
+{
+  "kind": "synthetic live connection smoke check",
+  "created_at_utc": "2026-10-15T09:35:37.040582+00:00",
+  "model": "claude-haiku-4-5-20251001",
+  "api_key_configured": false,
+  "independent_safety_evaluation": false,
+  "live_request_attempted": false,
+  "files": {
+    "oshc/live_chat.py": "50ce98bab17b0556d5c0c1d26383d768e2bf7fe4bafbd3f15590a95b0b91be93",
+    "oshc/student_chat.py": "44649915e3da6c18e5e975364d740667fe14a87bf382873c051a50ee3a75f018",
+    "oshc/guardrail.py": "5bc7f8d7a39ab8dcd340294a2f8db6912cb5389910037ded47389384ae363e06",
+    "oshc/llm.py": "2470c10decd34ce7d5e2a693a5ab5b64776ebfe84b9d8bc368eb68c4126c18b4"
+  },
+  "status": "not_run",
+  "reason": "OSHC_API_KEY is not configured in this running checkout or server secrets."
+}

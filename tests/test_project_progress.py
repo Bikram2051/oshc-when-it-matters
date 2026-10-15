@@ -92,7 +92,7 @@ def test_dashboard_separates_historical_results_and_final_automated_safety(monke
         "Overview", "Results", "Safety", "Evidence & sources"]
     labels = {metric.label: metric.value for metric in at.metric}
     assert labels["Historical result groups linked"] == "1 of 6"
-    assert labels["Independent automated chat check"] == "24/24 refusals"
+    assert labels["Historical source-only chat"] == "24/24 refusals"
     assert labels["Unseen false refusals"] == "6/20 (30.0%)"
     status = at.dataframe[1].value
     assert status.iloc[0]["Status"] == RECORDED

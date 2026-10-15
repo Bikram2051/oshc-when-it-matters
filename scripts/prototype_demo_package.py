@@ -34,6 +34,7 @@ FILES = (
     "oshc/__init__.py", "oshc/billexplainer/__init__.py",
     "oshc/home_ui.py", "oshc/ask_ui.py", "oshc/student_chat.py", "oshc/curated_answers.py", "oshc/guardrail.py",
     "oshc/chat_emergency.py",
+    "oshc/live_chat.py",
     "oshc/final_results.py",
     "oshc/config.py", "oshc/project_progress.py",
     "oshc/schemas.py", "oshc/llm.py", "oshc/llm_budget.py", "oshc/policy_source.py",

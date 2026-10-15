@@ -1,5 +1,10 @@
 # Guarded guide chat
 
+Historical source-only specification. Normal application startup now selects
+[live grounded Haiku chat](live_chat.md). The source-only path remains available
+for explicit offline research and regression tests. Its recorded scores do not
+measure the live generated-answer surface.
+
 ## Curated direct answers (implementation specification)
 
 The supported general topics now receive a short authored answer above their exact

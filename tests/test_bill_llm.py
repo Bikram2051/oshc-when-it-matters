@@ -10,7 +10,7 @@ import oshc.llm as adapter
 from oshc.billexplainer import extract_llm as module
 from oshc.billexplainer.read import BillText
 from oshc.llm import CacheMiss, OutputValidationError, ProviderError
-from oshc.llm_budget import BudgetError
+from oshc.llm_budget import MODEL, BudgetError
 
 
 TABLE = 'Item | Description | Charge\n23 | Short consultation | $90.00\nTotal charged: $90.00'
@@ -199,6 +199,17 @@ def test_offline_cache_miss_is_handled_through_real_adapter(monkeypatch, tmp_pat
     result = module.extract(TABLE)
     assert not result.line_items
     assert any('CacheMiss' in text for text in result.warnings)
+
+
+def test_cache_only_bill_miss_never_uses_live_provider(monkeypatch, tmp_path):
+    monkeypatch.setenv('OSHC_OFFLINE', '0')
+    monkeypatch.setenv('OSHC_ENABLE_LIVE', '1')
+    monkeypatch.setenv('OSHC_MODEL', MODEL)
+    monkeypatch.setattr(adapter, 'CACHE_DIR', tmp_path)
+    result = module.extract(TABLE, cache_only=True)
+    assert not result.line_items
+    assert any('CacheMiss' in text for text in result.warnings)
+    assert not list(tmp_path.iterdir())
 
 
 def test_pdf_provenance_and_reader_warning_survive(monkeypatch):

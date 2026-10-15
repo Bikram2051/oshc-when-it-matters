@@ -1,5 +1,9 @@
 # NextBest frozen demo — 15 October 2026
 
+Historical source-only release. The subsequent [live Haiku path](live_chat.md)
+supersedes normal chat behavior. This document and its evaluation artifacts are
+retained without attributing their scores to the new generated-answer version.
+
 The demo includes six connected pages, direct source-bound answers, interactive
 Journey Coach activities, a numeric bill explanation and a results dashboard.
 The final chat implementation is bound by `chat_freeze_release_final_2026-10-15.json`.

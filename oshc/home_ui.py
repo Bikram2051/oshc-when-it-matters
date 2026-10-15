@@ -1,4 +1,5 @@
 """Student landing page; general education with links to the four learning tools."""
+import os
 import streamlit as st
 
 MODULES = (
@@ -9,7 +10,7 @@ MODULES = (
     ("Understand the numbers", "Bill Explainer", "views/3_Bill_Explainer.py", "home_bill",
      "receipt_long", "Explore a synthetic bill and compare its charges with published MBS references."),
     ("Ask in your own words", "Ask NextBest", "views/4_Ask.py", "home_ask",
-     "forum", "Get curated answers to general OSHC questions, with supporting guide passages."),
+     "forum", "Ask Haiku in your own words, with guardrail checks and supporting guide passages."),
 )
 
 
@@ -23,7 +24,8 @@ def render():
     with st.container(horizontal=True):
         st.badge("University prototype", icon=":material/science:")
         st.badge("Public sources + synthetic bills", icon=":material/verified_user:")
-        st.badge("Offline demonstration", icon=":material/wifi_off:")
+        live = os.getenv("OSHC_OFFLINE") == "0" and os.getenv("OSHC_ENABLE_LIVE") == "1"
+        st.badge("Guarded Haiku chat" if live else "Verified source mode", icon=":material/verified_user:")
 
     st.space("small")
     with st.container(border=True):
@@ -60,7 +62,8 @@ def render():
         )
         st.caption(
             "Chat stays in the current Streamlit session and can be cleared. "
-            "Free-form generated policy answers remain disabled pending the safety evaluation."
+            "Haiku checks the question, generates from retrieved evidence and reviews the answer before display. "
+            "Personal benefits and clinical advice remain outside scope."
         )
     st.divider()
     footer, evidence = st.columns([3, 1], vertical_alignment="center")

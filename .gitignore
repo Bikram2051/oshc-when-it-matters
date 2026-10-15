@@ -1,5 +1,8 @@
 # Secrets. Never commit.
 .env
+.env.*
+!.env.example
+.streamlit/secrets.toml
 *.key
 
 # Third-party content we may store for research but must not republish.
@@ -27,7 +30,10 @@ data/events.sqlite
 .idea/
 .vscode/
 
-# NOTE: cache/llm/ is deliberately NOT ignored. It is committed.
+# Legacy synthetic research cache entries are already tracked for reproducibility.
+# New runtime responses can contain student text and must never enter Git.
+/cache/llm/**
+/cache/live/**
 
 data/freeze/
 *.egg-info/

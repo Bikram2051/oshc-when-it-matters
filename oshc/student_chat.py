@@ -12,7 +12,7 @@ import os
 import re
 import unicodedata
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Literal
 
@@ -54,6 +54,7 @@ class ChatResponse:
     answer_title: str | None = None
     answer_id: str | None = None
     answer_source_ids: tuple[str, ...] = ()
+    response_mode: Literal["source", "haiku"] = "source"
 
 
 # This is an intentionally narrow channel vocabulary, not an expanded clinical
@@ -232,6 +233,10 @@ def answer_question(
                                      layer="gazetteer")
     if decision.blocked:
         return ChatResponse("blocked", decision, REFUSAL_TEXT[decision.verdict])
+
+    if os.getenv("OSHC_OFFLINE") == "0" and os.getenv("OSHC_ENABLE_LIVE") == "1":
+        from oshc.live_chat import answer_live
+        return replace(answer_live(question, root=root, source_loader=source_loader), response_mode="haiku")
 
     def stop(status: ChatStatus) -> ChatResponse:
         return ChatResponse(status, decision, _MESSAGES[status])

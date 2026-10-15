@@ -5,10 +5,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-# This is an offline teaching prototype by default. Explicit runtime flags still
-# take precedence, and each module refuses a mode outside its supported boundary.
-os.environ.setdefault("OSHC_OFFLINE", "1")
-os.environ.setdefault("OSHC_ENABLE_LIVE", "0")
+# Server-side .env/secrets supply credentials; values are never rendered.
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).resolve().parents[1] / ".env", override=False)
+# Normal operation uses guarded Haiku. Tests/research can explicitly select the
+# preserved source-only mode without calling a provider.
+os.environ.setdefault("OSHC_OFFLINE", "0")
+os.environ.setdefault("OSHC_ENABLE_LIVE", "1")
 os.environ.setdefault("OSHC_MODEL", "claude-haiku-4-5-20251001")
 
 import streamlit as st

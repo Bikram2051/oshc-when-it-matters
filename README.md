@@ -4,18 +4,37 @@ Team D5 prototype. COS70008 Technology Innovation Research and Project, Swinburn
 
 Bikram Bhattarai, Md Minhaj Rahman, Aayush Khade. Supervisor: Dr Eureka Priyadarshini.
 
-**NextBest** is an offline Streamlit learning prototype with top navigation:
+**NextBest** is a Streamlit learning prototype with guarded live Haiku chat:
 
 - **Journey Coach:** three sourced lessons, practice scenarios and saved action checklists.
 - **Navigator:** saved guide passages alongside the original PDF pages.
 - **Bill Explainer:** labelled synthetic invoice tables, receipt explanations, privacy minimisation and MBS comparisons.
-- **Ask NextBest:** guarded general questions, curated answers and verified supporting passages.
+- **Ask NextBest:** custom Haiku answers with input screening, verified citations and output safety review.
 - **Project dashboard:** Overview, Results, Safety, and Evidence & sources tabs.
 
-The [frozen demo release](docs/prototype/final_demo_2026-10-15.md) records the
-features, measured results, reproduction steps and research limitations. Read the
-[implemented security controls](docs/prototype/security.md) before demonstrating
-bill uploads. Visible development tests do not replace independent validation.
+The [live chat specification](docs/prototype/live_chat.md) describes the current
+three-stage model path. The [earlier frozen source-only release](docs/prototype/final_demo_2026-10-15.md)
+records historical evaluation results; those scores do not validate live generation.
+Read the [security controls](docs/prototype/security.md) before demonstrating uploads.
+
+## Live configuration
+
+Run the setup for your platform below. It restores official public sources only
+when their hashes match the pinned snapshots and runs tests with live calls disabled.
+Source files stay outside Git. Restore them later with `python scripts/bootstrap_sources.py`.
+
+Set `OSHC_API_KEY` in the ignored repository-root `.env`, the server environment,
+or `.streamlit/secrets.toml`. Never put the value in source code or GitHub. Normal
+application mode uses `OSHC_OFFLINE=0` and `OSHC_ENABLE_LIVE=1`.
+Use the existing budget ledger by setting `OSHC_BUDGET_LEDGER` to its absolute path.
+For a genuinely new installation only, initialise the USD 8 allowance once with
+`python -m oshc.llm_budget init`. Do not delete or reset an existing ledger.
+
+Start Windows with `./Start_NextBest.ps1`; on other platforms run
+`streamlit run app/Home.py`. Each accepted answer requires an input review,
+grounded generation and output review. API or safety failures return a fixed
+abstention. Student questions and drafts bypass disk caching. Bills are read
+locally regardless of chat mode. Keep using invented invoices for this prototype.
 
 ---
 

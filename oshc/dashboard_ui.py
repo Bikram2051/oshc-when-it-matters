@@ -21,10 +21,10 @@ def _overview(evidence, measurements):
                   border=True, help="Saved checkpoint reports, not a fresh test of today's code.")
         st.metric("Historical result groups linked", f"{linked} of {len(results)}",
                   border=True, help="Earlier report linkage only. Final chat, retrieval, classifier and bill scores appear in Results.")
-        st.metric("Independent automated chat check",
+        st.metric("Historical source-only chat",
                   (f"{final['release_chat']['refusal_recall']['k']}/{final['release_chat']['refusal_recall']['n']} refusals"
                    if final else "Unavailable"), border=True,
-                  help="Separately authored automated probes; false refusals and emergency results are in Results. No human safety validation.")
+                  help="Historical source-only implementation. These scores do not validate live Haiku generation.")
 
     if passing != len(evidence):
         st.warning("Some saved reports are missing or need review. Their outcomes remain unknown.")
@@ -54,12 +54,12 @@ def _overview(evidence, measurements):
     with st.container(border=True):
         st.markdown("### :material/flag: Final demo checkpoint")
         st.markdown(
-            "**Implemented:** curated guide answers, interactive learning checklists, "
+            "**Implemented:** Haiku answers with input/output checks, interactive learning checklists, "
             "dated invoice-table reading and privacy minimisation.\n\n"
             "**Evaluation:** current development checks, local classifier baselines and a "
             "separately authored synthetic invoice handoff are recorded in Results when verified.\n\n"
-            "**Independent automated checks:** separate unseen chat probes and source-only retrieval labels. "
-            "**Unmeasured:** human safety validation, real-student learning impact and production security."
+            "**Historical automated checks:** source-only chat probes and retrieval labels. "
+            "**Unmeasured:** live model performance, human safety validation, real-student learning impact and production security."
         )
 
 
@@ -123,13 +123,13 @@ def _results(measurements):
 
 
 def _final_results():
-    st.subheader("Final prototype evaluation")
+    st.subheader("Historical source-only prototype evaluation")
     saved = load_final(ROOT)
     if saved is None:
         st.info("The final evaluation reports are missing or do not match their manifest.")
         return
-    st.caption("Frozen implementation · independent automated assessors · no production safety claim")
-    st.markdown("**Fresh unseen chat check**")
+    st.caption("Earlier source-only implementation · independent automated assessors · does not evaluate live Haiku")
+    st.markdown("**Recorded unseen check of the source-only chat**")
     with st.container(horizontal=True):
         for key, label in (("refusal_recall", "Unseen refusal recall"),
                            ("false_refusal_rate", "Unseen false refusals"),
@@ -190,8 +190,9 @@ def _safety(measurement):
             with st.container(border=True):
                 st.markdown(f"**{title}**")
                 st.caption(text)
-    st.info("Results includes current unseen automated chat checks and separate development checks. "
-            "Small synthetic probe sets do not establish a clinically safe or production-ready chatbot.")
+    st.info("Live Haiku checks each input and complete draft before display. Its model performance "
+            "has not been measured by the historical source-only chat scores in Results. "
+            "Small synthetic rule tests do not establish clinical or production safety.")
 
     with st.expander("What the earlier seminar experiment showed"):
         st.markdown("This experiment used **seminar.demo_guardrail**, a separate frozen rules "
@@ -243,7 +244,7 @@ def _provenance(evidence, measurements):
         with st.expander(f"{item.name} · {item.status}"):
             st.text(f"File: {item.file}\nRecorded (UTC): {item.checked_at_utc or 'Unknown'}\n"
                     f"SHA-256: {item.sha256 or 'Unavailable'}")
-    st.caption("Project review: docs/prototype/project_progress_2026-10-14.md. "
+    st.caption("Current live specification: docs/prototype/live_chat.md. Historical review: docs/prototype/project_progress_2026-10-14.md. "
                "Raw review snippets, question text and held-out materials are not displayed.")
 
 

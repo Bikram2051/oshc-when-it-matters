@@ -1,9 +1,8 @@
-"""Offline teaching screen. Never sends a bill to a provider or infers cover."""
+"""Local teaching screen. Never sends a bill to a provider or infers cover."""
 from __future__ import annotations
 
 import hashlib
 import json
-import os
 from dataclasses import asdict
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -16,7 +15,6 @@ from oshc.billexplainer.explanation import explain
 from oshc.billexplainer.privacy import minimise, retained_fields
 from oshc.billexplainer.mbs_reference import SourceError, compare_bill, load_snapshot
 from oshc.billexplainer.read import MAX_BYTES, MAX_CHARS, read_pdf, read_text
-from oshc.llm_budget import MODEL
 from oshc.schemas import ExtractionResult
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -31,23 +29,15 @@ BASES = {"No comparison": None, "MBS schedule fee": "ScheduleFee",
          "Published 85% benefit": "Benefit85", "Published 100% benefit": "Benefit100"}
 
 
-def require_offline():
-    if os.getenv("OSHC_OFFLINE") != "1" or os.getenv("OSHC_ENABLE_LIVE") != "0":
-        raise RuntimeError("Start the demo with OSHC_OFFLINE=1 and OSHC_ENABLE_LIVE=0.")
-    if os.getenv("OSHC_MODEL") != MODEL:
-        raise RuntimeError("Start the demo with the model used for the saved examples.")
-
-
 def read_bill(data: bytes, kind: str, reader: str) -> tuple[ExtractionResult, ReceiptFacts]:
-    require_offline()
     if kind not in ("text", "pdf") or reader not in ("rules", "llm"):
         raise ValueError("Unsupported bill input.")
     source = read_pdf(data) if kind == "pdf" else read_text(data.decode("utf-8-sig"))
     if reader == "llm":
         if kind != "text":
             raise ValueError("The saved AI example is text only.")
-        # Offline adapter returns a cache hit or a visible abstention, never a live call.
-        result = extract_saved(source)
+        # Bills cannot reach a provider, even when the chat enables live requests.
+        result = extract_saved(source, cache_only=True)
         _, receipt = read_document(source)
     else:
         result, receipt = read_document(source)
@@ -108,7 +98,7 @@ def render():
     st.caption("NEXTBEST / AT THE MOMENT OF NEED")
     st.title("Make sense of a bill")
     st.write("See what the document says, understand the numbers, and identify what still needs checking.")
-    st.caption("University prototype | Synthetic bills only | Offline demonstration")
+    st.caption("University prototype | Synthetic bills only | Local document processing")
     with st.expander("How your bill is protected"):
         st.markdown("**Processed on this computer.** No bill is sent to an AI provider. "
                     "The app retains only service dates, item numbers and amounts for this session. "
@@ -120,13 +110,6 @@ def render():
                    "for invented data; it is not approved for real patient records or public hosting.")
     if st.session_state.get("lang") == "hi":
         st.info("This prototype screen currently uses English.")
-    try:
-        require_offline()
-    except RuntimeError as error:
-        clear_result()
-        st.error(str(error))
-        return
-
     st.subheader("1. Choose your example")
     try:
         data, kind, reader, label, confirmed = _input()

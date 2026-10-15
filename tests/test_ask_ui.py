@@ -123,13 +123,41 @@ def test_offline_flags_disable_question_box_before_source_access(source, monkeyp
     assert at.error and not at.chat_input
 
 
-def test_plain_entrypoint_defaults_to_offline_demo(source, monkeypatch):
+def test_plain_entrypoint_defaults_to_live_chat_without_source_access(source, monkeypatch):
     monkeypatch.delenv("OSHC_OFFLINE", raising=False)
     monkeypatch.delenv("OSHC_ENABLE_LIVE", raising=False)
     monkeypatch.delenv("OSHC_MODEL", raising=False)
+    monkeypatch.setattr(ui, "api_key_configured", lambda: False)
     at = app()
     source.assert_not_called()
     assert at.chat_input and not at.error
+    assert "Haiku is not connected yet" in text(at)
+
+
+def test_live_custom_answer_is_checked_once_and_survives_rerun(source, monkeypatch):
+    from dataclasses import replace
+    from oshc.student_chat import answer_question
+    response = answer_question("How do I make a claim?", source_loader=lambda: source.return_value[0])
+    response = replace(response, answer="Use the member account. [1]", answer_title="Your answer",
+                       answer_id="haiku-grounded", response_mode="haiku")
+    live = Mock(return_value=response)
+    monkeypatch.setattr("oshc.live_chat.answer_live", live)
+    monkeypatch.setattr(ui, "api_key_configured", lambda: True)
+    monkeypatch.setenv("OSHC_OFFLINE", "0")
+    monkeypatch.setenv("OSHC_ENABLE_LIVE", "1")
+    at = submit(app(), "Could you walk me through making a claim online?")
+    assert "Use the member account" in text(at) and "input and output checked" in text(at)
+    assert len(at.session_state["ask_history"]) == 1
+    at.run()
+    assert live.call_count == 1
+    at.button(key="ask_clear").click().run()
+    assert at.session_state["ask_history"] == []
+
+
+def test_clarification_does_not_claim_a_privacy_rejection(source):
+    at = submit(app(), "and for me?")
+    assert "[Question not retained]" in text(at)
+    assert "withheld for privacy" not in text(at)
 
 
 def test_private_question_not_retained_in_transcript(source):

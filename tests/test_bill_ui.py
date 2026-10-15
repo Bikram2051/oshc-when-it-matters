@@ -120,6 +120,17 @@ def test_cache_miss_stays_offline_and_shows_no_amounts(sandbox):
     assert any("No bill rows" in warning.value for warning in at.warning)
 
 
+def test_saved_cache_miss_cannot_send_bill_when_chat_is_live(sandbox, monkeypatch):
+    monkeypatch.setenv("OSHC_OFFLINE", "0")
+    monkeypatch.setenv("OSHC_ENABLE_LIVE", "1")
+    at = app()
+    at.selectbox(key="be_example").select("GP visit: saved AI reading").run()
+    at.button(key="be_read").click().run()
+    assert not at.exception and not at.metric
+    assert any("No bill rows" in warning.value for warning in at.warning)
+    sandbox.assert_not_called()
+
+
 def test_saved_result_is_not_reextracted_when_reference_changes(sandbox, monkeypatch):
     saved = Mock(return_value=ui.extract_local(TEXT))
     monkeypatch.setattr(ui, "extract_saved", saved)
@@ -129,6 +140,7 @@ def test_saved_result_is_not_reextracted_when_reference_changes(sandbox, monkeyp
     at.toggle(key="be_compare").set_value(True).run()
     at.selectbox(key="be_basis_1").select("Published 100% benefit").run()
     saved.assert_called_once()
+    assert saved.call_args.kwargs == {"cache_only": True}
     assert not at.exception
     assert at.metric[1].value == "Not shown"
 
@@ -143,8 +155,13 @@ def test_unverified_reference_preserves_only_document_readings(sandbox, monkeypa
     assert any("reference data is unavailable" in error.value for error in at.error)
 
 
-@pytest.mark.parametrize("name,value", [("OSHC_OFFLINE", "0"), ("OSHC_ENABLE_LIVE", "1")])
-def test_unsafe_runtime_is_blocked_before_reading(sandbox, monkeypatch, name, value):
-    monkeypatch.setenv(name, value)
+@pytest.mark.parametrize("choice", ["GP visit: text example", "GP visit: PDF example"])
+def test_local_reading_works_while_chat_is_live(sandbox, monkeypatch, choice):
+    monkeypatch.setenv("OSHC_OFFLINE", "0")
+    monkeypatch.setenv("OSHC_ENABLE_LIVE", "1")
     at = app()
-    assert at.error and not at.metric and not at.button
+    at.selectbox(key="be_example").select(choice).run()
+    at.button(key="be_read").click().run()
+    assert not at.exception and not at.error
+    assert at.metric[0].value == "AUD 105.00"
+    sandbox.assert_not_called()

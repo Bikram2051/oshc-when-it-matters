@@ -67,7 +67,12 @@ def check(text: str) -> GuardrailDecision:
     norm = _normalise(text)
 
     for term in EMERGENCY_TERMS:
-        if term in norm:
+        matched = (
+            bool(re.search(r"(?<!\d)000(?!\d)", norm))
+            if term == "000"
+            else term in norm
+        )
+        if matched:
             return GuardrailDecision(
                 verdict=GuardrailVerdict.ESCALATE_EMERGENCY,
                 layer="gazetteer",

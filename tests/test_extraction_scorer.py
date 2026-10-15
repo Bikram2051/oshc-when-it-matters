@@ -44,28 +44,45 @@ def digest(path):
 
 def write_json(path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8", newline="\n")
+    path.write_text(json.dumps(value, indent=2) + "\n",
+                    encoding="utf-8", newline="\n")
+
 
 
 def case(tmp_path, outputs, gold=GOLD, pipeline="rules"):
     gold_path = tmp_path / "gold" / "DEV-001.json"
     write_json(gold_path, gold)
+
     inputs = tmp_path / "inputs"
     inputs.mkdir()
     (inputs / "DEV-001.txt").write_text("synthetic\n", encoding="utf-8")
+
     run_dir = tmp_path / "run"
     record = {"outputs": {}}
+
     for document_id, output in outputs.items():
         path = run_dir / pipeline / f"{document_id}.json"
         write_json(path, output)
         record["outputs"][f"{pipeline}/{document_id}.json"] = digest(path)
-    write_json(run_dir / "run_record.json", record)
+
     map_path = tmp_path / "map.csv"
     with map_path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
         writer.writerow(scorer.MAP_COLUMNS)
-        writer.writerow(["DEV-001", "dev_example", "DEV-001.txt", digest(inputs / "DEV-001.txt"),
-                         "DEV-001.json", digest(gold_path)])
+        writer.writerow(
+            [
+                "DEV-001",
+                "dev_example",
+                "DEV-001.txt",
+                digest(inputs / "DEV-001.txt"),
+                "DEV-001.json",
+                digest(gold_path),
+            ]
+        )
+
+    record["map_sha256"] = digest(map_path)
+    write_json(run_dir / "run_record.json", record)
+
     return map_path, tmp_path / "gold", run_dir
 
 
@@ -87,7 +104,8 @@ def test_wrong_amount_is_a_false_positive_and_a_miss(tmp_path):
     output = copy.deepcopy(OUTPUT)
     output["line_items"][0]["charged"] = 95.0
     counts = summary(tmp_path, output)["per_field"]["charged"]
-    assert (counts["tp"], counts["fp"], counts["fn"], counts["wrong"]) == (1, 1, 1, 1)
+    assert (counts["tp"], counts["fp"], counts["fn"],
+            counts["wrong"]) == (1, 1, 1, 1)
 
 
 def test_value_where_nothing_is_printed_is_invented(tmp_path):
@@ -105,7 +123,8 @@ def test_missing_and_extra_rows_count_only_recorded_values(tmp_path):
                             {"raw_description": "Bulk-bill incentive", "item_number": "10990",
                              "charged": 7.0, "benefit_paid": None, "gap": None}]
     result = summary(tmp_path, output)
-    assert result["rows"] == {"expected": 2, "output": 2, "matched": 1, "missing": 1, "extra": 1}
+    assert result["rows"] == {
+        "expected": 2, "output": 2, "matched": 1, "missing": 1, "extra": 1}
     assert result["per_field"]["charged"]["fn"] == 1
     assert result["per_field"]["charged"]["fp"] == 1
     assert result["per_field"]["item_number"]["invented"] == 1
@@ -119,7 +138,8 @@ def test_row_order_does_not_matter(tmp_path):
 
 
 def test_recorded_failure_misses_every_printed_value(tmp_path):
-    result = summary(tmp_path, {"document_id": "DEV-001", "pipeline": "rules", "error": "X"})
+    result = summary(
+        tmp_path, {"document_id": "DEV-001", "pipeline": "rules", "error": "X"})
     assert result["status"]["failed"] == 1
     assert (result["micro"]["tp"], result["micro"]["fn"]) == (0, PRINTED)
     assert result["micro"]["f1"] == 0.0
@@ -145,7 +165,8 @@ def test_description_is_reported_but_not_in_the_headline(tmp_path):
     output["line_items"][0]["raw_description"] = "Short consult"
     result = summary(tmp_path, output)
     assert result["micro"]["f1"] == 1.0
-    assert result["descriptions"] == {"matched_rows": 2, "correct": 1, "rate": 0.5}
+    assert result["descriptions"] == {
+        "matched_rows": 2, "correct": 1, "rate": 0.5}
 
 
 def test_changed_expected_output_is_refused(tmp_path):
@@ -154,13 +175,14 @@ def test_changed_expected_output_is_refused(tmp_path):
     with pytest.raises(scorer.ScoringError, match="differs from the file map"):
         scorer.score(map_path, gold_dir, run_dir)
 
-
-def test_output_changed_after_the_run_is_refused(tmp_path):
+def test_map_changed_after_the_run_is_refused(tmp_path):
     map_path, gold_dir, run_dir = case(tmp_path, {"DEV-001": OUTPUT})
-    write_json(run_dir / "rules" / "DEV-001.json", {**OUTPUT, "total_gap": 1.0})
-    with pytest.raises(scorer.ScoringError, match="run_record"):
-        scorer.score(map_path, gold_dir, run_dir)
 
+    original = map_path.read_text(encoding="utf-8")
+    map_path.write_text(original + "\n", encoding="utf-8")
+
+    with pytest.raises(scorer.ScoringError, match="File map differs"):
+        scorer.score(map_path, gold_dir, run_dir)
 
 def test_invalid_expected_value_is_refused(tmp_path):
     gold = copy.deepcopy(GOLD)
@@ -175,7 +197,8 @@ def test_report_is_written_once(tmp_path):
     args = ["--map", str(map_path), "--gold", str(gold_dir), "--outputs", str(run_dir),
             "--report", str(report)]
     scorer.main(args)
-    assert json.loads(report.read_text())["pipelines"]["rules"]["micro"]["f1"] == 1.0
+    assert json.loads(report.read_text())[
+        "pipelines"]["rules"]["micro"]["f1"] == 1.0
     with pytest.raises(SystemExit, match="already exists"):
         scorer.main(args)
 
@@ -188,7 +211,8 @@ def test_map_rejects_duplicates_and_bad_hashes(tmp_path):
     with pytest.raises(scorer.ScoringError, match="Duplicate"):
         scorer.load_map(path)
     with path.open("w", newline="") as handle:
-        csv.writer(handle).writerows([scorer.MAP_COLUMNS, row[:3] + ["abc"] + row[4:]])
+        csv.writer(handle).writerows(
+            [scorer.MAP_COLUMNS, row[:3] + ["abc"] + row[4:]])
     with pytest.raises(scorer.ScoringError, match="SHA-256"):
         scorer.load_map(path)
 
@@ -197,16 +221,19 @@ def test_custodian_check_catches_problems_before_release(tmp_path, capsys):
     map_path, gold_dir, _ = case(tmp_path, {"DEV-001": OUTPUT})
     inputs = tmp_path / "inputs"
     assert scorer.check_handoff(map_path, gold_dir, inputs) == 1
-    scorer.main(["--check", "--map", str(map_path), "--gold", str(gold_dir), "--inputs", str(inputs)])
+    scorer.main(["--check", "--map", str(map_path), "--gold",
+                str(gold_dir), "--inputs", str(inputs)])
     assert "File map SHA-256 " + digest(map_path) in capsys.readouterr().out
     (inputs / "DEV-001.txt").write_text("changed\n", encoding="utf-8")
     with pytest.raises(scorer.ScoringError, match="Input differs"):
         scorer.check_handoff(map_path, gold_dir, inputs)
     gold = copy.deepcopy(GOLD)
     gold["line_items"][0]["charged"] = "$90.00"
-    map_path, gold_dir, _ = case(tmp_path / "second", {"DEV-001": OUTPUT}, gold)
+    map_path, gold_dir, _ = case(
+        tmp_path / "second", {"DEV-001": OUTPUT}, gold)
     with pytest.raises(SystemExit, match="Not ready: Unreadable expected value"):
-        scorer.main(["--check", "--map", str(map_path), "--gold", str(gold_dir)])
+        scorer.main(["--check", "--map", str(map_path),
+                    "--gold", str(gold_dir)])
 
 
 def test_map_accepts_plain_file_names_only(tmp_path):
@@ -251,7 +278,8 @@ def runner_case(tmp_path, input_hash=None):
 
 @pytest.fixture
 def unfrozen(monkeypatch):
-    monkeypatch.setattr(runner, "verify_freeze", lambda: {"commit": "development test"})
+    monkeypatch.setattr(runner, "verify_freeze", lambda: {
+                        "commit": "development test"})
 
 
 def test_llm_pipeline_needs_explicit_live_settings(tmp_path, monkeypatch, unfrozen):

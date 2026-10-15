@@ -25,10 +25,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PIPELINES = ("rules", "llm")
-DOC_FIELDS = ("provider", "service_date", "total_charged", "total_benefit", "total_gap")
+DOC_FIELDS = ("provider", "service_date", "total_charged",
+              "total_benefit", "total_gap")
 LINE_FIELDS = ("item_number", "charged", "benefit_paid", "gap")
-MONEY_FIELDS = frozenset({"total_charged", "total_benefit", "total_gap", "charged", "benefit_paid", "gap"})
-MAP_COLUMNS = ("document_id", "family", "input_file", "input_sha256", "gold_file", "gold_sha256")
+MONEY_FIELDS = frozenset(
+    {"total_charged", "total_benefit", "total_gap", "charged", "benefit_paid", "gap"})
+MAP_COLUMNS = ("document_id", "family", "input_file",
+               "input_sha256", "gold_file", "gold_sha256")
 DATE_FORMATS = ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y")
 BOOTSTRAP_RESAMPLES = 2000
 BOOTSTRAP_SEED = 2026
@@ -116,7 +119,8 @@ def normalise(field: str, value, *, strict: bool):
         return result or None
     except (ValueError, InvalidOperation, TypeError) as error:
         if strict:
-            raise ScoringError(f"Unreadable expected value for {field}: {value!r}") from error
+            raise ScoringError(
+                f"Unreadable expected value for {field}: {value!r}") from error
         return _Invalid(value)
 
 
@@ -126,15 +130,18 @@ def _record(source: dict, *, strict: bool) -> dict:
         if strict:
             raise ScoringError("line_items must be a list.")
         lines = []
-    record = {name: normalise(name, source.get(name), strict=strict) for name in DOC_FIELDS}
+    record = {name: normalise(name, source.get(name), strict=strict)
+              for name in DOC_FIELDS}
     rows = []
     for line in lines:
         if not isinstance(line, dict):
             if strict:
                 raise ScoringError("Each line item must be an object.")
             continue
-        row = {name: normalise(name, line.get(name), strict=strict) for name in LINE_FIELDS}
-        row["raw_description"] = normalise("raw_description", line.get("raw_description"), strict=strict)
+        row = {name: normalise(name, line.get(name), strict=strict)
+               for name in LINE_FIELDS}
+        row["raw_description"] = normalise(
+            "raw_description", line.get("raw_description"), strict=strict)
         rows.append(row)
     record["line_items"] = rows
     return record
@@ -144,12 +151,15 @@ def load_map(path: Path) -> list[dict]:
     with Path(path).open(newline="", encoding="utf-8-sig") as handle:
         reader = csv.DictReader(handle)
         if set(reader.fieldnames or ()) != set(MAP_COLUMNS):
-            raise ScoringError("File map columns must be: " + ", ".join(MAP_COLUMNS))
+            raise ScoringError(
+                "File map columns must be: " + ", ".join(MAP_COLUMNS))
         rows = []
         for row in reader:
             if None in row:
-                raise ScoringError("A file map row has more cells than there are columns.")
-            rows.append({key: (value or "").strip() for key, value in row.items()})
+                raise ScoringError(
+                    "A file map row has more cells than there are columns.")
+            rows.append({key: (value or "").strip()
+                        for key, value in row.items()})
     if not rows:
         raise ScoringError("The file map lists no documents.")
     seen = set()
@@ -158,16 +168,19 @@ def load_map(path: Path) -> list[dict]:
             raise ScoringError(f"Unsafe document_id: {row['document_id']!r}")
         for column in ("input_file", "gold_file"):
             if not SAFE_FILE.fullmatch(row[column]) or row[column].startswith("."):
-                raise ScoringError(f"{column} for {row['document_id']} must be a plain file name.")
+                raise ScoringError(
+                    f"{column} for {row['document_id']} must be a plain file name.")
         if Path(row["input_file"]).suffix.lower() not in INPUT_TYPES:
-            raise ScoringError(f"Input for {row['document_id']} must be .pdf or .txt.")
+            raise ScoringError(
+                f"Input for {row['document_id']} must be .pdf or .txt.")
         if row["document_id"] in seen:
             raise ScoringError(f"Duplicate document_id: {row['document_id']}")
         seen.add(row["document_id"])
         for column in ("input_sha256", "gold_sha256"):
             row[column] = row[column].lower()
             if not HEX64.fullmatch(row[column]):
-                raise ScoringError(f"{column} for {row['document_id']} is not a SHA-256 value.")
+                raise ScoringError(
+                    f"{column} for {row['document_id']} is not a SHA-256 value.")
         if not row["family"]:
             raise ScoringError(f"Missing family for {row['document_id']}.")
     return rows
@@ -177,19 +190,23 @@ def load_gold(path: Path, row: dict) -> dict:
     try:
         source = json.loads(Path(path).read_text(encoding="utf-8"))
     except (OSError, ValueError) as error:
-        raise ScoringError(f"Unreadable expected output: {path.name}") from error
+        raise ScoringError(
+            f"Unreadable expected output: {path.name}") from error
     if not isinstance(source, dict):
         raise ScoringError(f"Expected output is not an object: {path.name}")
-    missing = (set(DOC_FIELDS) | {"document_id", "family", "line_items"}) - source.keys()
+    missing = (set(DOC_FIELDS) | {"document_id",
+               "family", "line_items"}) - source.keys()
     if missing:
-        raise ScoringError(f"{path.name} is missing: {', '.join(sorted(missing))}")
+        raise ScoringError(
+            f"{path.name} is missing: {', '.join(sorted(missing))}")
     if source["document_id"] != row["document_id"] or source["family"] != row["family"]:
         raise ScoringError(f"{path.name} does not match its file map row.")
     for line in source["line_items"] if isinstance(source["line_items"], list) else []:
         if isinstance(line, dict):
             absent = (set(LINE_FIELDS) | {"raw_description"}) - line.keys()
             if absent:
-                raise ScoringError(f"A line item in {path.name} is missing: {', '.join(sorted(absent))}")
+                raise ScoringError(
+                    f"A line item in {path.name} is missing: {', '.join(sorted(absent))}")
     return _record(source, strict=True)
 
 
@@ -291,11 +308,13 @@ def score_document(expected: dict, output: dict | None) -> dict:
     fields = {name: _empty_counts() for name in DOC_FIELDS + LINE_FIELDS}
     for name in DOC_FIELDS:
         _tally(fields[name], expected[name], output[name])
-    pairs, missing, extra = match_rows(expected["line_items"], output["line_items"])
+    pairs, missing, extra = match_rows(
+        expected["line_items"], output["line_items"])
     correct_descriptions = 0
     for e, o in pairs:
         for name in LINE_FIELDS:
-            _tally(fields[name], expected["line_items"][e][name], output["line_items"][o][name])
+            _tally(fields[name], expected["line_items"][e]
+                   [name], output["line_items"][o][name])
         if expected["line_items"][e]["raw_description"] == output["line_items"][o]["raw_description"]:
             correct_descriptions += 1
     # An unmatched row was not abstained on, so only recorded values are counted.
@@ -341,7 +360,7 @@ def bootstrap_f1(document_totals: list, resamples: int = BOOTSTRAP_RESAMPLES,
     if not values:
         return None
     values.sort()
-    pick = lambda q: values[round(q * (len(values) - 1))]  # noqa: E731
+    def pick(q): return values[round(q * (len(values) - 1))]  # noqa: E731
     return [round(pick(0.025), 4), round(pick(0.975), 4)]
 
 
@@ -416,7 +435,8 @@ def load_expected(rows: list, gold_dir: Path) -> dict:
         if not path.is_file():
             raise ScoringError(f"Missing expected output: {row['gold_file']}")
         if sha256(path) != row["gold_sha256"]:
-            raise ScoringError(f"Expected output differs from the file map: {row['gold_file']}")
+            raise ScoringError(
+                f"Expected output differs from the file map: {row['gold_file']}")
         expected[row["document_id"]] = load_gold(path, row)
     return expected
 
@@ -434,21 +454,30 @@ def check_handoff(map_path: Path, gold_dir: Path, inputs_dir: Path | None = None
             if not path.is_file():
                 raise ScoringError(f"Missing input: {row['input_file']}")
             if sha256(path) != row["input_sha256"]:
-                raise ScoringError(f"Input differs from the file map: {row['input_file']}")
+                raise ScoringError(
+                    f"Input differs from the file map: {row['input_file']}")
     load_expected(rows, gold_dir)
     return len(rows)
 
 
 def score(map_path: Path, gold_dir: Path, outputs_dir: Path) -> dict:
-    map_path, gold_dir, outputs_dir = Path(map_path), Path(gold_dir), Path(outputs_dir)
+    map_path, gold_dir, outputs_dir = Path(
+        map_path), Path(gold_dir), Path(outputs_dir)
     for path, label in ((map_path, "The file map"), (gold_dir, "The expected outputs folder"),
                         (outputs_dir, "The run folder")):
         require_private(path, label)
     rows = load_map(map_path)
     record_path = outputs_dir / "run_record.json"
     if not record_path.is_file():
-        raise ScoringError("run_record.json is missing from the outputs folder.")
+        raise ScoringError(
+            "run_record.json is missing from the outputs folder.")
     run_record = json.loads(record_path.read_text(encoding="utf-8"))
+
+    if run_record.get("map_sha256") != sha256(map_path):
+        raise ScoringError(
+            "File map differs from run_record.json or its recorded hash is missing."
+        )
+
     recorded = run_record.get("outputs", {})
     expected = load_expected(rows, gold_dir)
     pipelines = [name for name in PIPELINES if (outputs_dir / name).is_dir()]
@@ -472,22 +501,26 @@ def score(map_path: Path, gold_dir: Path, outputs_dir: Path) -> dict:
             if not path.is_file():
                 raise ScoringError(f"Missing output: {name}")
             if recorded.get(name) != sha256(path):
-                raise ScoringError(f"Output differs from run_record.json: {name}")
+                raise ScoringError(
+                    f"Output differs from run_record.json: {name}")
             output = load_output(path)
-            scored.append((row, _status(output), score_document(expected[row["document_id"]], output)))
+            scored.append((row, _status(output), score_document(
+                expected[row["document_id"]], output)))
         report["pipelines"][pipeline] = summarise(scored)
     return report
 
 
 def main(argv=None) -> None:
-    parser = argparse.ArgumentParser(description="Score saved extraction outputs once.")
+    parser = argparse.ArgumentParser(
+        description="Score saved extraction outputs once.")
     parser.add_argument("--map", required=True, type=Path)
     parser.add_argument("--gold", required=True, type=Path)
     parser.add_argument("--outputs", type=Path)
     parser.add_argument("--report", type=Path)
     parser.add_argument("--check", action="store_true",
                         help="custodian: check the expected outputs and the file map, then stop")
-    parser.add_argument("--inputs", type=Path, help="with --check: also check the input hashes")
+    parser.add_argument("--inputs", type=Path,
+                        help="with --check: also check the input hashes")
     args = parser.parse_args(argv)
     if args.check:
         try:
@@ -499,7 +532,8 @@ def main(argv=None) -> None:
         print("File map SHA-256", sha256(args.map))
         return
     if args.outputs is None or args.report is None:
-        parser.error("--outputs and --report are required unless --check is given")
+        parser.error(
+            "--outputs and --report are required unless --check is given")
     if args.report.exists():
         raise SystemExit(f"Not scored: {args.report} already exists. The first result is never "
                          "replaced; record a rescore under a new name with its reason.")

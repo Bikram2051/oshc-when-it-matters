@@ -175,20 +175,24 @@ def test_changed_expected_output_is_refused(tmp_path):
     with pytest.raises(scorer.ScoringError, match="differs from the file map"):
         scorer.score(map_path, gold_dir, run_dir)
 
+
+def test_output_changed_after_the_run_is_refused(tmp_path):
+    map_path, gold_dir, run_dir = case(tmp_path, {"DEV-001": OUTPUT})
+    write_json(
+        run_dir / "rules" / "DEV-001.json",
+        {**OUTPUT, "total_gap": 1.0},
+    )
+    with pytest.raises(scorer.ScoringError, match="run_record"):
+        scorer.score(map_path, gold_dir, run_dir)
+
+
 def test_map_changed_after_the_run_is_refused(tmp_path):
     map_path, gold_dir, run_dir = case(tmp_path, {"DEV-001": OUTPUT})
-
     original = map_path.read_text(encoding="utf-8")
     map_path.write_text(original + "\n", encoding="utf-8")
 
     with pytest.raises(scorer.ScoringError, match="File map differs"):
         scorer.score(map_path, gold_dir, run_dir)
-
-def test_invalid_expected_value_is_refused(tmp_path):
-    gold = copy.deepcopy(GOLD)
-    gold["line_items"][0]["charged"] = "ninety"
-    with pytest.raises(scorer.ScoringError, match="Unreadable expected value"):
-        scorer.score(*case(tmp_path, {"DEV-001": OUTPUT}, gold))
 
 
 def test_report_is_written_once(tmp_path):

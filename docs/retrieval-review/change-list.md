@@ -1,6 +1,6 @@
 # Retrieval freeze and pre-audit change list
 
-Date recorded: 2026-10-15
+Date recorded: 2026-10-15  
 Branch: `aayush/50questions/main`
 
 ## Freeze scope
@@ -13,7 +13,9 @@ Branch: `aayush/50questions/main`
 
 ## Pre-audit snapshot location
 
-The pre-audit copy was recorded locally at `D:\retrieval_handoff\retrieval_original.json`, associated with commit `94ced50`. This file is not currently present in this branch. Before declaring the snapshot fully archived, verify its existence and record its SHA-256 with:
+The pre-audit copy was recorded locally at `D:\retrieval_handoff\retrieval_original.json`, associated with commit `94ced50`. This file is not currently present in this branch.
+
+Before declaring the snapshot fully archived, verify its existence and record its SHA-256 with:
 
 ```powershell
 Get-Item D:\retrieval_handoff\retrieval_original.json
@@ -21,6 +23,18 @@ Get-FileHash D:\retrieval_handoff\retrieval_original.json -Algorithm SHA256
 ```
 
 Keep the original bytes unchanged. If the file is later added to the repository, add it under a distinct name such as `data/gold/retrieval_pre_audit.json` and verify its hash matches the local copy.
+
+### Verification record (2026-10-15)
+
+The local pre-audit file was verified against the Git blob `94ced50:data/gold/retrieval.json`.
+
+Both files have a size of 8,359 bytes and the same SHA-256 hash:
+
+`EFC3332D5631047A9C6B7732559A1AEF06ECBAC6EA4A9DC215D5A9AAE7DB8E60`
+
+The original local file at `D:\retrieval_handoff\retrieval_original.json` remains unchanged. The Git blob was extracted byte-for-byte to a separate temporary comparison file on the D: drive.
+
+This verifies that the local snapshot matches the historical Git version. **The snapshot has not yet been archived in the repository.**
 
 ## Change-list record
 
@@ -36,7 +50,7 @@ Keep the original bytes unchanged. If the file is later added to the repository,
 - [x] Blind review query packet committed.
 - [x] Review instructions committed.
 - [x] Task-mix limitation recorded.
-- [ ] Pre-audit snapshot hash verified and recorded.
+- [x] Pre-audit snapshot hash verified and recorded.
 - [ ] Independent annotations received as a separate file.
 - [ ] Final task-specific gold subsets and evaluation protocol frozen.
 - [ ] Evaluation rerun only after the independent review is complete.

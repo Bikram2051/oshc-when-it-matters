@@ -1,5 +1,10 @@
 # NextBest: 10-minute demonstration and 5-minute Q&A
 
+> Historical source-only presentation notes. The current application uses guarded
+> live Haiku answers. Use [the live demo checklist](live_demo.md) and
+> [live chat specification](live_chat.md) for the current demonstration and privacy
+> explanation. Source-only evaluation results below do not validate live generation.
+
 Presenter preparation, based on the verified prototype checkpoint.
 The separate three-minute Medibank video will follow its supplied format.
 One presenter can deliver this whole sequence.

@@ -63,14 +63,15 @@ streamlit run app/Home.py
 python -m pytest
 ```
 
-On Windows, `./Start_NextBest.ps1` launches the offline demonstration on port 8502.
+On Windows, `./Start_NextBest.ps1` launches the live application on port 8502.
 Use `-Python 'path/to/environment/Scripts/python.exe'` to reuse an existing project
-environment. The entry point defaults to `OSHC_OFFLINE=1`, `OSHC_ENABLE_LIVE=0`, and
-the model used for the saved bill example. It does not enable paid calls.
+environment. The entry point defaults to `OSHC_OFFLINE=0`, `OSHC_ENABLE_LIVE=1`, and
+`claude-haiku-4-5-20251001`. A configured API key and existing budget ledger are
+required for paid calls; a missing connection returns a fixed explanation.
 
-The pinned Member Guide PDF and MBS XML are deliberately gitignored. Restore the
-privately shared public-source snapshots into `corpus/`, with hashes matching
-`corpus/MANIFEST.csv`. The guide-backed pages visibly abstain when source verification
+The pinned Member Guide PDF and MBS XML are deliberately gitignored. Restore them
+with `python scripts/bootstrap_sources.py`, which downloads only the official
+snapshots matching `corpus/MANIFEST.csv`. The guide-backed pages abstain when source verification
 fails; emergency responses do not require the guide.
 
 Development smoke checks, with offline flags set:
@@ -82,10 +83,13 @@ python scripts/prototype_check_student_chat.py --out chat_check.json
 python scripts/prototype_check_dashboard_ui.py --out dashboard_check.json
 ```
 
-Each check refuses to overwrite an existing report. `python -m eval.run_all` remains
-an unfinished evaluation entry point; it does not currently produce five results.
-See the project review for the missing independent labels, extraction handoff and
-guardrail evaluation. Existing historical reports remain unchanged.
+Each check refuses to overwrite an existing report. For a bounded synthetic live
+connection check, run `python scripts/check_live_chat.py --live --out NEW_REPORT.json`
+after configuring the key. This checks the connection and answer release path; it
+does not measure unseen safety or model accuracy. The final source-only reports
+are linked from the historical release above. `python -m eval.run_all` remains an
+unfinished research entry point. Independent human consensus and the original
+controlled extraction study must not be presented as complete.
 
 ## Student questions and response boundaries
 
@@ -94,18 +98,22 @@ the same guardrail service **before** loading the guide or searching. Emergency,
 clinical and personal-benefit requests stop. Sensitive, unsupported or ambiguous
 requests receive a fixed clarification. There is no refusal-to-search shortcut.
 
-Allowed responses contain exact passages checked against the verified guide and
-linked to physical PDF pages. No language model or composer writes a policy answer.
+Allowed live responses contain a short Haiku answer with citations and supporting
+passages checked against the verified guide and linked to physical PDF pages.
+The semantic input review, grounded draft and final output audit are separate
+mandatory calls; local safety and exact-quotation checks also apply.
 Earlier messages are not silently reused as context; each follow-up names its topic.
-The original baseline guardrail remains frozen, with a conservative additional scope
-boundary for this chat. The known baseline clinical limitations are recorded rather
-than presented as solved by a passing development suite.
+The original baseline guardrail remains frozen. Passing mocked regression tests
+does not establish the accuracy of the live model or its safety decisions.
 
 The latest ten turns stay in Streamlit session memory until cleared or the session
 ends. Rejected messages are withheld, and raw rule matches are removed from response
-metadata. Chat is never logged, exported, persisted to disk or sent to a provider.
-Free-form generated policy answers remain disabled pending the held-out safety gate.
-See [the chat specification](docs/prototype/student_chat.md).
+metadata. The accepted current question and selected public passages are sent to
+Anthropic; previous turns and bill uploads are not. Live questions and answers
+bypass the local disk cache. Privacy screening is best effort, and the interface
+asks students to remove personal details before submitting. See
+[the live chat specification](docs/prototype/live_chat.md) and the
+[historical source-only specification](docs/prototype/student_chat.md).
 
 ---
 
@@ -115,7 +123,7 @@ See [the chat specification](docs/prototype/student_chat.md).
 
 **2. Never commit a secret.** `.env` is gitignored and CI fails the build if it becomes tracked. The API key is held by Bikram; copy `.env.example` to `.env` and paste it there.
 
-**3. `corpus/` is gitignored, `cache/llm/` is committed.** The corpus holds third-party material we may store for research but must not republish. The cache holds every model response, which is what makes the numbers reproducible and the demo network-independent.
+**3. Public sources and private runtime data stay outside Git.** `corpus/` contains pinned third-party snapshots restored during setup. Only the three existing synthetic research cache records are retained in Git. New runtime caches, student questions, generated answers and the private budget ledger are excluded; live chat bypasses the response cache entirely.
 
 **4. Money and safety code is tested before it is written.** `oshc/arithmetic.py` and `oshc/guardrail.py` had their tests written first. If you change either, change the test first. Never relax a failing test in these two files.
 
@@ -140,9 +148,10 @@ The generator reviewer rule is not a preference. Bikram writes the extractor tha
 
 ---
 
-## Evaluation separation
+## Planned research evaluation separation
 
-Three separations, all of which exist so a number can come out badly:
+The original study protocol requires these separations. This describes the
+protocol, not a claim that its human coding or original held-out study is complete:
 
 1. **Invoice layout families.** Four families. `specialist_gap` and `hospital_mixed` are frozen held-out. Their parameters live in `data/heldout/`, gitignored, released on evaluation day. Minhaj freezes them before Bikram writes extraction code.
 2. **Guardrail probes.** The dev probe set is in `tests/test_guardrail.py` and is visible to Aayush, who builds the gate. The held-out probe set is authored by Bikram, kept out of the repository, and run once at evaluation. Building against the set you are scored on is not a measurement.
@@ -152,7 +161,7 @@ The same separation applies to every tool used in development: held-out layout p
 
 ---
 
-## The five headline numbers
+## Planned research headline numbers
 
 Fixed in advance so that "done" has a definition.
 

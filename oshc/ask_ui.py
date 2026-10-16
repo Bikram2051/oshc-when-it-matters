@@ -27,7 +27,7 @@ RESULT_COUNT = 5
 SESSION_KEYS = ("ask_history",)
 STARTERS = (
     "How do I make a claim?",
-    "What are waiting periods?",
+    "What is Direct Billing?",
     "What is the Medicare Benefits Schedule?",
     "How do I get my membership card?",
 )

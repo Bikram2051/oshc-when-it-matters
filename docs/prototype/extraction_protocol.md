@@ -1,5 +1,13 @@
 # Held-out bill extraction: evaluation protocol
 
+Historical study contract. Its original held-out run remains incomplete. Product
+development has since changed UI and adapter files, so the unchanged runner
+correctly refuses the active checkout. To run this archived study, restore the
+controlled environment at `40e04f811ac23be00883ff00b789682314e305ad` and follow the
+original custodian separation below. The original object pins and runtime refusal
+are retained and regression tested; no pins are updated to admit current code.
+Later prototype invoice evaluations and live Haiku checks are separate experiments.
+
 Fixed before any held-out input is released. A change after the first scored run
 needs a new independent set before any new performance claim.
 

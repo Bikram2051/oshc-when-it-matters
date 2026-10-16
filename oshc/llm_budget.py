@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 import uuid
 from contextlib import closing, contextmanager
@@ -22,7 +23,7 @@ class BudgetError(RuntimeError):
 
 class Budget:
     def __init__(self, path=None):
-        self.path = Path(path) if path is not None else LEDGER_PATH
+        self.path = Path(path) if path is not None else Path(os.getenv("OSHC_BUDGET_LEDGER") or LEDGER_PATH)
 
     def initialize(self):
         # Explicit setup only. Ordinary calls never recreate a missing ledger.
@@ -109,6 +110,8 @@ class Budget:
 
 if __name__ == "__main__":
     import argparse
+    from dotenv import load_dotenv
+    load_dotenv(ROOT / ".env", override=False)
     parser = argparse.ArgumentParser()
     parser.add_argument("action", choices=("init", "status"))
     args = parser.parse_args()

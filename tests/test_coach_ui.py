@@ -15,10 +15,11 @@ from oshc.policy_source import PolicyChunk, PolicyCorpus, SourceError
 ROOT = Path(__file__).resolve().parents[1]
 
 
-@pytest.fixture
-def sandbox(tmp_path, monkeypatch):
-    monkeypatch.setenv("OSHC_OFFLINE", "1")
-    monkeypatch.setenv("OSHC_ENABLE_LIVE", "0")
+@pytest.fixture(params=[("1", "0"), ("0", "1")], ids=["source-mode", "live-mode"])
+def sandbox(tmp_path, monkeypatch, request):
+    offline, live = request.param
+    monkeypatch.setenv("OSHC_OFFLINE", offline)
+    monkeypatch.setenv("OSHC_ENABLE_LIVE", live)
     provider = Mock(side_effect=AssertionError("Unexpected provider access"))
     monkeypatch.setattr(adapter, "_client", provider)
     chunks = tuple(PolicyChunk(item.ident, item.page, item.column,
@@ -38,7 +39,7 @@ def sandbox(tmp_path, monkeypatch):
 
 def app():
     at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=15).run()
-    at.switch_page("pages/1_Journey_Coach.py").run()
+    at.switch_page("views/1_Journey_Coach.py").run()
     assert not at.exception
     return at
 
@@ -55,6 +56,20 @@ def test_no_automatic_answer_or_completion(sandbox):
     assert at.button(key="jc_check").disabled
     assert not at.success and not at.warning
     assert "jc_progress" not in at.session_state
+
+
+def test_checklist_is_saved_and_reset_without_identity(sandbox):
+    at = app()
+    lesson = lessons.LESSONS[0]
+    assert [tab.label for tab in at.tabs] == ["Learn", "Practise", "Take action"]
+    for index in range(len(lessons.ACTIVITIES[lesson.ident].checklist)):
+        at.checkbox(key=f"jc_task_{lesson.ident}_{index}").check()
+    at.button(key="jc_save_checklist").click().run()
+    assert all(at.session_state["jc_checklists"][lesson.ident])
+    at.button(key="jc_next").click().run()
+    assert at.segmented_control(key="jc_moment").value == lessons.LESSONS[1].moment
+    at.button(key="jc_reset").click().run()
+    assert not at.exception and "jc_checklists" not in at.session_state
 
 
 def test_retry_preserves_first_attempt_and_rerun_does_not_add_attempts(sandbox):
@@ -74,12 +89,12 @@ def test_topic_change_clears_stale_feedback_but_keeps_progress(sandbox):
     at = app()
     first, second = lessons.LESSONS[:2]
     answer(at, first.options[first.correct])
-    at.selectbox(key="jc_moment").select(second.moment).run()
+    at.segmented_control(key="jc_moment").select(second.moment).run()
     assert not at.success and not at.warning
     assert at.radio(key="jc_choice").value is None
     answer(at, second.options[second.correct])
     assert len(at.session_state["jc_progress"]) == 2
-    at.selectbox(key="jc_moment").select(first.moment).run()
+    at.segmented_control(key="jc_moment").select(first.moment).run()
     assert at.session_state["jc_progress"][first.ident]["passed"]
     assert not at.success
 
@@ -101,12 +116,54 @@ def test_invalid_source_hides_previously_shown_lesson(sandbox):
     assert not at.radio and not at.selectbox and not at.button
 
 
-@pytest.mark.parametrize("name,value", [("OSHC_OFFLINE", "0"), ("OSHC_ENABLE_LIVE", "1")])
-def test_offline_flags_checked_before_loading(sandbox, monkeypatch, name, value):
-    monkeypatch.setenv(name, value)
+def test_lessons_are_available_in_both_runtime_modes(sandbox):
     at = app()
-    sandbox.assert_not_called()
-    assert at.error and not at.radio
+    assert sandbox.called
+    assert not at.error and at.radio
+    assert any("No lesson or checklist details are sent" in item.value for item in at.caption)
+
+
+def test_resume_chooses_first_unfinished_moment(sandbox):
+    at = app()
+    first = lessons.LESSONS[0]
+    answer(at, first.options[first.correct])
+    for index in range(len(lessons.ACTIVITIES[first.ident].checklist)):
+        at.checkbox(key=f"jc_task_{first.ident}_{index}").check()
+    at.button(key="jc_save_checklist").click().run()
+    assert any("This moment is complete" in item.value for item in at.success)
+    at.button(key="jc_resume").click().run()
+    assert not at.exception
+    assert at.segmented_control(key="jc_moment").value == lessons.LESSONS[1].moment
+    assert at.radio(key="jc_choice").value is None
+
+
+def test_saved_checklist_returns_after_switching_moments(sandbox):
+    at = app()
+    first = lessons.LESSONS[0]
+    at.checkbox(key=f"jc_task_{first.ident}_0").check()
+    at.button(key="jc_save_checklist").click().run()
+    at.button(key="jc_next").click().run()
+    at.button(key="jc_previous").click().run()
+    assert at.checkbox(key=f"jc_task_{first.ident}_0").value is True
+    assert at.checkbox(key=f"jc_task_{first.ident}_1").value is False
+
+
+def test_full_journey_completion_and_reset(sandbox):
+    at = app()
+    for lesson in lessons.LESSONS:
+        at.segmented_control(key="jc_moment").select(lesson.moment).run()
+        answer(at, lesson.options[lesson.correct])
+        for index in range(len(lessons.ACTIVITIES[lesson.ident].checklist)):
+            at.checkbox(key=f"jc_task_{lesson.ident}_{index}").check()
+        at.button(key="jc_save_checklist").click().run()
+    assert not at.exception
+    assert any("Your three preparation moments are complete" in item.value for item in at.success)
+    assert at.button(key="jc_resume").disabled
+    at.button(key="jc_reset").click().run()
+    assert not at.exception and not at.success
+    assert "jc_progress" not in at.session_state
+    assert "jc_checklists" not in at.session_state
+    assert at.segmented_control(key="jc_moment").value == lessons.LESSONS[0].moment
 
 
 def test_missing_supporting_span_is_rejected(sandbox):
@@ -118,13 +175,13 @@ def test_missing_supporting_span_is_rejected(sandbox):
 def test_original_page_navigation_preserves_practice(sandbox):
     at = app()
     lesson = lessons.LESSONS[2]
-    at.selectbox(key="jc_moment").select(lesson.moment).run()
+    at.segmented_control(key="jc_moment").select(lesson.moment).run()
     answer(at, lesson.options[lesson.correct])
     at.button(key="jc_source").click().run()
     assert not at.exception and not at.error
     assert at.title[0].value == "Navigator"
     assert at.number_input(key="nv_page").value == 28
-    at.switch_page("pages/1_Journey_Coach.py").run()
+    at.switch_page("views/1_Journey_Coach.py").run()
     assert at.session_state["jc_progress"][lesson.ident]["passed"]
 
 

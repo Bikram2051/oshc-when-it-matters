@@ -1,0 +1,10 @@
+{
+  "kind": "Final regression evidence",
+  "checked_at_utc": "2026-10-15T09:04:00.981129+00:00",
+  "tests": 503,
+  "failures": 0,
+  "errors": 0,
+  "seconds": 25.16,
+  "junit_sha256": "185bb59a2741b6212ffebf989d08be5cfa70e173d676b0a327f08909530ee847",
+  "note": "Full offline suite; separate package proof verifies exported runtime. No provider calls are permitted by runtime regression fixtures."
+}

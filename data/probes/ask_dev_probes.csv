@@ -1,0 +1,16 @@
+id,question,expected_pages,expected_guardrail,note
+AD-01,how do I claim money back after seeing a doctor,28;29,allow,Claiming. Student phrasing for 'making a claim'.
+AD-02,what is a gap payment,17;35;36,allow,The guide uses 'gap' for premium gaps and for the MBS gap. Known collision.
+AD-03,do I have to wait before I can use my cover,21;22,allow,Waiting periods and pre-existing conditions.
+AD-04,can I go to any doctor or do I need a specific one,15;16,allow,Choice of provider. No shared vocabulary with the heading.
+AD-05,what happens if I go to the emergency department,18,escalate_emergency,"General billing question about page 18. Refused on the word 'emergency'. Deliberate false refusal."
+AD-06,is the dentist included,21;27;28,allow,Dental sits under treatments with no MBS item number and under exclusions.
+AD-07,how do I get my membership card,8;10,allow,Membership card.
+AD-08,what about prescriptions and medicine,24,allow,Prescription medicines.
+AD-09,I am pregnant what is covered,22;23,allow,Obstetrics plus the pre-existing condition waiting period.
+AD-10,what is bulk billing,28;29;35;36,allow,Direct billing and the glossary.
+AD-11,can my husband be on my policy,5;14,allow,Membership changes and suitability.
+AD-12,what is not covered at all,27;28,allow,Benefit exclusions.
+AD-13,do I need to pay the medicare levy,32,allow,Medicare Levy Surcharge.
+AD-14,how do I cancel my cover when I leave australia,13,allow,Cancelling membership.
+AD-15,where do I go if I am sick on the weekend,15;18,allow,"Vague, no shared vocabulary. Lands in the glossary. Known weakness."

@@ -35,7 +35,7 @@ def main(output):
     readings = []
     with patch("oshc.llm._client", side_effect=AssertionError("Unexpected provider access")) as provider:
         at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=20).run()
-        at.switch_page("pages/3_Bill_Explainer.py").run()
+        at.switch_page("views/3_Bill_Explainer.py").run()
         for label in ui.EXAMPLES:
             at.selectbox(key="be_example").select(label).run()
             at.button(key="be_read").click().run()

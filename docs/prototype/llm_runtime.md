@@ -1,5 +1,13 @@
 # Prototype LLM runtime
 
+Current live chat uses `complete_json(..., cache=False)` for input review,
+generation and output review. It neither reads nor writes response caches and
+does not stream unchecked text. Bills stay local; the saved AI bill example uses
+`cache_only=True`. Server credentials can come from `OSHC_API_KEY`,
+`ANTHROPIC_API_KEY` or Streamlit secrets. `OSHC_BUDGET_LEDGER` selects an existing
+ledger without resetting its allowance. The sections below retain the original
+research adapter's cached-call behavior for reproducibility.
+
 Test responses are fabricated engineering fixtures,
 not independent evaluation labels or held-out cases.
 

@@ -43,6 +43,21 @@ def examples():
                         "source_anchors_found": True, "wrong_then_correct_feedback": True,
                         "first_attempt_preserved": True}
                        for name, (page, column) in reports.LESSON_PAGES.items()])
+    probe_block = {"probes": 3, "allowed_and_scored": 2, "refused_at_guardrail": 1,
+                   "recall_at_5": 0.5, "recall_at_3": 0.5, "recall_at_1": 0.5, "mrr": 0.5,
+                   "guardrail_decisions_as_expected": True, "unexpected_refusals": [],
+                   "expected_refusals": ["X-1"],
+                   "detail": [{"id": "X-1", "guardrail": "escalate_emergency",
+                               "guardrail_as_expected": True, "retrieval_rank": None},
+                              {"id": "X-2", "guardrail": "allow",
+                               "guardrail_as_expected": True, "retrieval_rank": 1},
+                              {"id": "X-3", "guardrail": "allow",
+                               "guardrail_as_expected": True, "retrieval_rank": None}]}
+    values["ask_ui"].update(top_k=5, excerpt_count=61, generated_answers=False,
+        composer_reachable=False, question_text_persisted=False,
+        guardrail_runs_before_retrieval=True, recall_at_5_gap=0.46,
+        gold_guide_wording=dict(probe_block, recall_at_5=0.96),
+        dev_student_wording=dict(probe_block))
     return values
 
 
@@ -131,7 +146,7 @@ def test_export_excludes_arbitrary_report_fields(tmp_path):
 
 def app():
     at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=15).run()
-    at.switch_page("pages/4_Dashboard.py").run()
+    at.switch_page("views/5_Dashboard.py").run()
     assert not at.exception
     return at
 
@@ -139,7 +154,7 @@ def app():
 def test_missing_reports_remain_unknown_in_ui(tmp_path, monkeypatch):
     monkeypatch.setattr(ui, "ROOT", tmp_path)
     at = app()
-    assert at.metric[0].value == "0 of 6" and at.warning
+    assert at.metric[0].value == f"0 of {len(reports.SPECS)}" and at.warning
     assert set(at.dataframe[0].value["Status"]) == {"Missing report"}
     assert set(at.dataframe[1].value["Status"]) == {"Not linked here"}
 
@@ -149,9 +164,10 @@ def test_ui_rerun_drops_stale_pass_and_download_remains_available(tmp_path, monk
     for key, value in examples().items():
         save(tmp_path, key, value)
     at = app()
-    assert at.metric[0].value == "6 of 6" and not at.warning
+    assert at.metric[0].value == f"{len(reports.SPECS)} of {len(reports.SPECS)}" and not at.warning
     assert len(at.get("download_button")) == 1
     save(tmp_path, "coach_ui", {})
     at.run()
-    assert not at.exception and at.metric[0].value == "5 of 6" and at.warning
+    assert not at.exception and at.warning
+    assert at.metric[0].value == f"{len(reports.SPECS) - 1} of {len(reports.SPECS)}"
     assert at.dataframe[0].value.iloc[5]["Status"] == "Needs review"

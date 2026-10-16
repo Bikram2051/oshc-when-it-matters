@@ -35,9 +35,9 @@ def main():
         assert not at.exception and not at.error
         assert at.title[0].value == "Journey Coach"
         # Pin AppTest's page for subsequent widget reruns after programmatic navigation.
-        at.switch_page("pages/1_Journey_Coach.py").run()
+        at.switch_page("views/1_Journey_Coach.py").run()
         for lesson in LESSONS:
-            at.selectbox(key="jc_moment").select(lesson.moment).run()
+            at.segmented_control(key="jc_moment").select(lesson.moment).run()
             assert at.radio(key="jc_choice").value is None
             assert at.button(key="jc_check").disabled
             assert any(text.value == sources[lesson.ident].text for text in at.text)
@@ -60,7 +60,7 @@ def main():
         assert at.title[0].value == "Navigator"
         assert at.number_input(key="nv_page").value == 28
         assert len(at.image) == 1
-        at.switch_page("pages/1_Journey_Coach.py").run()
+        at.switch_page("views/1_Journey_Coach.py").run()
         assert len(at.session_state["jc_progress"]) == 3
         at.button(key="jc_reset").click().run()
         assert not at.exception and "jc_progress" not in at.session_state

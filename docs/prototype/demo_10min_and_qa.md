@@ -1,5 +1,8 @@
 # NextBest: 10-minute demonstration and 5-minute Q&A
 
+> For the Medibank session on 2 November 2026, use
+> [medibank_final_demo_2026-11-02.md](medibank_final_demo_2026-11-02.md).
+>
 > Historical source-only presentation notes. The current application uses guarded
 > live Haiku answers. Use [the live demo checklist](live_demo.md) and
 > [live chat specification](live_chat.md) for the current demonstration and privacy

@@ -7,7 +7,10 @@ development abstentions are retained in that report; this is not an unseen evalu
 ## Before presenting
 
 1. Complete setup and source verification as described in the repository README.
-   While PR #23 awaits review, use its `bb/student-chat-dashboard` branch.
+   Until the integration pull request is merged, use the `demo/final-integration`
+   branch. Start with `./Start_NextBest.ps1 -ResetCounts`; use `-Offline` if the
+   network fails. The run sheet for 2 November is in
+   [medibank_final_demo_2026-11-02.md](medibank_final_demo_2026-11-02.md).
 2. Configure the private value of `OSHC_API_KEY` in the ignored root `.env` or
    server secrets. Keep `OSHC_OFFLINE=0` and `OSHC_ENABLE_LIVE=1`.
 3. Select the existing budget ledger using `OSHC_BUDGET_LEDGER`. Do not reset it.

@@ -11,7 +11,7 @@ from __future__ import annotations
 import sqlite3
 import uuid
 from contextlib import closing
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from oshc.config import EVENTS_DB
@@ -78,7 +78,7 @@ def track(state, page: str, name: EventName, *, once_key: str | None = None) -> 
         return False
     try:
         record(Event(session_id=session_id(state), name=name,
-                     at=datetime.now(timezone.utc), page=page))
+                     at=datetime.now(UTC), page=page))
     except (OSError, sqlite3.Error, ValueError):
         return False
     if once_key is not None:

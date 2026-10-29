@@ -1,7 +1,7 @@
 """Shared test isolation."""
 import pytest
 
-import oshc.telemetry as telemetry
+from oshc import telemetry
 
 
 @pytest.fixture(autouse=True)

@@ -1,10 +1,10 @@
 """Session telemetry: counts visits and events, never content, and never breaks a page."""
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
-import oshc.telemetry as telemetry
+from oshc import telemetry
 from oshc.schemas import Event, EventName
 
 
@@ -15,7 +15,7 @@ def rows(path):
 
 def test_record_appends_one_row(isolated_events):
     telemetry.record(Event(session_id="s1", name=EventName.OPEN,
-                           at=datetime.now(timezone.utc), page="coach"))
+                           at=datetime.now(UTC), page="coach"))
     assert rows(isolated_events) == [("s1", "open", "coach", None, None)]
 
 

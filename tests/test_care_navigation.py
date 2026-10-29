@@ -52,3 +52,18 @@ def test_handoff_urls_never_include_private_question_parameters():
     for url in (SERVICE_FINDER_URL, SYMPTOM_CHECKER_URL):
         assert url.startswith("https://www.healthdirect.gov.au/")
         assert "?" not in url and "#" not in url
+
+
+@pytest.mark.parametrize("question", [
+    "I have a cough and a mild headache. Where should I go?",
+    "I'm feeling dizzy and have a headache",
+])
+def test_source_mode_gives_the_same_handoff_without_source_access(monkeypatch, question):
+    monkeypatch.setenv("OSHC_OFFLINE", "1")
+    monkeypatch.setenv("OSHC_ENABLE_LIVE", "0")
+    loader = Mock(side_effect=AssertionError("No source lookup for symptoms"))
+    response = answer_question(question, source_loader=loader)
+    assert response.decision.verdict == GuardrailVerdict.REFUSE_CLINICAL
+    assert "1800 022 222" in response.message and "000" in response.message
+    assert not response.answer and not response.hits and not response.safe_to_echo
+    loader.assert_not_called()

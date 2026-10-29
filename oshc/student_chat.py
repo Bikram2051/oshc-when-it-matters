@@ -234,12 +234,15 @@ def answer_question(
     if decision.blocked:
         return ChatResponse("blocked", decision, REFUSAL_TEXT[decision.verdict])
 
+    # Personal symptom disclosures get the same fixed official handoff in both modes,
+    # before any model or guide access. Emergency rules above take priority.
+    from oshc.care_navigation import CLINICAL_HANDOFF, personal_symptom_request
+    if personal_symptom_request(normal):
+        clinical = GuardrailDecision(verdict=GuardrailVerdict.REFUSE_CLINICAL,
+                                     layer="gazetteer")
+        return ChatResponse("blocked", clinical, CLINICAL_HANDOFF)
+
     if os.getenv("OSHC_OFFLINE") == "0" and os.getenv("OSHC_ENABLE_LIVE") == "1":
-        from oshc.care_navigation import CLINICAL_HANDOFF, personal_symptom_request
-        if personal_symptom_request(normal):
-            clinical = GuardrailDecision(verdict=GuardrailVerdict.REFUSE_CLINICAL,
-                                         layer="gazetteer")
-            return ChatResponse("blocked", clinical, CLINICAL_HANDOFF)
         from oshc.live_chat import answer_live
         return replace(answer_live(question, root=root, source_loader=source_loader), response_mode="haiku")
 

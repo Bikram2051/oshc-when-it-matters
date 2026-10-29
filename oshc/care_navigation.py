@@ -20,14 +20,19 @@ CLINICAL_HANDOFF = (
 )
 
 _PERSONAL = re.compile(
-    r"\b(?:i\s+(?:have|had|got|am\s+having|am\s+feeling|feel|am\s+sick|am\s+unwell)|"
+    r"\b(?:i\s+(?:have|had|got|am\s+having|am\s+feeling|feel|am\s+sick|am\s+unwell|"
+    r"hurt|injured|sprained)|"
     r"i['’]m\s+(?:having|feeling|sick|unwell)|i['’]ve\s+(?:got|had)|"
-    r"my\s+(?:child|friend|partner|roommate)\s+(?:has|is\s+having|feels))\b",
+    r"my\s+(?:child|friend|partner|roommate|flatmate)\s+(?:has|is|feels|got)|"
+    # Hypothetical care choices ("if I get sick", "see a GP for a cold") are the same
+    # where-should-I-go decision, so they receive the same fixed handoff.
+    r"if\s+i\s+(?:get|feel|am|become)|(?:see|visit)\s+a\s+(?:gp|doctor)\s+for)\b",
     re.I,
 )
 _SYMPTOM = re.compile(
     r"\b(?:cough(?:ing)?|headache|migraine|fever|rash|nausea|dizz\w*|pain|"
-    r"bleed\w*|vomit\w*|diarrh\w*|sore\s+throat|unwell|sick)\b",
+    r"bleed\w*|vomit\w*|diarrh\w*|sore\s+throat|unwell|sick|"
+    r"cold|flu|influenza|(?:tooth|ear|stomach)\s*ache|hurt|injur\w*|sprain\w*)\b",
     re.I,
 )
 

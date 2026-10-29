@@ -46,9 +46,11 @@ def main(argv=None):
     measurements = load_measurements(ROOT)
     before_reports = summary_bytes(evidence)
     before_measurements = {key: item.sha256 for key, item in measurements.items()}
-    expected_rows = evaluation_rows(measurements)
+    from oshc.dashboard_ui import NOT_MEASURED, status_rows
+    from oshc.final_results import load_final
+    expected_rows = status_rows(measurements, load_final(ROOT))
     passing = sum(item.status == PASSED for item in evidence)
-    linked = sum(row["Status"] == RECORDED for row in expected_rows)
+    linked = sum(row["Status"] not in (NOT_MEASURED, "Not linked here") for row in expected_rows)
 
     with (
         patch("oshc.llm._client", side_effect=AssertionError("Unexpected provider access"))

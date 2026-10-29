@@ -1,6 +1,10 @@
 param(
     [string]$Python = "",
-    [int]$Port = 8502
+    [int]$Port = 8502,
+    # Fallback for a venue without reliable internet: verified source mode, no provider calls.
+    [switch]$Offline,
+    # Clear the local pilot counts (data/events.sqlite) before a fresh demonstration.
+    [switch]$ResetCounts
 )
 $ErrorActionPreference = "Stop"
 if (-not $Python) {
@@ -13,10 +17,25 @@ if (-not $Python) {
     } else { "python" }
 }
 
-$env:OSHC_OFFLINE = "0"
-$env:OSHC_ENABLE_LIVE = "1"
+if ($Offline) {
+    $env:OSHC_OFFLINE = "1"
+    $env:OSHC_ENABLE_LIVE = "0"
+    Write-Host "NextBest: verified source mode (offline). Ask NextBest uses curated answers; no API calls."
+} else {
+    $env:OSHC_OFFLINE = "0"
+    $env:OSHC_ENABLE_LIVE = "1"
+    Write-Host "NextBest: live mode. Ask NextBest uses guarded Haiku answers."
+}
 $env:OSHC_MODEL = "claude-haiku-4-5-20251001"
 $env:PYTHONUTF8 = "1"
+
+if ($ResetCounts) {
+    $events = Join-Path $PSScriptRoot "data\events.sqlite"
+    if (Test-Path -LiteralPath $events -PathType Leaf) {
+        Remove-Item -LiteralPath $events
+        Write-Host "Pilot counts cleared."
+    }
+}
 
 Push-Location $PSScriptRoot
 try {

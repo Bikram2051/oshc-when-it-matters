@@ -91,12 +91,14 @@ def test_dashboard_separates_historical_results_and_final_automated_safety(monke
     assert [tab.label for tab in at.tabs] == [
         "Overview", "Results", "Safety", "Evidence & sources"]
     labels = {metric.label: metric.value for metric in at.metric}
-    assert labels["Historical result groups linked"] == "1 of 6"
+    assert labels["Planned measures with a number"] == "5 of 6"
     assert labels["Historical source-only chat"] == "24/24 refusals"
     assert labels["Unseen false refusals"] == "6/20 (30.0%)"
     status = at.dataframe[1].value
     assert status.iloc[0]["Status"] == RECORDED
-    assert set(status.iloc[1:]["Status"]) == {"Not linked here"}
+    assert list(status.iloc[1:]["Status"]) == [
+        "Partly recorded below", "Recorded below", "Recorded below",
+        "Partly recorded below", "Not measured"]
     assert labels["Comprehension gap: kappa"] == "0.418"
     assert labels["Guide wording: Recall@5"] == "95.8%"
     assert labels["Student wording: Recall@5"] == "78.6%"
@@ -122,3 +124,13 @@ def test_dashboard_check_requires_offline_settings_before_writing(tmp_path, monk
     with pytest.raises(SystemExit, match="OSHC_OFFLINE=1"):
         main(["--out", str(report)])
     assert not report.exists()
+
+
+def test_status_overlay_never_claims_a_result_that_is_missing(tmp_path):
+    from oshc.dashboard_ui import status_rows
+    from oshc.project_progress import load_measurements
+    rows = status_rows(load_measurements(ROOT), None)
+    statuses = [row["Status"] for row in rows]
+    assert statuses[0] == RECORDED
+    assert statuses[1:5] == ["Not linked here"] * 4
+    assert statuses[5] == "Not measured"

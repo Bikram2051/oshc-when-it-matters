@@ -181,7 +181,7 @@ Stated as design decisions, not gaps. Each removes a risk from the Week 5 NIST a
 
 - No user accounts, profiles or persistence of identity.
 - No symptom assessment. There is no symptom-to-service code path in this repository.
-- No statement about what a particular person's policy will pay. That is personal financial product advice under s 766B of the *Corporations Act 2001* (Cth), and the wording is always "the PDS states" or "this document shows", never "you are covered".
+- No statement about what a particular person's policy will pay. Medibank requires that coverage, claims, medical, visa and product-suitability questions are referred to Medibank, so the wording is always "the PDS states" or "this document shows", never "you are covered". (Earlier project documents cited s 766B of the *Corporations Act 2001* (Cth); that section does not apply, because reg 7.1.07C of the *Corporations Regulations 2001* (Cth) provides that insurance under an overseas student health insurance contract is not a financial product. The rule stands as a client requirement and a safety rule.)
 - No real invoice handling.
 - No model fine-tuning.
 - No native app, and no script tag embedded in a third-party page.

@@ -156,7 +156,8 @@ def test_missing_reports_remain_unknown_in_ui(tmp_path, monkeypatch):
     at = app()
     assert at.metric[0].value == f"0 of {len(reports.SPECS)}" and at.warning
     assert set(at.dataframe[0].value["Status"]) == {"Missing report"}
-    assert set(at.dataframe[1].value["Status"]) == {"Not linked here"}
+    # Missing reports never become recorded results; learning impact is never measured.
+    assert list(at.dataframe[1].value["Status"]) == ["Not linked here"] * 5 + ["Not measured"]
 
 
 def test_ui_rerun_drops_stale_pass_and_download_remains_available(tmp_path, monkeypatch):
@@ -171,3 +172,28 @@ def test_ui_rerun_drops_stale_pass_and_download_remains_available(tmp_path, monk
     assert not at.exception and at.warning
     assert at.metric[0].value == f"{len(reports.SPECS) - 1} of {len(reports.SPECS)}"
     assert at.dataframe[0].value.iloc[5]["Status"] == "Needs review"
+
+
+def test_pilot_measures_show_content_free_counts(tmp_path, monkeypatch, isolated_events):
+    import oshc.telemetry as telemetry
+    from oshc.schemas import EventName
+    monkeypatch.setattr(ui, "ROOT", tmp_path)
+    for _ in range(2):
+        state = {}
+        telemetry.track(state, "coach", EventName.OPEN, once_key="o")
+        telemetry.track(state, "coach", EventName.SCENARIO_START)
+    telemetry.track(state, "coach", EventName.SCENARIO_COMPLETE)
+    at = app()
+    labels = {metric.label: metric.value for metric in at.metric}
+    assert labels["Journey Coach visits"] == "2"
+    assert labels["Visits that started a scenario"] == "2"
+    assert labels["Visits with a correct scenario"] == "1"
+    assert labels["Visits that read a bill"] == "0"
+    assert any("1 of 2 visits" in item.value for item in at.caption)
+
+
+def test_pilot_measures_are_zero_without_events(tmp_path, monkeypatch):
+    monkeypatch.setattr(ui, "ROOT", tmp_path)
+    at = app()
+    labels = {metric.label: metric.value for metric in at.metric}
+    assert labels["Journey Coach visits"] == "0" and labels["Navigator visits"] == "0"

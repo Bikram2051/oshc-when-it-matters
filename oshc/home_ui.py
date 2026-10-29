@@ -10,7 +10,7 @@ MODULES = (
     ("Understand the numbers", "Bill Explainer", "views/3_Bill_Explainer.py", "home_bill",
      "receipt_long", "Explore a synthetic bill and compare its charges with published MBS references."),
     ("Ask in your own words", "Ask NextBest", "views/4_Ask.py", "home_ask",
-     "forum", "Ask Haiku in your own words, with guardrail checks and supporting guide passages."),
+     "forum", "Ask in your own words. Every message is checked, and answers show their guide passages."),
 )
 
 
@@ -62,8 +62,10 @@ def render():
         )
         st.caption(
             "Chat stays in the current Streamlit session and can be cleared. "
-            "Haiku checks the question, generates from retrieved evidence and reviews the answer before display. "
-            "Personal benefits and clinical advice remain outside scope."
+            + ("Haiku checks the question, generates from retrieved evidence and reviews the answer before display. "
+               if os.getenv("OSHC_OFFLINE") == "0" and os.getenv("OSHC_ENABLE_LIVE") == "1" else
+               "In verified source mode, answers are fixed explanations bound to guide passages; no AI provider is called. ")
+            + "Personal benefits and clinical advice remain outside scope."
         )
     st.divider()
     footer, evidence = st.columns([3, 1], vertical_alignment="center")

@@ -6,21 +6,57 @@ import streamlit as st
 from oshc.evidence_dashboard import PASSED, load_evidence, summary_bytes
 from oshc.project_progress import RECORDED, evaluation_rows, load_measurements
 from oshc.final_results import load_final
+from oshc import telemetry
 
 ROOT = Path(__file__).resolve().parents[1]
 STATUS_MARK = {PASSED: "recorded pass", "Missing report": "missing", "Needs review": "review"}
+NOT_MEASURED = "Not measured"
+# Where the final automated release supplies a number for a planned measure, the status
+# table says so and names what that number does not cover. The historical record in
+# project_progress is left unchanged.
+FINAL_STATUS = {
+    "Classification macro-F1 and shift gap": (
+        "classifier", "Partly recorded below",
+        "Macro-F1 from grouped five-fold predictions; the shift gap is not reported."),
+    "Held-out retrieval Recall@5": (
+        "independent_retrieval", "Recorded below",
+        "Independent automated labels on 25 guide questions; not a human relevance study."),
+    "Held-out current guardrail performance": (
+        "release_chat", "Recorded below",
+        "Unseen automated probes for the source-only chat; live Haiku is not measured."),
+    "Held-out bill extraction F1 and degradation": (
+        "bill_f1", "Partly recorded below",
+        "20 separately authored synthetic invoices; the frozen held-out study and real-document drop are not complete."),
+    "Learning effectiveness": (
+        None, NOT_MEASURED,
+        "No real-student testing this semester; a pilot would measure pre/post scenario scores."),
+}
+
+
+def status_rows(measurements, saved):
+    """Overlay final automated results onto the planned-measure table, without upgrading claims."""
+    rows = []
+    for row in evaluation_rows(measurements):
+        row = dict(row)
+        key, status, note = FINAL_STATUS.get(row["Measure"], (None, None, None))
+        if row["Status"] != RECORDED and status is not None and (
+                key is None or (saved is not None and saved.get(key) is not None)):
+            row["Status"], row["Next step"] = status, note
+        rows.append(row)
+    return rows
 
 
 def _overview(evidence, measurements):
     passing = sum(item.status == PASSED for item in evidence)
-    results = evaluation_rows(measurements)
-    linked = sum(row["Status"] == RECORDED for row in results)
     final = load_final(ROOT)
+    results = status_rows(measurements, final)
+    linked = sum(row["Status"] not in (NOT_MEASURED, "Not linked here") for row in results)
     with st.container(horizontal=True):
         st.metric("Saved checks with recorded passes", f"{passing} of {len(evidence)}",
                   border=True, help="Saved checkpoint reports, not a fresh test of today's code.")
-        st.metric("Historical result groups linked", f"{linked} of {len(results)}",
-                  border=True, help="Earlier report linkage only. Final chat, retrieval, classifier and bill scores appear in Results.")
+        st.metric("Planned measures with a number", f"{linked} of {len(results)}",
+                  border=True, help="Kappa, classifier, retrieval, guardrail and bill extraction have recorded "
+                  "numbers, some partial; learning effectiveness is not measured. Scope and limits are in Results.")
         st.metric("Historical source-only chat",
                   (f"{final['release_chat']['refusal_recall']['k']}/{final['release_chat']['refusal_recall']['n']} refusals"
                    if final else "Unavailable"), border=True,
@@ -28,6 +64,8 @@ def _overview(evidence, measurements):
 
     if passing != len(evidence):
         st.warning("Some saved reports are missing or need review. Their outcomes remain unknown.")
+
+    _pilot_measures()
 
     st.subheader("Demonstrated workflow")
     with st.container(horizontal=True):
@@ -61,6 +99,30 @@ def _overview(evidence, measurements):
             "**Historical automated checks:** source-only chat probes and retrieval labels. "
             "**Unmeasured:** live model performance, human safety validation, real-student learning impact and production security."
         )
+
+
+def _pilot_measures():
+    """Show how a pilot would measure engagement, from content-free local page events."""
+    counts = telemetry.summary()
+    coach, explainer = counts.get("coach", {}), counts.get("explainer", {})
+    navigator = counts.get("navigator", {})
+    with st.container(border=True):
+        st.markdown("### :material/monitoring: Pilot measures on this computer")
+        with st.container(horizontal=True):
+            st.metric("Journey Coach visits", coach.get("open", 0), border=True)
+            st.metric("Visits that started a scenario", coach.get("scenario_start", 0), border=True)
+            st.metric("Visits with a correct scenario", coach.get("scenario_complete", 0), border=True,
+                      help="Counted once per lesson per visit, at the first correct answer.")
+            st.metric("Visits that read a bill", explainer.get("decode_run", 0), border=True)
+            st.metric("Navigator visits", navigator.get("open", 0), border=True)
+        started = coach.get("scenario_start", 0)
+        if started:
+            st.caption(f"Completion signal: {coach.get('scenario_complete', 0)} of {started} visits "
+                       "that started a scenario reached a correct answer.")
+        st.caption("Each event holds a random visit id, an event name and a page. No question text, "
+                   "bill content, name or policy detail is stored. On a demo laptop these are rehearsal "
+                   "clicks, not student outcomes. A pilot would add pre/post scenario scores, a "
+                   "confidence item and drop-off points.")
 
 
 def _agreement(measurement):
@@ -116,7 +178,7 @@ def _results(measurements):
     st.subheader("Evaluation status")
     st.caption("A linked result is evidence for its stated experiment. Missing results remain "
                "unclaimed, and a successful demo does not replace an evaluation.")
-    st.dataframe(evaluation_rows(measurements), hide_index=True, width="stretch")
+    st.dataframe(status_rows(measurements, load_final(ROOT)), hide_index=True, width="stretch")
     _agreement(measurements["agreement"])
     _retrieval(measurements["retrieval"])
     _final_results()

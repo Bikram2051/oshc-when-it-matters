@@ -190,3 +190,28 @@ def test_new_session_has_no_previous_progress(sandbox):
     answer(first, lessons.LESSONS[0].options[1])
     second = app()
     assert "jc_progress" not in second.session_state
+
+
+def test_hindi_toggle_changes_interface_labels_only(sandbox):
+    at = app()
+    english_points = [item.value for item in at.markdown]
+    at.selectbox(key="coach_language").set_value("hi").run()
+    assert not at.exception
+    assert at.button(key="jc_check").label == "मेरा उत्तर जाँचें"
+    assert any("Lessons and sources stay in English" in item.value for item in at.caption)
+    assert [item.value for item in at.markdown] == english_points
+
+
+def test_practice_records_events_without_content(sandbox, isolated_events):
+    import sqlite3
+    at = app()
+    lesson = lessons.LESSONS[0]
+    answer(at, lesson.options[lesson.correct])
+    answer(at, lesson.options[lesson.correct])
+    with sqlite3.connect(isolated_events) as db:
+        names = [row[0] for row in db.execute("SELECT name FROM events WHERE page='coach'")]
+        text = db.execute("SELECT code, detail FROM events").fetchall()
+    assert names.count("open") == 1
+    assert names.count("scenario_start") == 1
+    assert names.count("scenario_complete") == 1
+    assert all(row == (None, None) for row in text)

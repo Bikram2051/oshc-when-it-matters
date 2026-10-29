@@ -6,9 +6,18 @@ from pathlib import Path
 import streamlit as st
 
 from oshc.coach_lessons import ACTIVITIES, LESSONS, action_card, verified_sources
+from oshc.coach_strings import LANGUAGE_LABELS, get_strings
+from oshc.config import LANGUAGES
 from oshc.policy_source import CAPTURED_ON, SOURCE_DOC, SOURCE_URL, SourceError
+from oshc.schemas import EventName
+from oshc.telemetry import track
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _s():
+    """Static interface strings for the selected language; lessons stay in English."""
+    return get_strings(st.session_state.get("coach_language", "en"))
 
 
 def _reset():
@@ -37,6 +46,8 @@ def _check_answer(ident):
     }
     st.session_state["jc_progress"] = progress
     st.session_state["jc_checked"] = (lesson.ident, choice)
+    if selected == lesson.correct and not (old and old["passed"]):
+        track(st.session_state, "coach", EventName.SCENARIO_COMPLETE)
 
 
 def _save_checklist(ident):
@@ -96,7 +107,7 @@ def _learn(lesson):
     for index, point in enumerate(lesson.points, start=1):
         with st.container(border=True):
             st.markdown(f"**{index}.** {point}")
-    st.info("Your next step: " + lesson.action, icon=":material/arrow_forward:")
+    st.info(_s()["next_step"] + lesson.action, icon=":material/arrow_forward:")
     st.caption("Try the scenario in Practise, then make a reminder in Take action.")
 
 
@@ -105,14 +116,14 @@ def _practice(lesson):
         st.badge("A fictional student scenario", icon=":material/psychology:")
         st.markdown(ACTIVITIES[lesson.ident].scenario)
         choice = st.radio(lesson.question, list(lesson.options), index=None, key="jc_choice")
-        st.button("Check my answer", key="jc_check", disabled=choice is None,
+        st.button(_s()["check_answer"], key="jc_check", disabled=choice is None,
                   on_click=_check_answer, args=(lesson.ident,),
                   type="primary", icon=":material/check:")
         if choice is not None and st.session_state.get("jc_checked") == (lesson.ident, choice):
             if choice == lesson.options[lesson.correct]:
-                st.success("Correct. " + lesson.explanation)
+                st.success(_s()["correct"] + lesson.explanation)
             else:
-                st.warning("Try again. " + lesson.explanation)
+                st.warning(_s()["try_again"] + lesson.explanation)
         result = st.session_state.get("jc_progress", {}).get(lesson.ident)
         if result:
             st.caption(f"Checked attempts: {result['attempts']}. Your first answer is preserved "
@@ -152,23 +163,29 @@ def _action(lesson):
 
 
 def render():
+    track(st.session_state, "coach", EventName.OPEN, once_key="telemetry_coach_open")
     st.title("Journey Coach")
-    st.caption("Learn one idea. Try a scenario. Leave with a practical next step.")
-    st.badge("Guided preparation", icon=":material/route:")
     try:
         sources = verified_sources(ROOT)
     except SourceError:
-        st.error("The saved lesson sources could not be verified. Restore the frozen guide first.")
+        st.error(_s()["source_error"])
         return
+    st.selectbox("Language / भाषा", LANGUAGES, format_func=lambda code: LANGUAGE_LABELS[code],
+                 key="coach_language", width=220)
+    strings = _s()
+    if st.session_state.get("coach_language", "en") != "en":
+        st.caption("Interface labels only. Lessons and sources stay in English until a "
+                   "reviewed translation exists.")
+    st.caption(strings["caption"])
+    st.badge("Guided preparation", icon=":material/route:")
 
-    st.caption("Based on the Medibank OSHC Member Guide, effective May 2026. "
-               "General education in English, rather than a decision about your benefits.")
+    st.caption(strings["guide_note"])
     st.caption("No lesson or checklist details are sent to the AI provider. "
                "Your progress stays in this browser session; Start again clears it.")
     _progress()
     _journey_plan()
     moment = st.segmented_control(
-        "Choose your moment", [lesson.moment for lesson in LESSONS],
+        strings["choose_moment"], [lesson.moment for lesson in LESSONS],
         default=LESSONS[0].moment, required=True, key="jc_moment", persist_state="session",
     )
     if moment not in {item.moment for item in LESSONS}:
@@ -179,6 +196,7 @@ def render():
         st.session_state.pop("jc_choice", None)
         st.session_state.pop("jc_checked", None)
         st.session_state["jc_active"] = lesson.ident
+        track(st.session_state, "coach", EventName.SCENARIO_START)
 
     learn, practise, action = st.tabs(["Learn", "Practise", "Take action"])
     with learn:
@@ -196,14 +214,15 @@ def render():
         next_lesson = LESSONS[(index + 1) % len(LESSONS)]
         st.button(f"Next: {next_lesson.moment}", key="jc_next", on_click=_select_moment,
                   args=(next_lesson.moment,), icon=":material/arrow_forward:")
-        st.button("Start again", key="jc_reset", on_click=_reset, icon=":material/restart_alt:")
+        st.button(strings["start_again"], key="jc_reset", on_click=_reset,
+                  icon=":material/restart_alt:")
 
     st.caption(f"Source: {SOURCE_DOC}, PDF page {lesson.page}, {lesson.column} column. "
                f"Saved {CAPTURED_ON}.")
-    if st.button("Read the original page in Navigator", key="jc_source", icon=":material/menu_book:"):
+    if st.button(strings["read_original"], key="jc_source", icon=":material/menu_book:"):
         st.session_state["nv_requested_page"] = lesson.page
         st.switch_page("views/2_Navigator.py")
-    with st.expander("Read the source excerpt"):
+    with st.expander(strings["read_source"]):
         st.text(sources[lesson.ident].text)
         st.markdown(f"[Publisher PDF, page {lesson.page}]({SOURCE_URL}#page={lesson.page})")
-        st.caption("The publisher link may show a newer edition. Navigator displays the saved guide.")
+        st.caption(strings["publisher_note"])

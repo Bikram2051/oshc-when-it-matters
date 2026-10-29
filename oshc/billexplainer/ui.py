@@ -15,7 +15,8 @@ from oshc.billexplainer.explanation import explain
 from oshc.billexplainer.privacy import minimise, retained_fields
 from oshc.billexplainer.mbs_reference import SourceError, compare_bill, load_snapshot
 from oshc.billexplainer.read import MAX_BYTES, MAX_CHARS, read_pdf, read_text
-from oshc.schemas import ExtractionResult
+from oshc.schemas import EventName, ExtractionResult
+from oshc.telemetry import track
 
 ROOT = Path(__file__).resolve().parents[2]
 EXAMPLES = {
@@ -95,6 +96,7 @@ def _input():
 
 
 def render():
+    track(st.session_state, "explainer", EventName.OPEN, once_key="telemetry_explainer_open")
     st.caption("NEXTBEST / AT THE MOMENT OF NEED")
     st.title("Make sense of a bill")
     st.write("See what the document says, understand the numbers, and identify what still needs checking.")
@@ -132,6 +134,7 @@ def render():
                 result, receipt = read_bill(data, kind, reader)
             st.session_state["be_result"] = {"identity": identity, "result": result.model_dump(),
                                             "receipt": asdict(receipt), "label": label, "reader": reader}
+            track(st.session_state, "explainer", EventName.DECODE_RUN)
         except (OSError, ValueError, RuntimeError):
             st.error("This example could not be read. Check the file and use the local text example.")
             return

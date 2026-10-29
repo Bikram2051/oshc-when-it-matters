@@ -10,6 +10,8 @@ import streamlit as st
 
 from oshc.care_navigation import HEALTHDIRECT_NUMBER, SERVICE_FINDER_URL, SYMPTOM_CHECKER_URL
 from oshc.policy_search import PolicySearch
+from oshc.schemas import EventName
+from oshc.telemetry import track
 from oshc.policy_source import (
     CAPTURED_ON, OMITTED_PAGES, SOURCE_DOC, SOURCE_SHA256, SOURCE_URL,
     SourceError, build_corpus,
@@ -205,6 +207,7 @@ def _preview(raw: bytes, page: int, *, width):
 
 
 def render():
+    track(st.session_state, "navigator", EventName.OPEN, once_key="telemetry_navigator_open")
     st.title("Navigator")
     st.caption("Find a practical next step, then check the original OSHC source.")
     _service_navigation()

@@ -1,0 +1,88 @@
+review_id,snippet
+PR-001,refunded very less than it should
+PR-002,suddenly demanded this additional document for refund
+PR-003,Its been over 3 months for a clearance certificate
+PR-004,once i visited doctor not getting any benefits
+PR-005,No cover while in bridging visa
+PR-006,did not know I had to pay first
+PR-007,robo system only understands five words
+PR-008,benefits offered were limited and failed to meet needs
+PR-009,Worst Experience with BUPA OSHC
+PR-010,reimbursement rates as the out of pocket cost was quite high
+GP-011,App keeps crashing when I try to upload my receipt
+GP-012,How do I find a doctor that speaks Mandarin? App doesn't say
+AS-013,Why am I paying this if I have a visa? It's just a tax.
+PR-014,"Got a bill from the hospital for emergency, thought OSHC covered it all"
+PR-015,Waited 45 mins on hold just to get my refund
+PR-016,Went to emergency for a cold because I didn't know where else to go
+GP-017,I called the ambulance but didn't know they are separate from OSHC
+AS-018,"Terrible refund policy, taking too long to give back my money when I cancelled"
+PR-019,"I didn't know I could use it for a normal GP visit, I thought it was just for hospitals"
+PR-020,Where do I find a direct billing clinic? This system is confusing
+PR-021,"They refused to pay for my glasses, didn't know extras were different"
+GP-022,Tried to get my money back but the claim form is too complicated
+AS-023,Who do I call in an emergency if I don't have my card?
+PR-024,Customer service was rude when I asked about my bridging visa
+PR-025,"Took a while to understand gap payments, but app is okay"
+PR-026,"I thought OSHC is just for visa approval, why do I have waiting periods?"
+GP-027,"Cannot log in, says my membership number is invalid"
+AS-028,How do I know if a clinic will charge me extra?
+PR-029,Waited 3 weeks for my claim to be processed.
+PR-030,"Went to a specialist, got a huge bill. Nobody told me about Medicare Benefit Schedule."
+PR-031,"I went to ED for a sprained ankle, had to wait 6 hours."
+PR-032,"No idea how to use this cover, is there a guide somewhere?"
+GP-033,App keeps freezing on the claim page
+AS-034,Where is the emergency button on this app?
+PR-035,Didn't realize mental health had a waiting period.
+PR-036,"Finally found a direct billing doctor, but it took ages to figure out how."
+PR-037,I don't understand the difference between OSHC and normal Medicare.
+PR-038,"Paid 80 dollars, only got 39 back. Why?"
+GP-039,"Useless app, just redirects to website."
+AS-040,I need a doctor now but app won't load the map.
+PR-041,"Went to hospital for a rash, they told me to go to GP instead."
+PR-042,Still waiting for my policy documents to be emailed.
+PR-043,Is there a hotline for urgent advice? I don't want to call 000.
+PR-044,They say 100% covered but I still had a gap fee at the hospital.
+PR-045,Terrible customer service on the phone.
+GP-046,Can't figure out how to book a telehealth appointment.
+AS-047,Good app but claim took 5 days.
+EX-049,"App faults, cannot login"
+EX-050,Thought I was fully covered for dental
+FM-051,"Clinic told me to pay and claim. Insurer only reimbursed $39.40 of $189.40 bill, leaving me $150 out of pocket."
+FM-052,"Hospital stay capped at $250 excess, but outpatient scans, tests, and CT scans billed separately under 'outpatient medical' for $7,000, leaving massive uncapped gaps."
+FM-053,"Charged $1,500 for emergency inter-hospital transfer. Medibank rejected claim because invoice didn't explicitly state 'clinically necessary' despite emergency rate."
+FM-054,Hypothyroidism diagnosed before travel. Panicked over 12-month pre-existing waiting period and contemplated bringing 3-month supply and faking recent symptoms to GP.
+FM-056,"Confused why Medibank only covers 25% of the MBS fee on private surgery quote, leaving a large private gap of thousands of dollars."
+FM-057,Must pay non-subsidized PBS price of over $230/month out-of-pocket because OSHC policies have a strict $50 cap per prescription item ($300/year max).
+FM-051-C1,"The pathology clinic isn't your OSHC provider, so they can't speak for how your OSHC provider processes claims. That statement on ""pay and claim"" is just what the clinic recommends, it doesn't apply to everyone's situation"
+FM-051-C2,The insurance has not paid the full amount as per your policy they expect you to pay a gap fee. You should have called them before your test.
+FM-051-C3,You want the clinic to take responsibility for your insurance coverage level?
+FM-051-C4,The gap in coverage doesn't have anything to do with the clinic.
+FM-051-C5,Responsibility for what? You were underinsured. You would be paying either way.
+FM-051-C6,Yes you are. It won't matter whether the OSHC was recorded beforehand or not; the issue is that your OSHC won't fully reimburse you.
+FM-051-C7,You were always going to be $150 out of pocket.
+FM-051-C8,Normal consumer law applies. Did they tell you it would be covered fully?
+FM-052-C1,"No you cannot negotiate hospital bills unfortunately. It would be the same for an Australian who went to a private hospital with no private health, they would have to pay $$$ out of pocket."
+FM-052-C2,Yep not being eligible for Medicare or coming from a country where we don’t have reciprocal healthcare means they would be treated as a private patient.
+FM-052-C3,Their policy cover them for 100% of the MBS amount. Their doctors charged above this level so they are being charged the gap an Australian would be.
+FM-052-C4,"Bupa can cover whatever is defined in their PDS, which is up to the MBS rate. They don’t have to pay beyond that."
+FM-052-C5,The public hospital I work at in NSW charges MBS rates to Medicare ineligible patients.
+FM-052-C6,Your policy says you are liable for the gap if you use a doctor who isn't in the BUPA Medical Gap Scheme
+FM-052-C7,"Tell them ""my bupa covered me for 100% MBS, the same as a medicare patient."""
+FM-052-C8,that's probably the grey area that bupa us getting away with.
+FM-052-C9,"Unfortunately, you have to pay what’s left. BUPA no doubt has exclusions in your contract. You’ll have to read the entire PDS to check if they have it correct."
+FM-053-C1,"If the first hospital stabilised you and then the inter-hospital trip was a patient transport, Medibank likely won't consider that medically necessary as it wasn't an emergency trip."
+FM-053-C2,It's legit and why you should always hold a seperate Ambulance membership.
+FM-053-C3,Ambulance cover through Private Health Cover only covers for medically necessary trips. Ambulance cover through Ambulance Victoria will cover any trip - approx $52 per year for Singles
+FM-053-C4,How does medibank deem what is and is not medically neccessary? Who makes that decision? Is it written somewhere? Because I can't find it anywhere.
+FM-053-C5,It boggles the mind that Medicare doesn't cover the cost of Ambulances.
+FM-053-C6,"Queensland and Tasmania cover ambulance for residents, no OOP. Other states screw their residents over."
+FM-053-C7,"You're not covered, pay up."
+FM-053-C8,"There should be a phone number on the invoice to contact the ambulance administration office, explain it to them and ask them to reissue the invoice."
+FM-053-C9,"Last year this happened to me, not a hospital but Women’s clinic that does day surgery, to the women’s l and the clinic paid for it for me.."
+FM-053-C10,If it is medically necessary then they will have to cover it. It could be as simple as getting the hospital to state that. It's likely there is a review option.
+FM-054-C1,Not sure this scheme would meet your visas character requirements.
+FM-054-C2,"The ""legal"" way to do it is serve 12 month waiting period (in most cases it is treated as an existing condition regardless)... you can get the 3 months of prescription medication from India"
+FM-054-C3,So you are asking if you should commit fraud so Australian taxpayers can pay for your medical expenses?
+FM-054-C4,"No, you absolutely should not commit fraud. Withholding critical information from an insurance provider constitutes fraud by definition—something you're essentially seeking advice on."
+FM-054-C5,Is it that bad? I stopped the medication way before even planning for Aus. I was asymptomatic while applying.

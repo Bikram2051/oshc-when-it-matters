@@ -98,10 +98,9 @@ def main():
          patch.object(adapter, "Budget", side_effect=AssertionError("Spending ledger accessed")) as ledger:
         at = AppTest.from_file(str(root / "app/Home.py"), default_timeout=30).run()
         assert not at.exception and not at.error
-        assert at.title[0].value == "A clearer next step."
-        at.button(key="home_coach").click().run()
-        assert not at.exception and at.title[0].value == "Journey Coach"
+        assert any("Your OSHC," in item.proto.body for item in at.get("html"))
         at.switch_page("views/1_Journey_Coach.py").run()
+        assert not at.exception and at.title[0].value == "Journey Coach"
         lesson = LESSONS[2]
         at.segmented_control(key="jc_moment").select(lesson.moment).run()
         for index in ((lesson.correct + 1) % len(lesson.options), lesson.correct):

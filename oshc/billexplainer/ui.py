@@ -17,6 +17,7 @@ from oshc.billexplainer.mbs_reference import SourceError, compare_bill, load_sna
 from oshc.billexplainer.read import MAX_BYTES, MAX_CHARS, read_pdf, read_text
 from oshc.schemas import EventName, ExtractionResult
 from oshc.telemetry import track
+from oshc.ui_style import lead
 
 ROOT = Path(__file__).resolve().parents[2]
 EXAMPLES = {
@@ -72,8 +73,8 @@ def _input():
     if choice in EXAMPLES:
         filename, kind, reader = EXAMPLES[choice]
         data = (ROOT / "data/demo_dev" / filename).read_bytes()
-        st.caption("Saved AI reading: replays an earlier result." if reader == "llm"
-                   else "Local reading: works without an AI request.")
+        st.caption("Invented example. Replays a saved AI reading of it." if reader == "llm"
+                   else "Invented example. Read on this computer, with no AI request.")
         return data, kind, reader, choice, True
     st.caption("Use invented data only. Do not include real invoices, names or member details.")
     kind = st.radio("Input format", ["Text", "PDF"], horizontal=True, key="be_format")
@@ -97,22 +98,8 @@ def _input():
 
 def render():
     track(st.session_state, "explainer", EventName.OPEN, once_key="telemetry_explainer_open")
-    st.caption("NEXTBEST / AT THE MOMENT OF NEED")
-    st.title("Make sense of a bill")
-    st.write("See what the document says, understand the numbers, and identify what still needs checking.")
-    st.caption("University prototype | Synthetic bills only | Local document processing")
-    with st.expander("How your bill is protected"):
-        st.markdown("**Processed on this computer.** No bill is sent to an AI provider. "
-                    "The app retains only service dates, item numbers and amounts for this session. "
-                    "Names, contact and membership details, provider identities and free-text descriptions "
-                    "are removed from the displayed result and download.")
-        st.caption("The selected upload temporarily lives in browser/server memory until cleared. "
-                   "Clear removes the app's retained result and upload widget. No bill database, "
-                   "application file storage or bill-content logging is used. This local demo is "
-                   "for invented data; it is not approved for real patient records or public hosting.")
-    if st.session_state.get("lang") == "hi":
-        st.info("This prototype screen currently uses English.")
-    st.subheader("1. Choose your example")
+    st.title("Bill Explainer")
+    lead("See what a bill shows, what it doesn't, and what to ask before you claim.")
     try:
         data, kind, reader, label, confirmed = _input()
     except OSError:
@@ -123,23 +110,24 @@ def render():
     stored = st.session_state.get("be_result")
     if not confirmed or (stored and stored["identity"] != identity):
         clear_result()
-    left, right = st.columns([3, 1])
-    run = left.button("Read this bill", type="primary", disabled=not confirmed or not data.strip(),
-                      key="be_read", width="stretch")
-    right.button("Clear", on_click=clear_all, key="be_clear", width="stretch")
+    with st.container(horizontal=True):
+        run = st.button("Read this bill", type="primary", disabled=not confirmed or not data.strip(),
+                        key="be_read")
+        st.button("Clear", on_click=clear_all, key="be_clear")
     if run:
         clear_result()
         try:
-            with st.spinner("Reading the example..."):
+            with st.spinner("Reading the bill..."):
                 result, receipt = read_bill(data, kind, reader)
             st.session_state["be_result"] = {"identity": identity, "result": result.model_dump(),
                                             "receipt": asdict(receipt), "label": label, "reader": reader}
             track(st.session_state, "explainer", EventName.DECODE_RUN)
         except (OSError, ValueError, RuntimeError):
-            st.error("This example could not be read. Check the file and use the local text example.")
+            st.error("This bill could not be read. Check the file, or try the text example.")
             return
     stored = st.session_state.get("be_result")
     if not stored:
+        _protection()
         return
     result = ExtractionResult.model_validate(stored["result"])
     # Old sessions from an earlier app version must not retain their original text.
@@ -147,11 +135,9 @@ def render():
     result = minimise(result)
     stored["result"] = result.model_dump()
     receipt = ReceiptFacts(**stored.get("receipt", {}))
-    st.divider()
-    st.subheader("2. Check what was read")
-    st.caption(stored["label"] + " | Service date: " + (result.service_date or "Not shown"))
-    with st.expander("View only the retained fields"):
-        st.json(retained_fields(result, receipt), expanded=False)
+
+    st.header("What this bill shows")
+    st.caption(f"{stored['label']}. Service date: {result.service_date or 'not shown'}.")
     if result.warnings:
         with st.expander("Reading notes", expanded=not result.line_items):
             for warning in result.warnings:
@@ -160,79 +146,79 @@ def render():
         st.warning("No bill rows were accepted. Try the text example or check the reading notes.")
         return
 
-    columns = st.columns(3)
-    columns[0].metric("Total charge shown", money(result.total_charged))
-    columns[1].metric("Insurer benefit shown", money(result.total_benefit))
-    columns[2].metric("Gap shown", money(result.total_gap))
-    st.caption("Not shown means unknown. It does not mean zero or that a claim was refused.")
-    with st.container(border=True):
-        st.subheader("Your bill, explained")
-        for message in explain(result, receipt):
-            st.markdown(message)
-        st.caption("Reading method: local labelled-table extraction. Original narrative is omitted for privacy.")
+    with st.container(horizontal=True):
+        st.metric("Total charge shown", money(result.total_charged), border=True)
+        st.metric("Insurer benefit shown", money(result.total_benefit), border=True)
+        st.metric("Gap shown", money(result.total_gap), border=True)
+    st.markdown("**Not shown means unknown.** It does not mean zero, and it does not mean a "
+                "claim was refused.")
+    st.subheader("In plain words")
+    st.markdown("\n".join(f"- {message}" for message in explain(result, receipt)))
     st.dataframe([{"Line": i, "Description": line.raw_description,
-                   "MBS item shown": line.item_number or "Not shown", "Charge": money(line.charged),
-                   "Insurer benefit shown": money(line.benefit_paid), "Gap shown": money(line.gap)}
+                   "MBS item": line.item_number or "Not shown", "Charge": money(line.charged),
+                   "Insurer benefit": money(line.benefit_paid), "Gap": money(line.gap)}
                   for i, line in enumerate(result.line_items, 1)], hide_index=True, width="stretch")
     if receipt.amount_settled is not None or receipt.balance_remaining is not None:
-        st.caption("Receipt amounts: " + " · ".join((
-            "Settled " + money(receipt.amount_settled),
-            "Balance " + money(receipt.balance_remaining),
-            "GST " + money(receipt.total_gst))))
+        st.caption(f"Receipt: settled {money(receipt.amount_settled)}, balance "
+                   f"{money(receipt.balance_remaining)}, GST {money(receipt.total_gst)}.")
 
-    with st.expander("Walk through one service line", expanded=True):
-        chosen = st.selectbox("Choose a service line", list(range(len(result.line_items))),
-                              format_func=lambda i: f"Line {i + 1} · MBS item {result.line_items[i].item_number or 'not printed'}",
-                              key="be_line")
-        line = result.line_items[chosen]
-        st.write(f"This line shows a provider charge of {money(line.charged)}. "
-                 f"Its printed insurer benefit is {money(line.benefit_paid).lower()} "
-                 f"and its printed gap is {money(line.gap).lower()}.")
-        st.caption("An MBS item identifies a service category. It does not prove the service was billed correctly or is payable under your policy.")
-
-    st.subheader("3. Explore an MBS comparison")
-    st.write("An MBS reference and a provider's charge can be different amounts. "
-             "This learning exercise does not establish what an insurer will pay.")
+    st.header("Compare with the MBS fee")
+    st.markdown("A provider's charge and the government's MBS reference fee can differ. "
+                "This shows why a gap can exist. It does not show what an insurer will pay.")
     comparison = None
     if st.toggle("Show a reference comparison", key="be_compare"):
-        st.caption("Choose a reference explicitly for each line. Available source window: 1 Aug to 28 Sep 2026.")
         try:
             snapshot = load_snapshot(ROOT / "corpus/MBS-XML-20260801.XML")
         except (OSError, SourceError):
-            st.error("Verified MBS reference data is unavailable. The document readings above are still separate.")
+            st.error("Verified MBS reference data is unavailable. The bill reading above is unaffected.")
         else:
             bases = []
             for i, line in enumerate(result.line_items, 1):
                 if not line.item_number:
-                    st.caption(f"Line {i}: no printed MBS item number; comparison unavailable.")
+                    st.caption(f"Line {i} has no MBS item number, so there is nothing to compare.")
                     bases.append(None)
                 else:
-                    selected = st.selectbox(f"Line {i}, item {line.item_number}: reference for this exercise",
+                    selected = st.selectbox(f"Line {i}, MBS item {line.item_number}: compare with",
                                             list(BASES), key=f"be_basis_{i}")
                     bases.append(BASES[selected])
             comparison = compare_bill(result, snapshot, bases)
             st.dataframe([{"Line": line.line_number, "Published amount": money(line.reference_amount, "Not available"),
                            "Amount used (capped at charge)": money(line.amount_used, "Not available"),
-                           "Illustrative difference": money(line.difference, "Not available"),
-                           "Reading": line.reason} for line in comparison.lines], hide_index=True, width="stretch")
+                           "Illustrative difference": money(line.difference, "Not available")}
+                          for line in comparison.lines], hide_index=True, width="stretch")
             if comparison.total_difference is None:
                 st.info(comparison.total_note)
             else:
                 st.metric("Total illustrative difference", money(comparison.total_difference))
-            st.caption(comparison.scope)
-            st.caption("MBS August 2026 snapshot | Captured 28 Sep 2026 | Later revisions are not checked")
+            st.caption(comparison.scope + " MBS August 2026 release, captured 28 September 2026.")
             st.link_button("Open the MBS source page", comparison.source_page)
 
-    with st.expander("Your next steps", expanded=True):
-        st.checkbox("I have checked the retained amounts against the original invoice.", key="be_check_amounts")
-        st.checkbox("I understand that the receipt balance and insurance gap are different.", key="be_check_gap")
-        st.write("Which documents should I provide with this claim?")
-        st.write("Which policy conditions affect these charges?")
-        st.write("Does this document show an insurer payment, or only a payment made to the provider?")
+    st.header("Before you claim")
+    st.checkbox("I have checked these amounts against the original invoice.", key="be_check_amounts")
+    st.checkbox("I understand the receipt balance and the insurance gap are different.", key="be_check_gap")
+    st.markdown("Questions to ask Medibank:\n"
+                "- Which documents should I provide with this claim?\n"
+                "- Which policy conditions affect these charges?\n"
+                "- Does this document show an insurer payment, or only a payment to the provider?")
     summary = {"purpose": "Synthetic teaching example; not a claim or eligibility decision",
                "reading_method": "saved AI response" if stored["reader"] == "llm" else "local rules",
                **retained_fields(result, receipt),
                "explanation": explain(result, receipt),
                "mbs_comparison": asdict(comparison) if comparison else None}
-    st.download_button("Download this teaching summary", json.dumps(summary, indent=2, default=str),
-                       file_name="synthetic_bill_summary.json", mime="application/json", key="be_download")
+    st.download_button("Download this summary", json.dumps(summary, indent=2, default=str),
+                       file_name="synthetic_bill_summary.json", mime="application/json",
+                       key="be_download", icon=":material/download:")
+    with st.expander("See exactly what the app kept"):
+        st.json(retained_fields(result, receipt), expanded=False)
+    _protection()
+
+
+def _protection():
+    with st.expander("How your bill is protected"):
+        st.markdown("The bill is read on this computer and never sent to an AI provider. The app "
+                    "keeps only service dates, item numbers and amounts for this session. Names, "
+                    "contact and membership details, provider identities and descriptions are "
+                    "removed from the result and the download.")
+        st.caption("The upload stays in memory until you select Clear. There is no bill database, "
+                   "file storage or logging of bill content. This prototype is for invented "
+                   "bills; it is not approved for real patient records or public hosting.")

@@ -3,6 +3,8 @@ address = "127.0.0.1"
 maxUploadSize = 10
 enableXsrfProtection = true
 enableCORS = true
+# Serves the bundled fonts in app/static. No network font requests.
+enableStaticServing = true
 
 [browser]
 gatherUsageStats = false
@@ -10,25 +12,101 @@ gatherUsageStats = false
 [client]
 toolbarMode = "viewer"
 
+# Brand tokens live here and only here. A partner can swap these values for their
+# own palette and typeface without touching any page code.
 [theme]
 base = "light"
-primaryColor = "#D50032"
+# Eucalyptus: calm, readable (7.6:1 on white). Red is kept for emergencies only.
+primaryColor = "#1E5B4F"
 backgroundColor = "#FFFFFF"
-secondaryBackgroundColor = "#F4F4F4"
-textColor = "#111111"
-linkColor = "#B4001F"
-borderColor = "#D6D6D6"
-blueColor = "#333333"
-blueBackgroundColor = "#F4F4F4"
-blueTextColor = "#111111"
-redColor = "#D50032"
-redBackgroundColor = "#FBE8EC"
-redTextColor = "#A3001F"
-baseRadius = "0.25rem"
-buttonRadius = "0.25rem"
+secondaryBackgroundColor = "#F2F5F3"
+textColor = "#1F2A2E"
+linkColor = "#1E5B4F"
+linkUnderline = true
+borderColor = "#CBD5D1"
 showWidgetBorder = true
-font = "sans-serif"
-headingFont = "sans-serif"
-headingFontSizes = ["2.75rem", "1.75rem", "1.25rem"]
-headingFontWeights = [800, 700, 700]
-chartCategoricalColors = ["#D50032", "#111111", "#767676", "#8C0020", "#B3B3B3"]
+baseRadius = "0.5rem"
+buttonRadius = "0.5rem"
+paddingTop = "3rem"
+# Letters: Atkinson Hyperlegible Next, designed by the Braille Institute so similar
+# letters stay distinct. Digits: plain Noto Sans numerals, because Atkinson's slashed
+# zero reads oddly in "000" and in dollar amounts. Hindi: Noto Sans Devanagari.
+font = "Atkinson Hyperlegible Next, Noto Sans Digits, Noto Sans Devanagari, sans-serif"
+headingFont = "Atkinson Hyperlegible Next, Noto Sans Digits, Noto Sans Devanagari, sans-serif"
+baseFontSize = 17
+headingFontSizes = ["2.25rem", "1.45rem", "1.15rem"]
+headingFontWeights = [700, 700, 600]
+metricValueFontSize = "1.75rem"
+metricValueFontWeight = 700
+blueColor = "#1E5B4F"
+blueBackgroundColor = "#E8F1ED"
+blueTextColor = "#17463C"
+greenColor = "#2E7D46"
+greenBackgroundColor = "#E6F3E9"
+greenTextColor = "#1D5530"
+yellowBackgroundColor = "#FFF4D6"
+yellowTextColor = "#6B4A00"
+redColor = "#B42318"
+redBackgroundColor = "#FDECEA"
+redTextColor = "#8A1C12"
+chartCategoricalColors = ["#1E5B4F", "#7FA89B", "#1F2A2E", "#B9CBC4"]
+
+[[theme.fontFaces]]
+family = "Atkinson Hyperlegible Next"
+url = "app/static/fonts/atkinson-hyperlegible-next-latin-400-normal.woff2"
+weight = "400"
+style = "normal"
+unicodeRange = "U+0000-002F, U+003A-FFFF"
+
+[[theme.fontFaces]]
+family = "Atkinson Hyperlegible Next"
+url = "app/static/fonts/atkinson-hyperlegible-next-latin-600-normal.woff2"
+weight = "600"
+style = "normal"
+unicodeRange = "U+0000-002F, U+003A-FFFF"
+
+[[theme.fontFaces]]
+family = "Atkinson Hyperlegible Next"
+url = "app/static/fonts/atkinson-hyperlegible-next-latin-700-normal.woff2"
+weight = "700"
+style = "normal"
+unicodeRange = "U+0000-002F, U+003A-FFFF"
+
+[[theme.fontFaces]]
+family = "Noto Sans Devanagari"
+url = "app/static/fonts/noto-sans-devanagari-devanagari-400-normal.woff2"
+weight = "400"
+style = "normal"
+
+[[theme.fontFaces]]
+family = "Noto Sans Devanagari"
+url = "app/static/fonts/noto-sans-devanagari-devanagari-600-normal.woff2"
+weight = "600"
+style = "normal"
+
+[[theme.fontFaces]]
+family = "Noto Sans Devanagari"
+url = "app/static/fonts/noto-sans-devanagari-devanagari-700-normal.woff2"
+weight = "700"
+style = "normal"
+
+[[theme.fontFaces]]
+family = "Noto Sans Digits"
+url = "app/static/fonts/noto-sans-digits-400-normal.woff2"
+weight = "400"
+style = "normal"
+unicodeRange = "U+0030-0039"
+
+[[theme.fontFaces]]
+family = "Noto Sans Digits"
+url = "app/static/fonts/noto-sans-digits-600-normal.woff2"
+weight = "600"
+style = "normal"
+unicodeRange = "U+0030-0039"
+
+[[theme.fontFaces]]
+family = "Noto Sans Digits"
+url = "app/static/fonts/noto-sans-digits-700-normal.woff2"
+weight = "700"
+style = "normal"
+unicodeRange = "U+0030-0039"

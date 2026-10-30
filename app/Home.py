@@ -17,19 +17,24 @@ os.environ.setdefault("OSHC_MODEL", "claude-haiku-4-5-20251001")
 import streamlit as st
 
 from oshc.home_ui import render
+from oshc.ui_style import apply as apply_style
 
 st.set_page_config(
     page_title="NextBest | OSHC When It Matters",
     page_icon=":material/health_and_safety:",
-    layout="wide",
+    layout="centered",
 )
+apply_style()
 
+# Students see five places. Partners get one page of their own. The research evidence
+# page stays reachable at /Dashboard for assessors but is not part of the product.
 page = st.navigation([
-    st.Page(render, title="Home", icon=":material/home:", default=True),
-    st.Page("views/1_Journey_Coach.py", title="Journey Coach", icon=":material/school:"),
-    st.Page("views/2_Navigator.py", title="Navigator", icon=":material/menu_book:"),
-    st.Page("views/3_Bill_Explainer.py", title="Bill Explainer", icon=":material/receipt_long:"),
-    st.Page("views/4_Ask.py", title="Ask NextBest", icon=":material/forum:"),
-    st.Page("views/5_Dashboard.py", title="Project dashboard", icon=":material/dashboard:"),
+    st.Page(render, title="Home", default=True),
+    st.Page("views/1_Journey_Coach.py", title="Journey Coach"),
+    st.Page("views/2_Navigator.py", title="Navigator"),
+    st.Page("views/3_Bill_Explainer.py", title="Bill Explainer"),
+    st.Page("views/4_Ask.py", title="Ask NextBest"),
+    st.Page("views/6_Partners.py", title="For partners"),
+    st.Page("views/5_Dashboard.py", title="Project evidence", visibility="hidden"),
 ], position="top")
 page.run()

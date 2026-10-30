@@ -8,5 +8,5 @@ import streamlit as st
 
 from oshc.coach_ui import render
 
-st.set_page_config(page_title="Journey Coach | NextBest", page_icon=":material/school:", layout="wide")
+st.set_page_config(page_title="Journey Coach | NextBest", page_icon=":material/school:", layout="centered")
 render()

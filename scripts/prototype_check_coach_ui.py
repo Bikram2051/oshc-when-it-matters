@@ -31,11 +31,10 @@ def main():
     with patch("oshc.llm._client", side_effect=AssertionError("Unexpected provider access")) as provider:
         sources = verified_sources(ROOT)
         at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=25).run()
-        at.button(key="home_coach").click().run()
+        # Home links to each moment; open the Coach page directly.
+        at.switch_page("views/1_Journey_Coach.py").run()
         assert not at.exception and not at.error
         assert at.title[0].value == "Journey Coach"
-        # Pin AppTest's page for subsequent widget reruns after programmatic navigation.
-        at.switch_page("views/1_Journey_Coach.py").run()
         for lesson in LESSONS:
             at.segmented_control(key="jc_moment").select(lesson.moment).run()
             assert at.radio(key="jc_choice").value is None

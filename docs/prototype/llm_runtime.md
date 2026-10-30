@@ -11,7 +11,7 @@ research adapter's cached-call behavior for reproducibility.
 Test responses are fabricated engineering fixtures,
 not independent evaluation labels or held-out cases.
 
-- Model: claude-haiku-4-5-20251001, text input, temperature 0.
+- Model: claude-haiku-4-5-20251001, text input. No temperature field is sent: since 30 October 2026 the provider rejects it for this model with HTTP 400. Saved results replay from the cache.
 - Price basis checked 2026-10-01: USD 1 per million input tokens and USD 5
   per million output tokens. No provider tools, prompt caching or thinking.
 - Local allowance: USD 8 for calls recorded by this ledger. The AUD 20 project

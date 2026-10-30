@@ -160,6 +160,7 @@ def complete(prompt: str, *, model=None, temperature=0.0, max_tokens=1024,
     if system:
         request["system"] = system
     key = _digest(json.dumps({"version": 2, "request": request,
+                              # Kept so committed cache entries still replay.
                               "max_tokens": max_tokens, "temperature": 0},
                              sort_keys=True, ensure_ascii=False))
     # Private chat has no replay cache. Use an unlinkable accounting identifier,
@@ -189,8 +190,10 @@ def complete(prompt: str, *, model=None, temperature=0.0, max_tokens=1024,
         padded_input = max(count + 1024, (count * 11 + 9) // 10)
         ticket = budget.reserve(key, padded_input + 5 * max_tokens)
         try:
+            # No temperature field: the provider now rejects it for this model
+            # (HTTP 400 "Extra inputs are not permitted", observed 30 October 2026).
+            # Reproducible results already come from cache replay, not sampling settings.
             message = client.messages.create(**request, max_tokens=max_tokens,
-                                             extra_body={"temperature": 0},
                                              service_tier="standard_only")
         except Exception as exc:
             raise _provider_failure(exc) from None

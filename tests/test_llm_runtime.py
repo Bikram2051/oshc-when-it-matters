@@ -70,7 +70,9 @@ def test_offline_never_contacts_provider(runtime, monkeypatch, offline, enable):
 def test_cache_replay_and_usage(runtime, monkeypatch):
     fake, budget = runtime
     assert llm.complete("cache me", system="instruction") == "hello"
-    assert fake.requests[0]["extra_body"] == {"temperature": 0}
+    # The provider now rejects a temperature field for this model (HTTP 400, 30 Oct 2026).
+    assert "temperature" not in fake.requests[0]
+    assert "temperature" not in (fake.requests[0].get("extra_body") or {})
     assert budget.status()["spent_or_reserved"] == 0.0002
     monkeypatch.setenv("OSHC_OFFLINE", "1")
     assert llm.complete("cache me", system="instruction") == "hello"
@@ -315,7 +317,7 @@ def test_installed_sdk_request_and_response_without_network(runtime, monkeypatch
         if request.url.path == "/v1/messages/count_tokens":
             return httpx2.Response(200, json={"input_tokens": 100})
         assert request.url.path == "/v1/messages"
-        assert payload["temperature"] == 0
+        assert "temperature" not in payload
         assert payload["max_tokens"] == 1024
         assert payload["service_tier"] == "standard_only"
         return httpx2.Response(200, json={

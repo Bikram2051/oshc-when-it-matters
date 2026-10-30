@@ -8,5 +8,5 @@ import streamlit as st
 
 from oshc.navigator_ui import render
 
-st.set_page_config(page_title="Navigator | NextBest", page_icon=":material/menu_book:", layout="centered")
+st.set_page_config(page_title="Navigator | OSHC When It Matters", page_icon=":material/menu_book:", layout="centered")
 render()

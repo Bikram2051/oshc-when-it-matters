@@ -1,4 +1,4 @@
-# Live NextBest demonstration
+# Live OSHC When It Matters demonstration
 
 The [campus demo verification](campus_demo_verification_2026-10-15.json) records
 662 passing software tests and the final three-topic live rehearsal. Earlier
@@ -7,7 +7,7 @@ development abstentions are retained in that report; this is not an unseen evalu
 ## Before presenting
 
 1. Complete setup and source verification as described in the repository README.
-   Use the `main` branch. Start with `./Start_NextBest.ps1 -ResetCounts`; use `-Offline` if the
+   Use the `main` branch. Start with `./Start_OSHC.ps1 -ResetCounts`; use `-Offline` if the
    network fails. The run sheet for 2 November is in
    [medibank_final_demo_2026-11-02.md](medibank_final_demo_2026-11-02.md).
 2. Configure the private value of `OSHC_API_KEY` in the ignored root `.env` or
@@ -17,14 +17,14 @@ development abstentions are retained in that report; this is not an unseen evalu
    new report filename. A successful check exits with code 0. Missing credentials,
    an abstention or a failed check exits with code 2; resolve that before promising
    a live answer. This synthetic check is not an unseen safety evaluation.
-5. Start `./Start_NextBest.ps1` on Windows and open `http://127.0.0.1:8502`.
+5. Start `./Start_OSHC.ps1` on Windows and open `http://127.0.0.1:8502`.
    The Ask page must no longer show the missing-key warning. Use invented
    questions and invoices throughout the presentation.
 
 In VS Code, activate the environment that has the installed project dependencies,
 then run `python -m streamlit run app/Home.py --server.port 8502` from the repository
 root. Keep that terminal running throughout the demo. If the new clone's `.venv`
-is incomplete, use `./Start_NextBest.ps1 -Python 'path/to/working/python.exe'`.
+is incomplete, use `./Start_OSHC.ps1 -Python 'path/to/working/python.exe'`.
 Journey Coach and Navigator work with live chat enabled; they do not require an
 offline-mode restart and do not make model calls for lessons, checklists or browsing.
 
@@ -43,7 +43,7 @@ offline-mode restart and do not make model calls for lessons, checklists or brow
   charges, paid amount and outstanding balance. Receipt settlement does not tell
   us the insurer's benefit or the student's final out-of-pocket cost. Show an MBS
   comparison only when the printed item supports it.
-- **Ask NextBest:** type a general custom question, such as “What documents are
+- **Ask a question:** type a general custom question, such as “What documents are
   generally required to submit a medical claim online?” Wait for the complete
   checked answer, then open its cited passages and Response checks. Every answer
   requires local checks, a model input review, grounded generation and a separate

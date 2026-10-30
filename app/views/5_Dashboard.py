@@ -8,5 +8,5 @@ import streamlit as st
 
 from oshc.dashboard_ui import render
 
-st.set_page_config(page_title="Project evidence | NextBest", page_icon=":material/dashboard:", layout="wide")
+st.set_page_config(page_title="Project evidence | OSHC When It Matters", page_icon=":material/dashboard:", layout="wide")
 render()

@@ -1,4 +1,4 @@
-"""For partners: how to link NextBest from existing channels, and how a pilot is measured."""
+"""For partners: how to link OSHC When It Matters from existing channels, and how a pilot is measured."""
 import sys
 from pathlib import Path
 
@@ -8,5 +8,5 @@ import streamlit as st
 
 from oshc.partner_ui import render
 
-st.set_page_config(page_title="For partners | NextBest", page_icon=":material/handshake:", layout="centered")
+st.set_page_config(page_title="For partners | OSHC When It Matters", page_icon=":material/handshake:", layout="centered")
 render()

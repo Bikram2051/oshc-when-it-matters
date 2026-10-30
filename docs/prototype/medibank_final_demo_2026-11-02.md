@@ -1,4 +1,4 @@
-# NextBest: Medibank final demonstration, 2 November 2026
+# OSHC When It Matters: Medibank final demonstration, 2 November 2026
 
 BA403, 12:00 to 1:30 pm. Ten-minute face-to-face slot. Medibank representatives attend.
 The brief for this session: show how the solution works and how it addresses the
@@ -10,7 +10,7 @@ word-for-word lines; this file keeps the click path, recovery and sources in the
 |---|---|
 | Bikram | Opening, Bill Explainer, close and the ask |
 | Minhaj | Journey Coach, Navigator, For partners |
-| Aayush | Ask NextBest and the safety boundary |
+| Aayush | Ask a question and the safety boundary |
 
 The person speaking does not drive the laptop. The next presenter drives, so every
 hand-over is also a seat change, not a pause.
@@ -19,7 +19,7 @@ hand-over is also a seat change, not a pause.
 
 ## The pitch in one sentence
 
-NextBest teaches the few OSHC ideas students get wrong, at the moments they already
+OSHC When It Matters teaches the few OSHC ideas students get wrong, at the moments they already
 pass through, and never tells a student something about their own cover that only
 Medibank can confirm.
 
@@ -53,9 +53,9 @@ The Hindi interface strings are reviewed. Lessons and sources stay in English.
 2. Phone hotspot ready as a second network.
 3. Start live mode with clean pilot counts:
    ```powershell
-   .\Start_NextBest.ps1 -ResetCounts
+   .\Start_OSHC.ps1 -ResetCounts
    ```
-4. Open `http://127.0.0.1:8502`. On Ask NextBest, confirm there is no missing-key
+4. Open `http://127.0.0.1:8502`. On Ask a question, confirm there is no missing-key
    warning. Ask one warm-up question, then click **Clear chat**. (The Ask page records
    no pilot counts, so this does not change the For partners page.)
 5. Leave the app on **Home**. Keep this runbook printed.
@@ -75,7 +75,7 @@ Of 36 that showed a real comprehension gap, 20 came down to two things: what is
 covered, and how to claim. Most OSHC education reaches students as a website or an
 orientation talk, at a point when they have no reason to care yet.
 
-NextBest is not another app. It is a set of short learning moments designed to sit in
+OSHC When It Matters is not another app. It is a set of short learning moments designed to sit in
 channels Medibank and universities already own: the offer letter, the pre-departure
 email, the student portal, and the moment a student is holding a bill. Today it runs as
 a web prototype, so you can see the whole flow in ten minutes."
@@ -130,7 +130,7 @@ location or identity."
 **Say:**
 "This is the moment our research says students get stuck: they paid a clinic and
 think that means they were covered. The receipt shows AUD 245 settled and a zero
-balance. NextBest explains that a zero balance is the clinic's account, not the
+balance. The app explains that a zero balance is the clinic's account, not the
 student's insurance gap, and it shows the insurer benefit as unknown rather than
 guessing. Unknown is not zero.
 
@@ -139,10 +139,10 @@ a 90 dollar charge against a 45 dollar 5 cent reference. That explains why a gap
 exist. It is not a prediction of what Medibank will pay, and the app says so. The bill
 is read on this computer; nothing is sent to an AI provider."
 
-### 6:00 to 8:15 · Aayush · Ask NextBest
+### 6:00 to 8:15 · Aayush · Ask a question
 
 **Do:**
-1. Open **Ask NextBest**. Type: *What documents are generally required to submit a
+1. Open **Ask a question**. Type: *What documents are generally required to submit a
    medical claim online?* Wait for the full answer. Open the first source and
    **Response checks**.
 2. Type: *Am I covered for physiotherapy?* Show the referral to Medibank.
@@ -157,7 +157,7 @@ any check fails, the student sees fixed wording instead of a draft. Each checked
 costs a little over one cent on the smallest Claude model.
 
 Now the boundary. Whether I am covered for physio is a question about one person's
-policy. NextBest does not guess; it sends the student to Medibank, which is the only
+policy. It does not guess; it sends the student to Medibank, which is the only
 party that can answer it.
 
 And a symptom question never gets triage. It gets healthdirect's 24-hour line, the
@@ -198,7 +198,7 @@ Thank you."
 
 | Problem | Action | Say |
 |---|---|---|
-| Venue Wi-Fi fails before Ask | Ctrl+C, then `.\Start_NextBest.ps1 -Offline`. In Ask, use the starter **How do I make a claim?**, then the physio and cold questions. All three work offline | "Without the network, Ask uses curated answers from the same guide passages." |
+| Venue Wi-Fi fails before Ask | Ctrl+C, then `.\Start_OSHC.ps1 -Offline`. In Ask, use the starter **How do I make a claim?**, then the physio and cold questions. All three work offline | "Without the network, Ask uses curated answers from the same guide passages." |
 | A live answer abstains | Do not retype variations. Move to the physio question | "When a check cannot be satisfied, it abstains rather than guessing. That is the design." |
 | App stops | Restart with the same command once | |
 | Restart fails | Play the recorded rehearsal from the matching timestamp | "This is the run we recorded on Saturday." |

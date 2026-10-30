@@ -116,7 +116,7 @@ ACTIVITIES = {
 def action_card(lesson: Lesson, checked: tuple[bool, ...] = ()) -> bytes:
     """Make a fixed-content reminder; never include learner-entered free text."""
     activity = ACTIVITIES[lesson.ident]
-    lines = ["NextBest | My next-step card", lesson.moment, lesson.title, "",
+    lines = ["OSHC When It Matters: my next-step card", lesson.moment, lesson.title, "",
              "My next step", lesson.action, "", "Preparation self-check"]
     for index, item in enumerate(activity.checklist):
         done = index < len(checked) and checked[index] is True

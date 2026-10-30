@@ -1,4 +1,4 @@
-"""NextBest entry point. Run: streamlit run app/Home.py."""
+"""OSHC When It Matters entry point. Run: streamlit run app/Home.py."""
 import os
 import sys
 from pathlib import Path
@@ -20,11 +20,12 @@ from oshc.home_ui import render
 from oshc.ui_style import apply as apply_style
 
 st.set_page_config(
-    page_title="NextBest | OSHC When It Matters",
+    page_title="OSHC When It Matters",
     page_icon=":material/health_and_safety:",
     layout="centered",
 )
 apply_style()
+st.logo(str(Path(__file__).parent / "static/brand/wordmark.svg"), size="small")
 
 # Students see five places. Partners get one page of their own. The research evidence
 # page stays reachable at /Dashboard for assessors but is not part of the product.
@@ -33,7 +34,7 @@ page = st.navigation([
     st.Page("views/1_Journey_Coach.py", title="Journey Coach"),
     st.Page("views/2_Navigator.py", title="Navigator"),
     st.Page("views/3_Bill_Explainer.py", title="Bill Explainer"),
-    st.Page("views/4_Ask.py", title="Ask NextBest"),
+    st.Page("views/4_Ask.py", title="Ask a question"),
     st.Page("views/6_Partners.py", title="For partners"),
     st.Page("views/5_Dashboard.py", title="Project evidence", visibility="hidden"),
 ], position="top")

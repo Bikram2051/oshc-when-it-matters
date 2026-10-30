@@ -57,7 +57,7 @@ def _links():
         items.append(f"- **{moment}.** {channel}.  \n  [{path}]({url})")
     with st.container(key="partner_links"):
         st.markdown("\n".join(items))
-    st.caption("Paths work on whichever address hosts NextBest. To show a moment inside your "
+    st.caption("Paths work on whichever address hosts OSHC When It Matters. To show a moment inside your "
                "own page, add embed=true (for example ?embed=true, or &embed=true after "
                "another parameter).")
 
@@ -89,7 +89,7 @@ def _yours():
 
 def render():
     st.title("For partners")
-    lead("NextBest is built to sit inside the channels you already run.")
+    lead("OSHC When It Matters is built to sit inside the channels you already run.")
     _links()
     _measures()
     _yours()

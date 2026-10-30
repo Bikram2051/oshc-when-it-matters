@@ -312,7 +312,7 @@ def _provenance(evidence, measurements):
 
 def render():
     st.title("Project dashboard")
-    st.caption("NEXTBEST · Evidence and project progress")
+    st.caption("OSHC When It Matters: evidence and project progress")
     st.info("Saved project evidence and frozen automated evaluations. Opening this page does not "
             "rerun checks. Each result retains its scope, uncertainty and limitations.")
 

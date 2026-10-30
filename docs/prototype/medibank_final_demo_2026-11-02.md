@@ -58,7 +58,9 @@ The Hindi interface strings are reviewed. Lessons and sources stay in English.
 4. Open `http://127.0.0.1:8502`. On Ask a question, confirm there is no missing-key
    warning. Ask one warm-up question, then click **Clear chat**. (The Ask page records
    no pilot counts, so this does not change the For partners page.)
-5. Leave the app on **Home**. Keep this runbook printed.
+5. Leave the app on **Home** with the sidebar open, so the team names show under the
+   logo. If the sidebar is closed, click the arrows beside the red OSHC badge. Keep
+   this runbook printed.
 
 ---
 

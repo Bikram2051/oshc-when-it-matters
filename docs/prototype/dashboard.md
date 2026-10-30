@@ -1,6 +1,7 @@
 # Project dashboard
 
-Open **Project dashboard** from the top navigation. It is a presenter view of
+Open **For partners** in the sidebar, then **Research evidence and evaluation results**
+(or go to `/Dashboard`). It is a presenter view of
 saved evidence and remaining work, rather than a live usage-telemetry system.
 
 ## Four views

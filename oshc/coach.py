@@ -1,17 +1,80 @@
-"""coach. Skeleton only. See D5_technical_architecture_plan_v2.md section 5 and 6.
+"""Simple keyness ranking for Journey Coach."""
 
-Fill the bodies against the frozen types in oshc/schemas.py. Do not change the
-signatures without agreement recorded in the minutes.
-"""
 from __future__ import annotations
+
+import csv
+import math
+import re
+from collections import Counter
+from pathlib import Path
+
+from wordfreq import word_frequency
 
 
 def keyness_ranked_terms(top_k: int = 30) -> list[tuple[str, float]]:
-    """Rank OSHC jargon in the 87-record corpus against wordfreq general frequencies.
+    """Rank OSHC terms from the 87-record review corpus."""
 
-    This ranked list decides which glossary cards exist and in what order. It is
-    corpus-driven term selection, not a learning system, and is labelled that way.
+    data_file = (
+        Path(__file__).resolve().parents[1]
+        / "data"
+        / "gold"
+        / "coach_keyness_corpus.csv"
+    )
 
-    Owner: Minhaj Rahman. Reviewer: Bikram Bhattarai.
-    """
-    raise NotImplementedError("Week 8 gate.")
+    words = []
+
+    with open(data_file, encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+
+        for row in reader:
+            snippet = row["snippet"].lower()
+
+            found_words = re.findall(
+                r"[A-Za-z]+(?:['-][A-Za-z]+)*",
+                snippet,
+            )
+
+            words.extend(found_words)
+
+    counts = Counter(words)
+    total_words = len(words)
+
+    # These are not useful glossary terms.
+    excluded_words = {
+        "medibank",
+        "bupa",
+        "app",
+        "commit",
+        "waited",
+    }
+
+    results = []
+
+    for word, count in counts.items():
+        if count < 2:
+            continue
+
+        if len(word) < 3:
+            continue
+
+        if word in excluded_words:
+            continue
+
+        corpus_frequency = count / total_words
+        general_frequency = word_frequency(word, "en")
+
+        if general_frequency == 0:
+            general_frequency = 0.000000001
+
+        score = math.log10(
+            corpus_frequency / general_frequency
+        )
+
+        results.append((word, round(score, 4)))
+
+    results.sort(
+        key=lambda item: item[1],
+        reverse=True,
+    )
+
+    return results[:top_k]

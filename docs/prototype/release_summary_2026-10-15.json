@@ -1,0 +1,208 @@
+{
+  "kind": "Final frozen demo aggregate evaluation",
+  "created_at_utc": "2026-10-15T09:00:41.761374+00:00",
+  "independent_of_implementation": true,
+  "human_assessment": false,
+  "source_reports": {
+    "docs/prototype/unseen_chat_final_2026-10-15.json": "2a59e460527b443a0dfb9eb77c6094823a6a9a752b391416fd49e5ff98ab5455",
+    "docs/prototype/independent_retrieval_2026-10-15.json": "daea8c6c5f2e9ce6b712b939572ba81a18ba4dfc260e4cf211570d22688b7516",
+    "docs/prototype/chat_freeze_release_final_2026-10-15.json": "c5ecf6ae2d4e0cae2c060b0c6ab53f850e510170e759338540b13207e1ec0104"
+  },
+  "runtime_files": [
+    {
+      "path": "oshc/student_chat.py",
+      "sha256": "922cb1ccd4b3c4c6eb8aa414e150049b2b3b94fa0a3adc158d60b00c18fe0eac"
+    },
+    {
+      "path": "oshc/curated_answers.py",
+      "sha256": "8ebb2a90a65a7a16ff03cb6414401f7b4c5dd404427c4a1726a72658e86085a3"
+    },
+    {
+      "path": "oshc/guardrail.py",
+      "sha256": "4b9cb298990c2262b119b619420ea69b16a481fdf79d20f6344a5809a7884e07"
+    },
+    {
+      "path": "oshc/policy_source.py",
+      "sha256": "d351c871b6db024748e98e2dc866edd78a8ab1d26a3c56556f10b76c2fa99699"
+    },
+    {
+      "path": "oshc/policy_search.py",
+      "sha256": "520095a1f01d57073cf5e873225ca541ee8a5282db2ba526ec5f457e6ae82943"
+    },
+    {
+      "path": "oshc/schemas.py",
+      "sha256": "eb5dc61240ba005c622fd59a3ee58d9cf4f35e5b7656982775d29b8542ed8de0"
+    },
+    {
+      "path": "oshc/chat_emergency.py",
+      "sha256": "a1660c8b79359aefeb5943728224134f93c953868dc1caf44c1e246ed8ea5c27"
+    }
+  ],
+  "chat": {
+    "total": 50,
+    "refusal_recall": {
+      "k": 24,
+      "n": 24,
+      "rate": 1.0,
+      "ci95": [
+        0.862,
+        1.0
+      ]
+    },
+    "false_refusal_rate": {
+      "k": 6,
+      "n": 20,
+      "rate": 0.3,
+      "ci95": [
+        0.1455,
+        0.519
+      ]
+    },
+    "emergency_recall": {
+      "k": 6,
+      "n": 6,
+      "rate": 1.0,
+      "ci95": [
+        0.6097,
+        1.0
+      ]
+    },
+    "exceptions": 0,
+    "provider_calls": 0,
+    "composer_calls": 0
+  },
+  "retrieval": {
+    "hit_at_1": {
+      "k": 18,
+      "n": 25,
+      "rate": 0.72,
+      "ci95": [
+        0.5242,
+        0.8572
+      ]
+    },
+    "hit_at_5": {
+      "k": 23,
+      "n": 25,
+      "rate": 0.92,
+      "ci95": [
+        0.7503,
+        0.9778
+      ]
+    },
+    "mrr_at_5": 0.8,
+    "all_50_hit_at_5": {
+      "k": 23,
+      "n": 50,
+      "rate": 0.46,
+      "ci95": [
+        0.3297,
+        0.596
+      ]
+    },
+    "unsupported_mbs_queries": 25,
+    "ambiguous_queries": 31,
+    "distinct_queries": 48
+  },
+  "candidate_history": [
+    {
+      "report_sha256": "9eff70d50205b4fb8b67a8673883e3d90a067c9adc7bed33993025f7997bd222",
+      "refusal_recall": {
+        "k": 24,
+        "n": 24,
+        "rate": 1.0,
+        "ci95": [
+          0.862,
+          1.0
+        ]
+      },
+      "false_refusal_rate": {
+        "k": 15,
+        "n": 20,
+        "rate": 0.75,
+        "ci95": [
+          0.5313,
+          0.8881
+        ]
+      },
+      "emergency_recall": {
+        "k": 3,
+        "n": 6,
+        "rate": 0.5,
+        "ci95": [
+          0.1876,
+          0.8124
+        ]
+      }
+    },
+    {
+      "report_sha256": "a5b8d3c522a51c0f0abc87338bfb646c89a4dbd121fdc2733019467a2e9df271",
+      "refusal_recall": {
+        "k": 24,
+        "n": 24,
+        "rate": 1.0,
+        "ci95": [
+          0.862,
+          1.0
+        ]
+      },
+      "false_refusal_rate": {
+        "k": 17,
+        "n": 20,
+        "rate": 0.85,
+        "ci95": [
+          0.6396,
+          0.9476
+        ]
+      },
+      "emergency_recall": {
+        "k": 6,
+        "n": 6,
+        "rate": 1.0,
+        "ci95": [
+          0.6097,
+          1.0
+        ]
+      }
+    },
+    {
+      "report_sha256": "2a59e460527b443a0dfb9eb77c6094823a6a9a752b391416fd49e5ff98ab5455",
+      "refusal_recall": {
+        "k": 24,
+        "n": 24,
+        "rate": 1.0,
+        "ci95": [
+          0.862,
+          1.0
+        ]
+      },
+      "false_refusal_rate": {
+        "k": 6,
+        "n": 20,
+        "rate": 0.3,
+        "ci95": [
+          0.1455,
+          0.519
+        ]
+      },
+      "emergency_recall": {
+        "k": 6,
+        "n": 6,
+        "rate": 1.0,
+        "ci95": [
+          0.6097,
+          1.0
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "One automated assessor per unseen probe pack and one source-only retrieval assessor; no human consensus.",
+    "Earlier candidate scores retained. Different packs are not a paired improvement experiment.",
+    "False refusals remain 6/20 valid general requests. This finite vocabulary may abstain on unsupported phrasing.",
+    "Exact source binding is provenance, not proof of semantic correctness or clinical safety.",
+    "25 MBS queries are outside deployed guide-only search.",
+    "Narrative invoice layouts are unsupported; new invoice micro-F1 is 0.3226.",
+    "Human coding consensus, student learning impact, real-invoice accuracy and production security remain unmeasured."
+  ]
+}

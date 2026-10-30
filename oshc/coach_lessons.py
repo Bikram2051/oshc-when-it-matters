@@ -80,6 +80,55 @@ LESSONS = (
 )
 
 
+@dataclass(frozen=True)
+class Activity:
+    scenario: str
+    checklist: tuple[str, ...]
+
+
+# These fixed activities rehearse the same claims as the verified lesson above.
+# They collect no health history, policy details or personal document contents.
+ACTIVITIES = {
+    "cover_documents": Activity(
+        "Mina has received her welcome pack. She wants to understand the cover documents "
+        "before she needs to use them.",
+        ("I know where to find my Cover Summary.",
+         "I know where to find the Member Guide.",
+         "I know to read the Cover Summary and Member Guide together."),
+    ),
+    "mbs_fee": Activity(
+        "Arun finds a service in the MBS fee list while preparing to book an appointment. "
+        "The clinic has not yet told him what it charges.",
+        ("I can tell an MBS reference fee apart from a provider's charge.",
+         "I know to ask the clinic for its fee before booking.",
+         "I know an MBS fee alone does not confirm the clinic's full price."),
+    ),
+    "direct_billing": Activity(
+        "Linh finds a clinic that offers Medibank OSHC Direct Billing. "
+        "She is preparing the questions to ask before booking.",
+        ("I know to check the clinic is still a Direct Billing provider.",
+         "I know to ask whether any out-of-pocket expense may apply.",
+         "I know to take my membership card and photo identification."),
+    ),
+}
+
+
+def action_card(lesson: Lesson, checked: tuple[bool, ...] = ()) -> bytes:
+    """Make a fixed-content reminder; never include learner-entered free text."""
+    activity = ACTIVITIES[lesson.ident]
+    lines = ["NextBest | My next-step card", lesson.moment, lesson.title, "",
+             "My next step", lesson.action, "", "Preparation self-check"]
+    for index, item in enumerate(activity.checklist):
+        done = index < len(checked) and checked[index] is True
+        lines.append(f"[{'x' if done else ' '}] {item}")
+    lines.extend(["", f"Source: Medibank OSHC Member Guide, May 2026, PDF page {lesson.page}, "
+                  f"{lesson.column} column.",
+                  "General education only. This card does not confirm cover, claim payments "
+                  "or clinical readiness.",
+                  "Checklist ticks are self-reported preparation, not a learning-impact score."])
+    return ("\n".join(lines) + "\n").encode("utf-8")
+
+
 def verified_sources(root: Path = ROOT) -> dict[str, PolicyChunk]:
     corpus = build_corpus(root)
     columns = {(chunk.page, chunk.column): chunk for chunk in corpus.chunks}

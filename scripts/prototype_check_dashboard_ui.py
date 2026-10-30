@@ -1,64 +1,121 @@
-"""Check the evidence browser against existing reports without rerunning those checks."""
+"""Check the current dashboard while preserving every saved evidence report."""
+import argparse
+import hashlib
 import json
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from streamlit.testing.v1 import AppTest  # noqa: E402
-from oshc.evidence_dashboard import EVALUATIONS, PASSED, load_evidence, summary_bytes  # noqa: E402
-from oshc.llm_budget import Budget  # noqa: E402
-from scripts.prototype_check_policy_source import fingerprints  # noqa: E402
+from streamlit.testing.v1 import AppTest
+
+from oshc.evidence_dashboard import PASSED, load_evidence, summary_bytes
+from oshc.policy_source import SOURCE_DOC
+from oshc.project_progress import RECORDED, evaluation_rows, load_measurements
 
 
-def main():
-    output = ROOT / "docs/prototype/dashboard_ui_check.json"
+def source_fingerprints():
+    """Hash an explicit public-source/cache allowlist; never inspect private runtime."""
+    names = ("corpus/MANIFEST.csv", f"corpus/{SOURCE_DOC}",
+             "corpus/MBS-XML-20260801.XML", "data/mbs/mbs.sqlite",
+             "data/rules/benefit_rules.csv", "data/rules/SOURCES.md")
+    paths = [ROOT / name for name in names]
+    paths.extend(sorted((ROOT / "cache/llm/v2").glob("*.json")))
+    return {path.relative_to(ROOT).as_posix():
+            hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+            for path in paths}
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--out", type=Path, default=Path("docs/prototype/dashboard_ui_check.json"),
+                        help="New JSON report path, relative to the repository or absolute.")
+    args = parser.parse_args(argv)
+    output = args.out if args.out.is_absolute() else ROOT / args.out
     if output.exists():
-        raise SystemExit("The Dashboard check report already exists. Keep it for review.")
+        raise SystemExit(f"Report already exists: {output}. Preserve it and choose a new --out.")
     if os.getenv("OSHC_OFFLINE") != "1" or os.getenv("OSHC_ENABLE_LIVE") != "0":
         raise SystemExit("Run with OSHC_OFFLINE=1 and OSHC_ENABLE_LIVE=0.")
-    budget = Budget()
-    before_budget, before_files = budget.status(), fingerprints()
-    with patch("oshc.llm._client", side_effect=AssertionError("Unexpected provider access")) as provider:
-        evidence = load_evidence(ROOT)
-        for item in evidence:
-            print(f"{item.component}: {item.status}; {item.detail}")
-        if not all(item.status == PASSED for item in evidence):
-            raise SystemExit("Some saved reports need review. No Dashboard check report was written.")
-        before_reports = summary_bytes(evidence)
+
+    before_files = source_fingerprints()
+    evidence = load_evidence(ROOT)
+    measurements = load_measurements(ROOT)
+    before_reports = summary_bytes(evidence)
+    before_measurements = {key: item.sha256 for key, item in measurements.items()}
+    from oshc.dashboard_ui import NOT_MEASURED, status_rows
+    from oshc.final_results import load_final
+    expected_rows = status_rows(measurements, load_final(ROOT))
+    passing = sum(item.status == PASSED for item in evidence)
+    linked = sum(row["Status"] not in (NOT_MEASURED, "Not linked here") for row in expected_rows)
+
+    with (
+        patch("oshc.llm._client", side_effect=AssertionError("Unexpected provider access"))
+        as provider,
+        patch("oshc.llm.complete", side_effect=AssertionError("Unexpected model call"))
+        as complete,
+        patch("oshc.llm_budget.Budget.__init__",
+              side_effect=AssertionError("Unexpected budget/ledger access")) as budget,
+    ):
         at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=25).run()
-        at.switch_page("pages/4_Dashboard.py").run()
-        assert not at.exception and not at.error and not at.warning
-        assert at.title[0].value == "Prototype evidence"
-        assert at.metric[0].value == "6 of 6"
-        assert list(at.dataframe[0].value["Status"]) == [PASSED] * 6
-        assert len(at.dataframe[1].value) == len(EVALUATIONS)
-        assert set(at.dataframe[1].value["Status"]) == {"Not linked here"}
+        at.switch_page("views/5_Dashboard.py").run()
+        assert not at.exception and not at.error
+        assert at.title[0].value == "Project dashboard"
+        assert [tab.label for tab in at.tabs] == [
+            "Overview", "Results", "Safety", "Evidence & sources"]
+        assert at.metric[0].value == f"{passing} of {len(evidence)}"
+        assert at.metric[1].value == f"{linked} of {len(expected_rows)}"
+        assert list(at.dataframe[0].value["Status"]) == [item.status for item in evidence]
+        assert list(at.dataframe[1].value["Status"]) == [row["Status"] for row in expected_rows]
+        assert bool(at.warning) == (passing != len(evidence))
         assert len(at.get("download_button")) == 1
-        assert len(json.loads(before_reports)["reports"]) == 6
+        assert len(json.loads(before_reports)["reports"]) == len(evidence)
         provider.assert_not_called()
+        complete.assert_not_called()
+        budget.assert_not_called()
+
+    after_measurements = {key: item.sha256 for key, item in load_measurements(ROOT).items()}
     if before_reports != summary_bytes(load_evidence(ROOT)):
-        raise AssertionError("An input report changed.")
-    if before_budget != budget.status() or before_files != fingerprints():
-        raise AssertionError("A protected file or spending ledger changed.")
+        raise AssertionError("An engineering input report changed.")
+    if before_measurements != after_measurements:
+        raise AssertionError("An aggregate measurement report changed.")
+    if before_files != source_fingerprints():
+        raise AssertionError("An allowlisted public source or replay cache changed.")
     result = {
-        "checked_at_utc": datetime.now(timezone.utc).isoformat(),
-        "scope": "Dashboard integration check. Historical checks were not rerun.",
+        "checked_at_utc": datetime.now(UTC).isoformat(),
+        "scope": "Current dashboard integration; historical checks and evaluations not rerun.",
+        "dashboard_page": "views/5_Dashboard.py",
+        "tabs": [tab.label for tab in at.tabs],
+        "engineering_report_count": len(evidence),
+        "recorded_passing_report_count": passing,
+        "evaluation_group_count": len(expected_rows),
+        "linked_result_group_count": linked,
         "input_report_sha256": {item.file: item.sha256 for item in evidence},
-        "six_reports_displayed": True, "independent_metrics_not_fabricated": True,
-        "summary_export_available": True, "input_reports_unchanged": True,
-        "protected_files_unchanged": True, "budget_unchanged": True, "additional_api_calls": 0,
+        "measurement_report_sha256": {
+            item.file: item.sha256 for item in measurements.values()},
+        "source_cache_sha256": before_files,
+        "report_statuses_match_validated_inputs": True,
+        "missing_results_not_fabricated": True,
+        "summary_export_available": True,
+        "input_reports_unchanged": True,
+        "measurement_reports_unchanged": True,
+        "allowlisted_public_sources_and_cache_unchanged": True,
+        "provider_calls": provider.call_count,
+        "llm_calls": complete.call_count,
+        "budget_initializations": budget.call_count,
+        "private_runtime_inspected": False,
+        "additional_api_calls": 0,
     }
+    output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("x", encoding="utf-8", newline="\n") as handle:
         json.dump(result, handle, indent=2)
         handle.write("\n")
-    print("Dashboard: PASS; six historical reports and explicit evaluation gaps.")
-    print("Additional API calls: 0; reports, protected files and budget unchanged.")
-    print("Budget:", json.dumps(budget.status(), indent=2))
+    print(f"Dashboard: PASS; {len(evidence)} saved reports, {linked} linked result groups.")
+    print("Provider calls: 0; model calls: 0; budget initializations: 0.")
+    print("Saved reports, allowlisted sources and cache unchanged. Private runtime not inspected.")
     print("Wrote:", output)
 
 

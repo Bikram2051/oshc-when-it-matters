@@ -1,5 +1,9 @@
 # LLM bill extractor
 
+This describes the research extractor API. The current Bill Explainer processes
+uploads locally and only replays existing synthetic AI examples with
+`cache_only=True`; a missing saved example never becomes a provider request.
+
 Uses the existing frozen
 ExtractionResult and LineItem interfaces and the existing budgeted LLM adapter.
 
@@ -24,9 +28,11 @@ ExtractionResult and LineItem interfaces and the existing budgeted LLM adapter.
 ## Operation
 
 Call `oshc.billexplainer.extract_llm.extract(text_or_billtext)`.
-Offline is the default. The existing adapter requires both OSHC_OFFLINE=0 and
+The standalone adapter requires both OSHC_OFFLINE=0 and
 OSHC_ENABLE_LIVE=1 to make a paid request. Use synthetic development bills only
 for the prototype's paid requests and committed cache examples.
+These are research API settings; the normal application now starts with live
+chat enabled while bill examples remain cache-only.
 
 Input limit: 18,000 UTF-8 bytes and 500 lines. At most 20 proposed rows.
 Output token limit: 3,072. Oversized inputs are rejected, never silently truncated.

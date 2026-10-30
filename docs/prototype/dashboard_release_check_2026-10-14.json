@@ -1,0 +1,50 @@
+{
+  "checked_at_utc": "2026-10-14T08:35:49.065819+00:00",
+  "scope": "Current dashboard integration; historical checks and evaluations not rerun.",
+  "dashboard_page": "views/5_Dashboard.py",
+  "tabs": [
+    "Overview",
+    "Results",
+    "Safety",
+    "Evidence & sources"
+  ],
+  "engineering_report_count": 7,
+  "recorded_passing_report_count": 7,
+  "evaluation_group_count": 6,
+  "linked_result_group_count": 1,
+  "input_report_sha256": {
+    "docs/prototype/bill_ui_check.json": "94ee5bfbb0be663e08a145ac5eb5fb6aea6e1d8da82d72980964fb207d0e16c6",
+    "docs/prototype/mbs_reference_check.json": "9685baae2fe0aa2916c8c4d7716b24b489dce7b47e1b0f1e7e59eb75e10862ba",
+    "docs/prototype/mbs_source_check.json": "ab81d387df1427925787eab611eee7f0498de8334b3cb4b52b983be73f08e936",
+    "docs/prototype/policy_source_check.json": "5ad645e3bcea8542dbd6dbc6e757572079f447d55613b9774eb27e62ebd5f394",
+    "docs/prototype/navigator_ui_check.json": "0049dba52684c8d798ea45a5630feddb54dd7c300fa9c817fb7b72165424de01",
+    "docs/prototype/coach_ui_check.json": "0fee4b01afc2538292f6421390e43bdc870dd776a05e471bbf4fd263dffa259b",
+    "docs/prototype/ask_ui_check.json": "ce489a5f6f192a19bbb10c662c311a1259fa7d96ea0a97836f144071306690af"
+  },
+  "measurement_report_sha256": {
+    "data/agreement/agreement_2026-10-13.json": "f44761b1d47c3b971703ca0601be2c4e5cae802d48aecdf49834e870aebcabc7",
+    "docs/prototype/ask_ui_check.json": "ce489a5f6f192a19bbb10c662c311a1259fa7d96ea0a97836f144071306690af",
+    "docs/prototype/seminar_guardrail_summary_2026-10-05.json": "25fdbafe203e2675a066903978e335f5a65147e8b260b4835810968d614af02d"
+  },
+  "source_cache_sha256": {
+    "corpus/MANIFEST.csv": "0c6eb30da03e7b180d6e5564f151cb89b5053aeb3ebd6983b53d8e3a0fd014df",
+    "corpus/Medibank_OSHC_Member_Guide.pdf": "6ca7151567ee2b61f8e6b50340c297d50deb249a013f055ef38f50ed07ec87c7",
+    "corpus/MBS-XML-20260801.XML": "c5c04792cbdc7017589b4453aa4506f26b6cfcbfeaee3b0d6c866a8050b06565",
+    "data/mbs/mbs.sqlite": "eeca641a80d3a4ccf6310428b488d7b4041cfc308a64e793fa54d05462ebb11a",
+    "data/rules/benefit_rules.csv": "de1aa21439c0bf90cdbd80e8b330dbc715020af3299f00fd9408b00bb171afd5",
+    "data/rules/SOURCES.md": "7cd066495cdf989aaf754cc3ebca96b9758f02695c34c676fefee5cef799c67f",
+    "cache/llm/v2/3f85f25a9e65976aaa59cf24bb4212078958e05480464753c1b1588762796384.json": "7a106055ff0b9e513bcc21510ce32347c5f26b71fdd7313dc0a2d1839128cabd",
+    "cache/llm/v2/79edc78aed0b2db4131b17dd5ff136e5e14f94371f7acdcc998e0ec85f8e4134.json": "524d579fd8c39c3d7a880be6ef374fc1a2d506f9dbabda237071c8a8eff46bb6"
+  },
+  "report_statuses_match_validated_inputs": true,
+  "missing_results_not_fabricated": true,
+  "summary_export_available": true,
+  "input_reports_unchanged": true,
+  "measurement_reports_unchanged": true,
+  "allowlisted_public_sources_and_cache_unchanged": true,
+  "provider_calls": 0,
+  "llm_calls": 0,
+  "budget_initializations": 0,
+  "private_runtime_inspected": false,
+  "additional_api_calls": 0
+}

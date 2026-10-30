@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import argparse
+import ast
+import hashlib
 import json
 import subprocess
 import sys
@@ -12,32 +14,119 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from packaging.requirements import Requirement  # noqa: E402
-from packaging.utils import canonicalize_name, parse_wheel_filename  # noqa: E402
-from scripts.prototype_verify_demo import environment, signature, safe_path, verify_files  # noqa: E402
+from packaging.requirements import Requirement
+from packaging.utils import canonicalize_name, parse_wheel_filename
+
+from scripts.prototype_verify_demo import (
+    REQUIRED_CHECKS,
+    environment,
+    safe_path,
+    signature,
+    verify_files,
+)
 
 ROOT_PACKAGES = ("streamlit==1.64.0", "pydantic==2.13.5", "pymupdf==1.28.2",
                  "rank-bm25==0.2.2", "python-dotenv==1.2.3")
 FILES = (
-    "app/Home.py", "app/pages/1_Journey_Coach.py", "app/pages/2_Navigator.py",
-    "app/pages/3_Bill_Explainer.py", "app/pages/4_Dashboard.py",
+    "app/Home.py", "app/views/1_Journey_Coach.py", "app/views/2_Navigator.py",
+    "app/views/3_Bill_Explainer.py", "app/views/4_Ask.py", "app/views/5_Dashboard.py",
+    ".streamlit/config.toml",
     "oshc/__init__.py", "oshc/billexplainer/__init__.py",
+    "oshc/home_ui.py", "oshc/ask_ui.py", "oshc/student_chat.py", "oshc/curated_answers.py", "oshc/guardrail.py",
+    "oshc/chat_emergency.py", "oshc/care_navigation.py",
+    "oshc/live_chat.py",
+    "oshc/final_results.py",
+    "oshc/config.py", "oshc/project_progress.py",
     "oshc/schemas.py", "oshc/llm.py", "oshc/llm_budget.py", "oshc/policy_source.py",
     "oshc/policy_search.py", "oshc/navigator_ui.py", "oshc/coach_lessons.py",
-    "oshc/coach_ui.py", "oshc/evidence_dashboard.py", "oshc/dashboard_ui.py",
+    "oshc/coach_ui.py", "oshc/coach_strings.py", "oshc/telemetry.py",
+    "oshc/evidence_dashboard.py", "oshc/dashboard_ui.py",
     "oshc/billexplainer/read.py", "oshc/billexplainer/extract_rules.py",
+    "oshc/billexplainer/extract_document.py", "oshc/billexplainer/explanation.py",
+    "oshc/billexplainer/privacy.py", "data/demo_dev/receipt_reader_example.txt",
     "oshc/billexplainer/extract_llm.py", "oshc/billexplainer/mbs_reference.py",
     "oshc/billexplainer/ui.py", "data/demo_dev/rules_reader_example.txt",
     "data/demo_dev/rules_reader_example.pdf", "data/demo_dev/llm_reader_example.txt",
     "corpus/MANIFEST.csv", "corpus/Medibank_OSHC_Member_Guide.pdf",
     "corpus/MBS-XML-20260801.XML",
+    "data/agreement/agreement_2026-10-13.json",
+    "docs/prototype/seminar_guardrail_summary_2026-10-05.json",
+    "docs/prototype/current_evaluation_final_2026-10-15.json",
+    "docs/prototype/bill_evaluation_2026-10-14.json",
+    "docs/prototype/classifier_summary_2026-10-15.json",
+    "docs/prototype/release_summary_2026-10-15.json",
+    "docs/prototype/security.md",
+    "docs/prototype/final_demo_2026-10-15.md",
+    "docs/prototype/final_results_manifest.json",
     "cache/llm/v2/79edc78aed0b2db4131b17dd5ff136e5e14f94371f7acdcc998e0ec85f8e4134.json",
 ) + tuple(f"docs/prototype/{name}_check.json" for name in (
-    "bill_ui", "mbs_reference", "mbs_source", "policy_source", "navigator_ui", "coach_ui", "dashboard_ui"))
+    "bill_ui", "mbs_reference", "mbs_source", "policy_source", "navigator_ui", "coach_ui",
+    "dashboard_ui", "ask_ui"))
+AGREEMENT_FILE = "data/agreement/agreement_2026-10-13.json"
 SOURCE_HASHES = {
     "corpus/Medibank_OSHC_Member_Guide.pdf": "6ca7151567ee2b61f8e6b50340c297d50deb249a013f055ef38f50ed07ec87c7",
     "corpus/MBS-XML-20260801.XML": "c5c04792cbdc7017589b4453aa4506f26b6cfcbfeaee3b0d6c866a8050b06565",
 }
+
+
+def runtime_imports(root, files):
+    """Discover local runtime imports without executing code or reading private data.
+
+    Every imported oshc module and its package initialisers must be allowlisted.
+    AST traversal includes imports inside functions and imported package members.
+    """
+    required = set()
+
+    def include(module):
+        if module != "oshc" and not module.startswith("oshc."):
+            return
+        parts = module.split(".")
+        for length in range(1, len(parts)):
+            parent = "/".join(parts[:length]) + "/__init__.py"
+            if (root / parent).is_file():
+                required.add(parent)
+        base = "/".join(parts)
+        for candidate in (base + ".py", base + "/__init__.py"):
+            if (root / candidate).is_file():
+                required.add(candidate)
+                return
+        raise ValueError(f"Cannot resolve a local runtime import: {module}")
+
+    for name in files:
+        if not name.endswith(".py"):
+            continue
+        tree = ast.parse(safe_path(root, name).read_text(encoding="utf-8-sig"), filename=name)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    include(alias.name)
+            elif isinstance(node, ast.ImportFrom):
+                module = node.module or ""
+                if node.level:
+                    package = name.removesuffix(".py").split("/")[:-1]
+                    parents = package[:len(package) - node.level + 1]
+                    module = ".".join(parents + ([module] if module else []))
+                include(module)
+                if module == "oshc" or module.startswith("oshc."):
+                    for alias in node.names:
+                        child = module + "." + alias.name
+                        base = child.replace(".", "/")
+                        if (root / (base + ".py")).is_file() or (root / base / "__init__.py").is_file():
+                            include(child)
+    return required
+
+
+def agreement_payload(path):
+    """Export validated aggregate statistics only; never copy per-record coding data."""
+    from oshc.project_progress import _agreement
+
+    with path.open("rb") as handle:
+        raw = handle.read(1_000_001)
+    if len(raw) > 1_000_000:
+        raise ValueError("Agreement report exceeds the export limit.")
+    stamp, values = _agreement(json.loads(raw.decode("utf-8-sig")))
+    aggregate = {"computed_at_utc": stamp, "n": values["Gap"]["n"], "results": values}
+    return (json.dumps(aggregate, indent=2, sort_keys=True) + "\n").encode("utf-8")
 
 
 def write_json(path, value, mode="x"):
@@ -72,7 +161,7 @@ def installed_lock(roots=ROOT_PACKAGES, lookup=distribution):
 
 
 def git(*args):
-    result = subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True)
+    result = subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True, check=False)
     if result.returncode:
         raise ValueError("Git check failed: " + result.stderr.strip())
     return result.stdout.strip()
@@ -81,15 +170,20 @@ def git(*args):
 def build(out):
     if out.exists() or out.is_relative_to(ROOT):
         raise ValueError("Choose a new output folder outside the repository.")
+    missing = runtime_imports(ROOT, FILES) - set(FILES)
+    if missing:
+        raise ValueError("Runtime imports missing from inventory: " + ", ".join(sorted(missing)))
     git("diff", "--exit-code", "HEAD", "--", *FILES)
     tracked = set(git("ls-files", "--", *FILES).splitlines())
     if set(FILES) - set(SOURCE_HASHES) - tracked:
         raise ValueError("A required runtime file is not tracked. Review the inventory first.")
     pins = installed_lock()
-    originals = {}
+    originals, transformed = {}, {}
     for name in FILES:
         path = safe_path(ROOT, name)
         originals[name] = signature(path)
+        if name == AGREEMENT_FILE:
+            transformed[name] = agreement_payload(path)
         if name in SOURCE_HASHES and originals[name]["sha256"] != SOURCE_HASHES[name]:
             raise ValueError(f"Frozen source hash differs: {name}")
     extras = {
@@ -103,14 +197,19 @@ def build(out):
         destination = out / name
         destination.parent.mkdir(parents=True, exist_ok=True)
         with destination.open("xb") as handle:
-            handle.write((ROOT / name).read_bytes())
-        if signature(destination) != originals[name]:
+            handle.write(transformed[name] if name in transformed else (ROOT / name).read_bytes())
+        expected = originals[name]
+        if name in transformed:
+            expected = {"sha256": hashlib.sha256(transformed[name]).hexdigest(),
+                        "bytes": len(transformed[name])}
+        if signature(destination) != expected or signature(ROOT / name) != originals[name]:
             raise ValueError(f"File changed while copying: {name}")
     for name, value in extras.items():
         with (out / name).open("xb") as handle:
             handle.write(value)
     manifest = {"format": 1, "sealed": False, "source_commit": git("rev-parse", "HEAD"),
                 "environment": environment(), "dependencies": pins,
+                "aggregate_only_exports": sorted(transformed),
                 "files": {name: signature(out / name) for name in (*FILES, *extras)}}
     write_json(out / "package_manifest.json", manifest)
     print(f"Copied {len(manifest['files'])} allowlisted files; pinned {len(pins)} runtime distributions.")
@@ -150,22 +249,22 @@ def seal(out):
     print(f"Sealed package with {len(wheels)} locally saved, SHA-256-pinned wheels.")
 
 
-def archive(out, proof):
+def archive(out, proof, report=None):
     manifest = verify_files(out)
     record = json.loads(proof.read_text(encoding="utf-8"))
-    required = {"home_coach_source_handoff", "three_bill_flows_and_comparisons",
-                "dashboard_scope", "offline_cache_miss_blocked"}
     if (record.get("manifest_sha256") != signature(out / "package_manifest.json")["sha256"]
             or record.get("source_commit") != manifest["source_commit"]
             or record.get("environment") != manifest.get("environment")
-            or set(record.get("checks", {})) != required
+            or set(record.get("checks", {})) != REQUIRED_CHECKS
             or not all(value is True for value in record["checks"].values())
             or type(record.get("provider_calls")) is not int or record["provider_calls"] != 0
             or type(record.get("ledger_accesses")) is not int or record["ledger_accesses"] != 0
             or record.get("package_files_unchanged") is not True):
         raise ValueError("Fresh-environment proof does not match this sealed package.")
     target = out.parent / "NextBest-demo.zip"
-    report = ROOT / "docs/prototype/demo_package_check.json"
+    report = Path(report) if report is not None else ROOT / "docs/prototype/demo_package_check.json"
+    if report.resolve().is_relative_to(out.resolve()) or not report.parent.is_dir():
+        raise ValueError("Choose a report path outside the package in an existing folder.")
     receipt = target.with_suffix(".zip.sha256")
     if target.exists() or report.exists() or receipt.exists():
         raise ValueError("An archive or evidence report already exists. Preserve it for review.")
@@ -189,6 +288,8 @@ def main():
     parser.add_argument("action", choices=("build", "seal", "archive"))
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--proof", type=Path)
+    parser.add_argument("--report", type=Path,
+                        help="New archive evidence path; defaults to the historical report name.")
     args = parser.parse_args()
     out = args.out.resolve()
     if args.action == "build":
@@ -196,7 +297,7 @@ def main():
     elif args.action == "seal":
         seal(out)
     elif args.proof:
-        archive(out, args.proof)
+        archive(out, args.proof, report=args.report)
     else:
         raise ValueError("Archive requires --proof.")
 

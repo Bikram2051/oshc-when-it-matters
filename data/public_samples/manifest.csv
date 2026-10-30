@@ -1,0 +1,2 @@
+file_name,source_url,collected_on,sha256,note
+medibank_private_health_statement_sample.pdf,https://www.medibank.com.au/content/dam/retail/members/private-health-insurance-statement.pdf,2026-10-13,7e95ab8537bc95301844982f9715944d15053b8378ceec2d8d90c5f0d5ef298e,Official public Medibank sample statement used for Week 8 real-world sample collection.

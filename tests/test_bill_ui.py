@@ -46,7 +46,7 @@ def sandbox(tmp_path, monkeypatch):
 
 def app():
     at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=15).run()
-    at.switch_page("pages/3_Bill_Explainer.py").run()
+    at.switch_page("views/3_Bill_Explainer.py").run()
     assert not at.exception
     return at
 
@@ -99,12 +99,36 @@ def test_custom_input_and_confirmation_changes_invalidate_results(sandbox):
     assert not at.exception
 
 
+def test_uploaded_narrative_is_not_retained_or_rendered(sandbox):
+    at = app()
+    at.selectbox(key="be_example").select(ui.CUSTOM).run()
+    at.text_area(key="be_text").set_value(TEXT.replace("Short consultation", "Secret Person 999999999")).run()
+    at.checkbox(key="be_synthetic").check().run()
+    at.button(key="be_read").click().run()
+    assert not at.exception
+    assert "Secret Person" not in repr(at.session_state["be_result"])
+    assert "999999999" not in repr(at.session_state["be_result"])
+    assert "text" not in at.session_state["be_result"]
+    assert "Secret Person" not in repr([item.value for item in at.dataframe])
+
+
 def test_cache_miss_stays_offline_and_shows_no_amounts(sandbox):
     at = app()
     at.selectbox(key="be_example").select("GP visit: saved AI reading").run()
     at.button(key="be_read").click().run()
     assert not at.exception and not at.metric
     assert any("No bill rows" in warning.value for warning in at.warning)
+
+
+def test_saved_cache_miss_cannot_send_bill_when_chat_is_live(sandbox, monkeypatch):
+    monkeypatch.setenv("OSHC_OFFLINE", "0")
+    monkeypatch.setenv("OSHC_ENABLE_LIVE", "1")
+    at = app()
+    at.selectbox(key="be_example").select("GP visit: saved AI reading").run()
+    at.button(key="be_read").click().run()
+    assert not at.exception and not at.metric
+    assert any("No bill rows" in warning.value for warning in at.warning)
+    sandbox.assert_not_called()
 
 
 def test_saved_result_is_not_reextracted_when_reference_changes(sandbox, monkeypatch):
@@ -116,6 +140,7 @@ def test_saved_result_is_not_reextracted_when_reference_changes(sandbox, monkeyp
     at.toggle(key="be_compare").set_value(True).run()
     at.selectbox(key="be_basis_1").select("Published 100% benefit").run()
     saved.assert_called_once()
+    assert saved.call_args.kwargs == {"cache_only": True}
     assert not at.exception
     assert at.metric[1].value == "Not shown"
 
@@ -130,8 +155,13 @@ def test_unverified_reference_preserves_only_document_readings(sandbox, monkeypa
     assert any("reference data is unavailable" in error.value for error in at.error)
 
 
-@pytest.mark.parametrize("name,value", [("OSHC_OFFLINE", "0"), ("OSHC_ENABLE_LIVE", "1")])
-def test_unsafe_runtime_is_blocked_before_reading(sandbox, monkeypatch, name, value):
-    monkeypatch.setenv(name, value)
+@pytest.mark.parametrize("choice", ["GP visit: text example", "GP visit: PDF example"])
+def test_local_reading_works_while_chat_is_live(sandbox, monkeypatch, choice):
+    monkeypatch.setenv("OSHC_OFFLINE", "0")
+    monkeypatch.setenv("OSHC_ENABLE_LIVE", "1")
     at = app()
-    assert at.error and not at.metric and not at.button
+    at.selectbox(key="be_example").select(choice).run()
+    at.button(key="be_read").click().run()
+    assert not at.exception and not at.error
+    assert at.metric[0].value == "AUD 105.00"
+    sandbox.assert_not_called()

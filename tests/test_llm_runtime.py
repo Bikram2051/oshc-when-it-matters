@@ -81,6 +81,51 @@ def test_cache_replay_and_usage(runtime, monkeypatch):
         llm.complete("cache me", system="instruction", max_tokens=1025)
 
 
+def test_private_completion_never_reads_or_writes_replay_cache(runtime):
+    fake, budget = runtime
+    fake.responses = [response("public cached response"), response("private first"), response("private second")]
+    assert llm.complete("same question") == "public cached response"
+    before = {p.name: p.read_bytes() for p in llm.CACHE_DIR.iterdir()}
+    assert llm.complete("same question", cache=False) == "private first"
+    assert llm.complete("same question", cache=False) == "private second"
+    assert {p.name: p.read_bytes() for p in llm.CACHE_DIR.iterdir()} == before
+    assert len(fake.requests) == 3 and budget.status()["unsettled_calls"] == 0
+    with budget._transaction() as db:
+        ids = [r[0] for r in db.execute("SELECT request_hash FROM calls")]
+    assert len(set(ids)) == 3
+
+
+def test_cache_only_miss_cannot_send_a_bill_in_live_mode(runtime):
+    fake, _ = runtime
+    with pytest.raises(llm.CacheMiss):
+        llm.complete("synthetic bill not cached", cache_only=True)
+    assert fake.requests == [] and fake.count_requests == []
+    assert not llm.CACHE_DIR.exists()
+
+
+def test_private_json_does_not_create_cache(runtime):
+    runtime[0].responses = [response('{"value":7}')]
+    assert llm.complete_json("private question", Result, cache=False).value == 7
+    assert not llm.CACHE_DIR.exists()
+
+
+def test_existing_budget_can_be_selected_without_reset(monkeypatch, tmp_path):
+    original = Budget(tmp_path / "existing.sqlite")
+    original.initialize()
+    original.reserve("already-used", 20_000)
+    monkeypatch.setenv("OSHC_BUDGET_LEDGER", str(original.path))
+    assert Budget().status()["spent_or_reserved"] == 0.02
+    assert Budget().path == original.path
+
+
+def test_missing_selected_budget_is_not_silently_initialised(monkeypatch, tmp_path):
+    path = tmp_path / "missing.sqlite"
+    monkeypatch.setenv("OSHC_BUDGET_LEDGER", str(path))
+    with pytest.raises(BudgetError):
+        Budget().status()
+    assert not path.exists()
+
+
 @pytest.mark.parametrize("kwargs", [dict(model="other-model"), dict(image_path="x.png"),
                                    dict(max_tokens=4097), dict(temperature=0.5)])
 def test_unsupported_requests_are_not_sent(runtime, kwargs):
@@ -109,6 +154,56 @@ def test_failed_call_keeps_reservation_across_restart(runtime):
     assert state["spent_or_reserved"] == 0.001624
     assert state["unsettled_calls"] == 1
     assert len(fake.requests) == 1
+
+
+@pytest.mark.parametrize("stage", ["count", "message"])
+@pytest.mark.parametrize("status,kind", [
+    (401, "authentication"), (403, "permission"), (429, "rate_limit"),
+    (500, "provider"), (400, "provider"),
+])
+def test_provider_failure_category_never_exposes_provider_body(runtime, stage, status, kind):
+    import anthropic
+    import httpx2
+
+    fake, budget = runtime
+    request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+    error = anthropic.APIStatusError(
+        "SECRET provider body including private prompt",
+        response=httpx2.Response(status, request=request), body={"secret": "PRIVATE"})
+    if stage == "count":
+        def fail_count(**kwargs):
+            raise error
+        fake.count_tokens = fail_count
+    else:
+        fake.responses = [error]
+    with pytest.raises(llm.ProviderError) as captured:
+        llm.complete("private question", cache=False)
+    assert captured.value.kind == kind
+    assert "SECRET" not in str(captured.value) and "PRIVATE" not in str(captured.value)
+    assert "private question" not in str(captured.value)
+    assert captured.value.__suppress_context__
+    assert budget.status()["unsettled_calls"] == (1 if stage == "message" else 0)
+    assert not llm.CACHE_DIR.exists()
+
+
+@pytest.mark.parametrize("timeout", [False, True])
+def test_connection_and_timeout_failures_have_safe_category(runtime, timeout):
+    import anthropic
+    import httpx2
+
+    request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+    error_type = anthropic.APITimeoutError if timeout else anthropic.APIConnectionError
+    runtime[0].responses = [error_type(request=request)]
+    with pytest.raises(llm.ProviderError) as captured:
+        llm.complete("private question", cache=False)
+    assert captured.value.kind == "connection"
+    assert runtime[1].status()["unsettled_calls"] == 1
+
+
+def test_missing_key_is_a_configuration_failure(monkeypatch):
+    monkeypatch.setattr(llm, "_api_key", lambda: None)
+    with pytest.raises(llm.ConfigurationError):
+        llm._client()
 
 
 @pytest.mark.parametrize("stop", ["max_tokens", "refusal", "tool_use"])

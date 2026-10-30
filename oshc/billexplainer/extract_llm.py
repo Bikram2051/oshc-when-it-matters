@@ -176,7 +176,8 @@ def _metadata(field, reference, lines, warnings):
     return parse(raw)
 
 
-def extract(source: str | BillText) -> ExtractionResult:
+def extract(source: str | BillText, *, cache_only: bool = False) -> ExtractionResult:
+    """Verify selected evidence; cache_only prevents bill transmission in the UI."""
     bill = read_text(source) if isinstance(source, str) else source
     warnings = list(bill.warnings)
 
@@ -199,7 +200,8 @@ def extract(source: str | BillText) -> ExtractionResult:
     prompt = json.dumps({'bill_lines': [{'line': index, 'text': text}
                                       for index, text in enumerate(lines, 1)]}, ensure_ascii=False)
     try:
-        draft = complete_json(prompt, BillEvidence, system=SYSTEM, max_tokens=3072, repair=False)
+        draft = complete_json(prompt, BillEvidence, system=SYSTEM, max_tokens=3072,
+                              repair=False, cache_only=cache_only)
     except (LLMError, BudgetError) as error:
         warnings.append(f'LLM extraction unavailable ({type(error).__name__}); no bill values returned. Check cache or budget status before retrying.')
         return result()

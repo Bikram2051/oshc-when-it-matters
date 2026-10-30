@@ -1,0 +1,26 @@
+{
+  "archive_bytes": 105743145,
+  "archive_sha256": "4518c67e030cea19e709e50a24e79150cf709771af511665c96c42e5d542f91e",
+  "checked_at_utc": "2026-10-14T08:35:30.621224+00:00",
+  "checks": {
+    "dashboard_scope": true,
+    "guarded_student_chat": true,
+    "home_coach_source_handoff": true,
+    "offline_cache_miss_blocked": true,
+    "three_bill_flows_and_comparisons": true
+  },
+  "environment": {
+    "implementation": "CPython",
+    "machine": "AMD64",
+    "python": "3.13.9",
+    "system": "Windows"
+  },
+  "ledger_accesses": 0,
+  "manifest_sha256": "b481ab1603f70c2d241bb7e60b6f392206bd6e3ac9e9dbe4a684d4e1b9101f92",
+  "package_files_unchanged": true,
+  "packaged_files": 97,
+  "provider_calls": 0,
+  "runtime_distributions": 44,
+  "scope": "Fresh-environment demo integration check; not independent accuracy evaluation.",
+  "source_commit": "d9a2737cf285884f2aa8b42e41d7209e6ac00866"
+}

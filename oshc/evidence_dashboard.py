@@ -1,4 +1,4 @@
-"""Read six saved engineering reports. No evaluations run here."""
+"""Read the saved engineering reports. No evaluations run here."""
 from __future__ import annotations
 
 import hashlib
@@ -22,6 +22,8 @@ SPECS = (
     ("policy_source", "Policy search", "Six known-topic searches; not held-out Recall@5."),
     ("navigator_ui", "Navigator", "Fixed-topic excerpts and PDF navigation; not conversational safety."),
     ("coach_ui", "Journey Coach", "Three authored lessons and session practice; not learning impact."),
+    ("ask_ui", "Ask a question",
+     "Guardrail order and in-house probe retrieval; neither probe set is held out."),
 )
 EVALUATIONS = (
     "Human coding agreement (kappa)", "Classification macro-F1 and shift gap",
@@ -129,6 +131,34 @@ def validate(key, record):
             require(type(row.get("pdf_page")) is int
                     and row["pdf_page"] == NAV_PAGES[row["topic"]], "Topic page differs.")
         return "6 topic checks and PDF navigation recorded."
+    if key == "ask_ui":
+        require(record.get("generated_answers") is False
+                and record.get("composer_reachable") is False
+                and record.get("question_text_persisted") is False
+                and record.get("guardrail_runs_before_retrieval") is True,
+                "Ask page scope differs.")
+        require(type(record.get("top_k")) is int and record["top_k"] == 5,
+                "Recorded result count differs.")
+        results = {}
+        for field in ("gold_guide_wording", "dev_student_wording"):
+            block = record.get(field)
+            require(isinstance(block, dict), f"Missing {field}.")
+            scored = block.get("allowed_and_scored")
+            require(type(scored) is int and scored > 0, f"No scored probes in {field}.")
+            for metric in ("recall_at_5", "recall_at_1", "mrr"):
+                value = block.get(metric)
+                require(type(value) is float and 0.0 <= value <= 1.0,
+                        f"Invalid {metric} in {field}.")
+            require(isinstance(block.get("detail"), list)
+                    and len(block["detail"]) >= scored, f"Incomplete detail in {field}.")
+            results[field] = block
+        gap = record.get("recall_at_5_gap")
+        require(type(gap) is float, "Missing the wording gap.")
+        dev = results["dev_student_wording"]
+        gold = results["gold_guide_wording"]
+        return (f"Student wording Recall@5 {dev['recall_at_5']:.0%} on {dev['allowed_and_scored']} "
+                f"probes, against {gold['recall_at_5']:.0%} for the guide's own wording. "
+                f"In-house probes, not held out.")
     require(key == "coach_ui", "Unknown report type.")
     flags(record, "home_navigation", "navigator_page_handoff", "progress_reset")
     require(record.get("learning_effectiveness_measured") is False

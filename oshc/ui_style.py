@@ -127,11 +127,11 @@ def lead(text: str) -> None:
     st.html(f"<p class='nb-lead'>{escape(text)}</p>")
 
 
-# Who built this. Roles follow the module ownership table in README.md.
+# Who built this, with the project roles the team agreed on 31 October 2026.
 TEAM = (
-    ("Bikram Bhattarai", "Bill Explainer and evaluation"),
-    ("Md Minhaj Rahman", "Journey Coach and measurement"),
-    ("Aayush Khade", "AI answers and safety"),
+    ("Bikram Bhattarai", "Team lead"),
+    ("Md Minhaj Rahman", "Learning design and analytics"),
+    ("Aayush Khade", "AI and safety engineer"),
 )
 
 

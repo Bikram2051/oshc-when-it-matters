@@ -3,12 +3,13 @@
 BA403, 12:00 to 1:30 pm. Ten-minute face-to-face slot. Medibank representatives attend.
 The brief for this session: show how the solution works and how it addresses the
 Medibank challenge. This runbook replaces the source-only notes in
-`demo_10min_and_qa.md` for this session.
+`demo_10min_and_qa.md` for this session. The team's shared script carries the
+word-for-word lines; this file keeps the click path, recovery and sources in the repository.
 
 | Presenter | Owns on the day |
 |---|---|
 | Bikram | Opening, Bill Explainer, close and the ask |
-| Minhaj | Journey Coach, Navigator, pilot measures |
+| Minhaj | Journey Coach, Navigator, For partners |
 | Aayush | Ask NextBest and the safety boundary |
 
 The person speaking does not drive the laptop. The next presenter drives, so every
@@ -56,7 +57,7 @@ The Hindi interface strings are reviewed. Lessons and sources stay in English.
    ```
 4. Open `http://127.0.0.1:8502`. On Ask NextBest, confirm there is no missing-key
    warning. Ask one warm-up question, then click **Clear chat**. (The Ask page records
-   no pilot counts, so this does not change the dashboard.)
+   no pilot counts, so this does not change the For partners page.)
 5. Leave the app on **Home**. Keep this runbook printed.
 
 ---
@@ -64,7 +65,7 @@ The Hindi interface strings are reviewed. Lessons and sources stay in English.
 ## Run sheet
 
 Times include clicking and pauses. Hold the checkpoints: Coach by 1:00, Bill Explainer
-by 4:00, Ask by 6:00, dashboard by 8:15.
+by 4:00, Ask by 6:00, For partners by 8:15.
 
 ### 0:00 to 1:00 · Bikram · Home
 
@@ -82,13 +83,13 @@ a web prototype, so you can see the whole flow in ten minutes."
 ### 1:00 to 3:15 · Minhaj · Journey Coach
 
 **Do:**
-1. Open **Journey Coach**. Point to the three progress tiles at 0.
-2. Choose the moment **Before an appointment**. Show the **Learn** tab briefly.
-3. **Practise** tab. Choose *"Nothing. Direct billing guarantees every charge is paid in
+1. On **Home**, click **Check direct billing and possible costs** on the journey line.
+2. Pause on the lesson for five seconds.
+3. Under **Try it**, choose *"Nothing. Direct billing guarantees every charge is paid in
    full."* and click **Check my answer**. Read the feedback.
 4. Choose *"Whether any out-of-pocket expenses may apply."* and check again.
-5. **Take action** tab. Tick the three steps, **Save my checklist**, point to
-   **Keep my next-step card**.
+5. Under **Keep a next step**, tick the three steps, **Save my checklist**, point to
+   **Download my next-step card**.
 6. Switch **Language** to **हिन्दी**, then back to English.
 
 **Say:**
@@ -106,8 +107,8 @@ statement is a compliance risk, not a typo."
 
 ### 3:15 to 4:00 · Minhaj · Navigator
 
-**Do:** Click **Read the original page in Navigator**. Show PDF page 28. Scroll up to
-**GP appointment** and the **healthdirect Service Finder** button.
+**Do:** Click **Read the original page in Navigator**, just under the lesson. Show page 28.
+Scroll up to **GP appointment** and the **Find a service near you** button.
 
 **Say:**
 "Every lesson is traceable to the page of the Medibank member guide it came from.
@@ -163,21 +164,21 @@ And a symptom question never gets triage. It gets healthdirect's 24-hour line, t
 official Symptom Checker, and an explanation of GP, pharmacy and telehealth options.
 Emergency wording always goes to 000 first."
 
-### 8:15 to 9:00 · Minhaj · Project dashboard
+### 8:15 to 9:00 · Minhaj · For partners
 
-**Do:** Open **Project dashboard**, **Overview**. Point to **Pilot measures on this
-computer**.
+**Do:** Open **For partners** in the top bar. Point to the six links, then scroll to
+**How a pilot would be measured**.
 
 **Say:**
-"How would Medibank know it works? The clicks we just made are already counted: one
-Coach visit, one scenario started, one answered correctly, one bill read. Each event is
-a random visit number, an event name and a page. No question text, bill content or name
-is stored.
+"Every moment has its own link, so one can sit in a pre-departure email and another on
+your claims help page. No login, nothing to install. And how would Medibank know it
+works? The clicks we just made are already counted: one Coach visit, one scenario
+started, one answered correctly, one bill read. Each event is a random visit number, an
+event name and a page. No question text, bill content or name is stored.
 
-In a pilot we would add a short scenario quiz before and after, a one-question
-confidence check, and drop-off points. Medibank's own measure would be fewer basic
-OSHC queries in a student's first six weeks. We have not measured learning with real
-students yet; that needs ethics approval and a pilot partner."
+The measure that matters is fewer basic OSHC queries in a student's first six weeks. We
+have not measured learning with real students yet; that needs ethics approval and a
+pilot partner."
 
 ### 9:00 to 10:00 · Bikram · Close and the ask
 
@@ -202,7 +203,7 @@ Thank you."
 | App stops | Restart with the same command once | |
 | Restart fails | Play the recorded rehearsal from the matching timestamp | "This is the run we recorded on Saturday." |
 | Running long at 6:00 | Drop the MBS comparison step | |
-| Running long at 8:15 | Shorten the dashboard to one sentence; keep the ask | |
+| Running long at 8:15 | Shorten For partners to the links sentence; keep the ask | |
 
 Offline mode is stricter: first-person questions such as "What documents do I need"
 return a clarification. Use the starter buttons and the scripted questions.
@@ -273,11 +274,11 @@ not a benefit, and a guide passage is not a coverage decision.
 | Number | Source |
 |---|---|
 | 20 of 36 gap accounts about what is covered or how to claim (C2 + C4, 55.6%) | `oshc-master-data-v7.1.xlsx`, recode of 21 Sep 2026 |
-| 24/24 unseen refusals, 6/20 false refusals (source-only chat) | `docs/prototype/release_summary_2026-10-15.json`, shown on Dashboard Results |
-| 23/25 independent retrieval labels in the top five | `docs/prototype/independent_retrieval_2026-10-15.json`, shown on Dashboard Results |
+| 24/24 unseen refusals, 6/20 false refusals (source-only chat) | `docs/prototype/release_summary_2026-10-15.json`, shown on the evidence page's Results tab (`/Dashboard`) |
+| 23/25 independent retrieval labels in the top five | `docs/prototype/independent_retrieval_2026-10-15.json`, shown on the evidence page's Results tab (`/Dashboard`) |
 | About USD 0.012 per checked live answer | `docs/prototype/campus_demo_verification_2026-10-15.json` |
 | AUD 90.00 charge, AUD 45.05 MBS 100% benefit, AUD 44.95 difference | GP text example with `corpus/MBS-XML-20260801.XML` |
 | Software tests passing | Run `python -m pytest` on the demo laptop on Saturday and quote that count |
 
 Do not quote kappa, classifier or bill-extraction F1 unless asked. If asked, quote them
-with their limits from the Dashboard Results tab.
+with their limits from the evidence page's Results tab, linked at the bottom of For partners.

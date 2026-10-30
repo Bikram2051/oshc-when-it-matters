@@ -4,9 +4,9 @@ Only interface chrome is translated. Lesson points, scenarios, answers and sourc
 excerpts stay in the English of the verified guide, so no translated sentence can
 change what a source-grounded lesson says. There is no runtime machine translation.
 
-Hindi strings are a draft by Minhaj Rahman (Week 9) and require review by a fluent
-Hindi reader before they are presented as reviewed. The Hindi caption states that
-lessons remain in English.
+Hindi strings were drafted by Minhaj Rahman (Week 9) and reviewed by Bikram
+Bhattarai, a fluent Hindi reader, on 30 October 2026. Any change to them needs the
+same review. The Hindi caption states that lessons remain in English.
 """
 
 STRINGS = {
@@ -54,7 +54,7 @@ STRINGS = {
     },
 }
 
-LANGUAGE_LABELS = {"en": "English", "hi": "हिन्दी (draft)"}
+LANGUAGE_LABELS = {"en": "English", "hi": "हिन्दी"}
 
 
 def get_strings(language: str) -> dict[str, str]:

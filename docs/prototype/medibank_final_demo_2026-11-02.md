@@ -35,16 +35,14 @@ Three claims we can defend on screen:
 
 | When | Who | Task |
 |---|---|---|
-| Fri 30 Oct | Aayush | Review PR for `demo/final-integration`: `scripts/make_invoices.py` (Bikram must not read it) and the symptom handoff change in `oshc/care_navigation.py` |
-| Fri 30 Oct | Minhaj | Confirm the telemetry and Coach string port matches your Week 9 intent. Ask a fluent Hindi reader to check `oshc/coach_strings.py` |
-| Fri 30 Oct | Reviewer | Merge to `main` once CI is green |
+| Fri 30 Oct | Done | Hindi interface strings reviewed by Bikram (fluent reader) |
+| Fri 30 Oct | Done | PR #24 merged to `main`. `scripts/make_invoices.py` passed automated checks only and was not read by Bikram; Aayush to review it, and `oshc/care_navigation.py`, after the demo |
 | Sat 31 Oct | Bikram | On the demo laptop: pull `main`, run `.\setup.ps1`, confirm all tests pass |
 | Sat 31 Oct | Bikram | Live check with a new filename: `python scripts/check_live_chat.py --live --out docs/prototype/live_connection_2026-10-31.json`. Exit code 0 is required. Then `python -m oshc.llm_budget status` and note the remaining allowance |
 | Sat 31 Oct | All | Full timed rehearsal, twice. Record the second run as a screen capture (Win+Alt+R) as the backup |
 | Sun 1 Nov | Bikram | Final report goes first. No code changes after Saturday's rehearsal |
 
-If Hindi review has not happened by Saturday, show the language switch but say the
-strings are a draft. Do not present unreviewed Hindi as reviewed.
+The Hindi interface strings are reviewed. Lessons and sources stay in English.
 
 ---
 
@@ -91,7 +89,7 @@ a web prototype, so you can see the whole flow in ten minutes."
 4. Choose *"Whether any out-of-pocket expenses may apply."* and check again.
 5. **Take action** tab. Tick the three steps, **Save my checklist**, point to
    **Keep my next-step card**.
-6. Switch **Language** to **हिन्दी (draft)**, then back to English.
+6. Switch **Language** to **हिन्दी**, then back to English.
 
 **Say:**
 "A student picks the moment they are in. Here, Linh has found a clinic that offers
@@ -242,8 +240,8 @@ independent safety evaluation, and we do not claim one. We chose to refuse too m
 rather than too little.
 
 **Can it handle other languages? (Minhaj)**
-The interface switches to Hindi as a draft. We deliberately use static, reviewed
-strings rather than machine translation, so a translation can never change what a
+The interface switches to Hindi, reviewed by a fluent reader on our team. We
+deliberately use static, reviewed strings rather than machine translation, so a translation can never change what a
 cover statement says. Adding a language is a content review task, not a code change.
 
 **Did students learn anything? (Minhaj)**

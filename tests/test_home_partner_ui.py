@@ -51,7 +51,7 @@ def test_partner_links_cover_every_moment_with_relative_paths():
         "/Bill_Explainer",
         "/Ask",
     ]
-    assert all(row[2].startswith("https://nextbest.example") for row in link_rows("https://nextbest.example"))
+    assert all(row[2].startswith("https://oshc.example") for row in link_rows("https://oshc.example"))
 
 
 def test_partner_page_renders_links_and_content_free_measures(isolated_events):

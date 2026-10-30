@@ -4,12 +4,12 @@ Team D5 prototype. COS70008 Technology Innovation Research and Project, Swinburn
 
 Bikram Bhattarai, Md Minhaj Rahman, Aayush Khade. Supervisor: Dr Eureka Priyadarshini.
 
-**NextBest** is a Streamlit learning prototype with guarded live Haiku chat:
+**OSHC When It Matters** is a Streamlit learning prototype with guarded live Haiku chat:
 
 - **Journey Coach:** three sourced lessons, practice scenarios, resumable progress and saved action checklists.
 - **Navigator:** practical service-navigation steps and official links, plus guide passages alongside original PDF pages.
 - **Bill Explainer:** labelled synthetic invoice tables, receipt explanations, privacy minimisation and MBS comparisons.
-- **Ask NextBest:** custom Haiku answers with input screening, verified citations and output safety review.
+- **Ask a question:** custom Haiku answers with input screening, verified citations and output safety review.
 - **For partners:** a direct link for every moment, so each one can sit in an existing channel, plus content-free pilot measures.
 - **Project evidence** (`/Dashboard`, not in the student navigation): saved evaluation results for assessors.
 
@@ -33,7 +33,7 @@ Use the existing budget ledger by setting `OSHC_BUDGET_LEDGER` to its absolute p
 For a genuinely new installation only, initialise the USD 8 allowance once with
 `python -m oshc.llm_budget init`. Do not delete or reset an existing ledger.
 
-Start Windows with `./Start_NextBest.ps1`; on other platforms run
+Start Windows with `./Start_OSHC.ps1`; on other platforms run
 `streamlit run app/Home.py`. Each accepted answer requires an input review,
 grounded generation and output review. API or safety failures return a fixed
 abstention. Student questions and drafts bypass disk caching. Bills are read
@@ -66,7 +66,7 @@ streamlit run app/Home.py
 python -m pytest
 ```
 
-On Windows, `./Start_NextBest.ps1` launches the live application on port 8502.
+On Windows, `./Start_OSHC.ps1` launches the live application on port 8502.
 Use `-Python 'path/to/environment/Scripts/python.exe'` to reuse an existing project
 environment. The entry point defaults to `OSHC_OFFLINE=0`, `OSHC_ENABLE_LIVE=1`, and
 `claude-haiku-4-5-20251001`. A configured API key and existing budget ledger are

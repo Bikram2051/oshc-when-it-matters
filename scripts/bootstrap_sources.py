@@ -122,7 +122,7 @@ def _existing(destination: Path, source: Source) -> bool:
 
 def _open(url: str):
     validate_url(url)
-    request = urllib.request.Request(url, headers={"User-Agent": "NextBest-Source-Bootstrap/1.0"})
+    request = urllib.request.Request(url, headers={"User-Agent": "OSHC-When-It-Matters-Source-Bootstrap/1.0"})
     return urllib.request.build_opener(OfficialRedirectHandler()).open(request, timeout=45)
 
 

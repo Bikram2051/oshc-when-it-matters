@@ -8,5 +8,5 @@ import streamlit as st
 
 from oshc.ask_ui import render
 
-st.set_page_config(page_title="Ask NextBest | NextBest", page_icon=":material/forum:", layout="centered")
+st.set_page_config(page_title="Ask a question | OSHC When It Matters", page_icon=":material/forum:", layout="centered")
 render()

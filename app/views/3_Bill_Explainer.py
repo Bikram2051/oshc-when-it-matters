@@ -8,5 +8,5 @@ import streamlit as st
 
 from oshc.billexplainer.ui import render
 
-st.set_page_config(page_title="Bill Explainer | NextBest", page_icon=":material/receipt_long:", layout="centered")
+st.set_page_config(page_title="Bill Explainer | OSHC When It Matters", page_icon=":material/receipt_long:", layout="centered")
 render()

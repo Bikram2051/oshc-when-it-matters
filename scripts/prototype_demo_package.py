@@ -31,6 +31,7 @@ FILES = (
     "app/Home.py", "app/views/1_Journey_Coach.py", "app/views/2_Navigator.py",
     "app/views/3_Bill_Explainer.py", "app/views/4_Ask.py", "app/views/5_Dashboard.py",
     "app/views/6_Partners.py", ".streamlit/config.toml",
+    "app/static/brand/wordmark.svg",
     "app/static/fonts/OFL-AtkinsonHyperlegibleNext.txt",
     "app/static/fonts/OFL-NotoSans.txt",
     "app/static/fonts/OFL-NotoSansDevanagari.txt",
@@ -274,7 +275,7 @@ def archive(out, proof, report=None):
             or type(record.get("ledger_accesses")) is not int or record["ledger_accesses"] != 0
             or record.get("package_files_unchanged") is not True):
         raise ValueError("Fresh-environment proof does not match this sealed package.")
-    target = out.parent / "NextBest-demo.zip"
+    target = out.parent / "OSHC-When-It-Matters-demo.zip"
     report = Path(report) if report is not None else ROOT / "docs/prototype/demo_package_check.json"
     if report.resolve().is_relative_to(out.resolve()) or not report.parent.is_dir():
         raise ValueError("Choose a report path outside the package in an existing folder.")
@@ -283,7 +284,7 @@ def archive(out, proof, report=None):
         raise ValueError("An archive or evidence report already exists. Preserve it for review.")
     with zipfile.ZipFile(target, "x", compression=zipfile.ZIP_DEFLATED) as bundle:
         for name in sorted({*manifest["files"], "package_manifest.json"}):
-            bundle.write(out / name, f"NextBest-demo/{name}")
+            bundle.write(out / name, f"OSHC-When-It-Matters-demo/{name}")
     info = signature(target)
     with receipt.open("x", encoding="ascii") as handle:
         handle.write(f"{info['sha256']}  {target.name}\n")

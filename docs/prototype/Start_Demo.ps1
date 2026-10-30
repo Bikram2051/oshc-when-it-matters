@@ -2,7 +2,7 @@ param([string]$Python = "python")
 $ErrorActionPreference = "Stop"
 $packageRoot = $PSScriptRoot
 $manifest = Get-Content -LiteralPath (Join-Path $packageRoot "package_manifest.json") -Raw | ConvertFrom-Json
-$runtimeRoot = Join-Path (Split-Path $packageRoot -Parent) ("NextBest-env-" + $manifest.source_commit.Substring(0, 12))
+$runtimeRoot = Join-Path (Split-Path $packageRoot -Parent) ("OSHC-When-It-Matters-env-" + $manifest.source_commit.Substring(0, 12))
 $runtimePython = Join-Path $runtimeRoot "Scripts\python.exe"
 
 $env:OSHC_OFFLINE = "1"

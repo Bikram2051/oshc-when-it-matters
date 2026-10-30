@@ -1,10 +1,10 @@
-# NextBest offline demonstration
+# OSHC When It Matters offline demonstration
 
 University prototype. This package reproduces the six-page demo,
 not the full research repository or its independent evaluation suite.
 
 Home introduces the tools; Journey Coach provides three sourced lessons;
-Navigator opens the guide; Bill Explainer reads synthetic examples; Ask NextBest
+Navigator opens the guide; Bill Explainer reads synthetic examples; Ask a question
 accepts general questions; and Project dashboard presents saved project evidence.
 
 Use the exact Python version, operating system and architecture recorded in
@@ -13,7 +13,7 @@ Streamlit 1.64.0 and 44 pinned runtime distributions.
 Python itself is not included. Runtime dependencies are included as wheels, with
 exact versions and SHA-256 hashes. No dependency download is needed at setup.
 
-Extract the ZIP into a new folder. In PowerShell, open the extracted NextBest-demo
+Extract the ZIP into a new folder. In PowerShell, open the extracted OSHC-When-It-Matters-demo
 folder and run:
 
     .\Start_Demo.ps1
@@ -26,7 +26,7 @@ starts http://127.0.0.1:8501. Stop an existing server first. Stop with Ctrl+C.
 Use the saved GP examples or the dated paid receipt. The saved AI reading replays an
 earlier response; new paid extraction is disabled. Missing benefits and gaps
 remain unknown. MBS comparisons are educational references, not claim decisions.
-The Navigator uses the frozen guide. Ask NextBest checks every submitted question
+The Navigator uses the frozen guide. Ask a question checks every submitted question
 before source loading or retrieval. It shows curated general answers with verified
 source passages, or fixed refusal/clarification messages. It does not generate novel policy answers, assess symptoms
 or decide personal benefits. Emergency and refused questions cannot retrieve a

@@ -126,7 +126,7 @@ def _render_response(response, turn: int, *, source_valid: bool) -> None:
 def render():
     live = os.getenv("OSHC_OFFLINE") == "0" and os.getenv("OSHC_ENABLE_LIVE") == "1"
     source_mode = os.getenv("OSHC_OFFLINE") == "1" and os.getenv("OSHC_ENABLE_LIVE") == "0"
-    st.title("Ask NextBest")
+    st.title("Ask a question")
     lead("Ask a general question about OSHC. Each answer comes from the Medibank member guide, "
          "with the page to check.")
 

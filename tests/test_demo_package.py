@@ -199,7 +199,7 @@ def test_archive_requires_matching_fresh_environment_proof(tmp_path):
     proof.write_text(json.dumps({"manifest_sha256": "wrong"}), encoding="utf-8")
     with pytest.raises(ValueError, match="proof does not match"):
         builder.archive(package, proof)
-    assert not (tmp_path / "NextBest-demo.zip").exists()
+    assert not (tmp_path / "OSHC-When-It-Matters-demo.zip").exists()
 
 
 def test_archive_contains_only_verified_package_files(tmp_path, monkeypatch):
@@ -219,10 +219,10 @@ def test_archive_contains_only_verified_package_files(tmp_path, monkeypatch):
                                  "offline_cache_miss_blocked"), True),
     })
     builder.archive(package, proof)
-    target = tmp_path / "NextBest-demo.zip"
+    target = tmp_path / "OSHC-When-It-Matters-demo.zip"
     with zipfile.ZipFile(target) as bundle:
         assert bundle.testzip() is None
-        assert set(bundle.namelist()) == {"NextBest-demo/example.txt", "NextBest-demo/package_manifest.json"}
+        assert set(bundle.namelist()) == {"OSHC-When-It-Matters-demo/example.txt", "OSHC-When-It-Matters-demo/package_manifest.json"}
     report = json.loads((root / "docs/prototype/demo_package_check.json").read_text())
     assert report["archive_sha256"] == signature(target)["sha256"]
 
@@ -247,4 +247,4 @@ def test_new_archive_report_preserves_previous_evidence(tmp_path, monkeypatch):
     builder.archive(package, proof, report=report)
     assert legacy.read_bytes() == b"PREVIOUS-EVIDENCE"
     assert json.loads(report.read_text())["archive_sha256"] == signature(
-        tmp_path / "NextBest-demo.zip")["sha256"]
+        tmp_path / "OSHC-When-It-Matters-demo.zip")["sha256"]

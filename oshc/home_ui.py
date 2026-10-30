@@ -56,12 +56,12 @@ def render():
     st.header("Something else on your mind?")
     st.markdown("Ask a general question in your own words. Answers come from the Medibank "
                 "OSHC Member Guide, with the page to check.")
-    st.page_link(ASK, label="Ask NextBest a question", icon=":material/forum:")
+    st.page_link(ASK, label="Ask a question", icon=":material/forum:")
 
     st.space("medium")
     safety_line()
     st.divider()
-    st.caption("NextBest is a student prototype from Swinburne University of Technology, built "
+    st.caption("OSHC When It Matters is a student prototype from Swinburne University of Technology, built "
                "with Medibank as industry partner. It explains general information from the "
                "public Medibank OSHC Member Guide (May 2026) and uses invented bills only. It "
                "cannot assess symptoms, decide your cover or confirm a claim.")

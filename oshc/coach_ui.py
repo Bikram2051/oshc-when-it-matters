@@ -132,7 +132,7 @@ def _action(lesson):
         st.form_submit_button("Save my checklist", key="jc_save_checklist",
                               on_click=_save_checklist, args=(lesson.ident,))
     st.download_button("Download my next-step card", action_card(lesson, saved),
-                       file_name=f"nextbest_{lesson.ident}_reminder.txt", mime="text/plain",
+                       file_name=f"oshc_{lesson.ident}_next_step.txt", mime="text/plain",
                        key="jc_card", icon=":material/download:")
     if _moment_complete(lesson):
         st.success("This moment is complete. Move on to another moment when you are ready.")

@@ -75,8 +75,11 @@ input:focus-visible, textarea:focus-visible, summary:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
+/* The wordmark leaves room for the menu buttons on a phone. */
+img[data-testid="stHeaderLogo"] { object-fit: contain; object-position: left center; }
 @media (max-width: 640px) {
   h1.nb-hero { font-size: 2.1rem; }
+  img[data-testid="stHeaderLogo"] { height: 16px !important; width: auto !important; max-width: none; }
 }
 </style>
 """

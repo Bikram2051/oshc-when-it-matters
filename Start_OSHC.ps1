@@ -20,11 +20,11 @@ if (-not $Python) {
 if ($Offline) {
     $env:OSHC_OFFLINE = "1"
     $env:OSHC_ENABLE_LIVE = "0"
-    Write-Host "NextBest: verified source mode (offline). Ask NextBest uses curated answers; no API calls."
+    Write-Host "OSHC When It Matters: verified source mode (offline). Ask a question uses curated answers; no API calls."
 } else {
     $env:OSHC_OFFLINE = "0"
     $env:OSHC_ENABLE_LIVE = "1"
-    Write-Host "NextBest: live mode. Ask NextBest uses guarded Haiku answers."
+    Write-Host "OSHC When It Matters: live mode. Ask a question uses guarded Haiku answers."
 }
 $env:OSHC_MODEL = "claude-haiku-4-5-20251001"
 $env:PYTHONUTF8 = "1"

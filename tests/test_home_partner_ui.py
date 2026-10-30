@@ -9,6 +9,7 @@ import oshc.llm as adapter
 from oshc.coach_lessons import LESSONS
 from oshc.home_ui import journey_stops
 from oshc.partner_ui import link_rows
+from oshc.ui_style import TEAM
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -39,6 +40,16 @@ def test_home_is_links_not_buttons_and_shows_emergency_numbers():
     assert "<strong>000</strong>" in html and "1800&nbsp;022&nbsp;222" in html
     assert html.count("<h1") == 1 and "Your OSHC," in html
     assert not any("Project dashboard" in item.value for item in at.markdown)
+
+
+def test_sidebar_credits_the_team_under_the_logo():
+    at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=15).run()
+    html = " ".join(item.proto.body for item in at.sidebar.get("html"))
+    for name, role in TEAM:
+        assert name in html and role in html
+    for logo in ("logo.svg", "mark.svg"):
+        svg = (ROOT / "app/static/brand" / logo).read_text(encoding="utf-8")
+        assert 'aria-label="OSHC When It Matters"' in svg and "#D50032" in svg
 
 
 def test_partner_links_cover_every_moment_with_relative_paths():

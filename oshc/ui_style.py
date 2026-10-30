@@ -1,8 +1,8 @@
 """Shared presentation helpers: one stylesheet, a lead paragraph and the safety line.
 
 Colours and fonts come from .streamlit/config.toml. This file only adds what the
-theme cannot express: the journey line, readable measure, caption contrast,
-visible keyboard focus and reduced motion.
+theme cannot express: the sidebar brand and team credits, the journey line,
+readable measure, caption contrast, visible keyboard focus and reduced motion.
 """
 from __future__ import annotations
 
@@ -15,11 +15,12 @@ from oshc.care_navigation import HEALTHDIRECT_NUMBER
 _CSS = """
 <style>
 :root {
-  --nb-ink: #1F2A2E;
-  --nb-muted: #475357;
-  --nb-brand: #1E5B4F;
-  --nb-line: #CBD5D1;
-  --nb-alert: #B42318;
+  --nb-ink: #111111;
+  --nb-muted: #4D4D4D;
+  --nb-brand: #D50032;
+  --nb-line: #D6D6D6;
+  --nb-field: #8C8C8C;
+  --nb-alert-bg: #FBE8EC;
 }
 p.nb-lead { font-size: 1.15rem; line-height: 1.55; color: var(--nb-ink); margin: 0; max-width: 38rem; }
 /* Streamlit fades captions with opacity; that fails contrast. Use a solid muted ink. */
@@ -65,8 +66,35 @@ p.nb-moment { color: var(--nb-brand); font-weight: 700; font-size: 0.95rem; marg
 .st-key-partner_links a { overflow-wrap: anywhere; }
 .st-key-partner_links li { margin-bottom: 0.5rem; }
 
-/* Emergency information: red is reserved for this. */
-p.nb-safety { border-left: 4px solid var(--nb-alert); padding: 0.2rem 0 0.2rem 0.9rem; margin: 0; max-width: 40rem; }
+/* Emergency information: the only tinted panel in the app, so it stands apart from
+   red buttons and links. */
+p.nb-safety { background: var(--nb-alert-bg); border-left: 5px solid var(--nb-brand);
+  border-radius: 0 0.25rem 0.25rem 0; padding: 0.75rem 1rem; margin: 0; max-width: 40rem; color: var(--nb-ink); }
+
+/* Form fields: a 3:1 outline so each field can be found without relying on its fill. */
+[data-baseweb="input"], [data-baseweb="textarea"], [data-baseweb="select"] > div,
+[data-testid="stChatInput"] > div { border-color: var(--nb-field) !important; }
+
+/* Sidebar: logo, then the team, then the menu. */
+[data-testid="stSidebarHeader"] { height: auto; padding-top: 1.5rem; padding-bottom: 0.25rem; align-items: flex-start; }
+img[data-testid="stSidebarLogo"] { height: 2.75rem; max-width: 100%; object-fit: contain; object-position: left center; }
+[data-testid="stSidebarContent"] { display: flex; flex-direction: column; }
+[data-testid="stSidebarHeader"] { order: 0; }
+[data-testid="stSidebarUserContent"] { order: 1; padding-top: 0.25rem; padding-bottom: 0.5rem; }
+[data-testid="stSidebarNav"] { order: 2; }
+[data-testid="stSidebarNavSeparator"] { display: none; }
+.nb-team { margin: 0; padding: 0 0 1rem; border-bottom: 1px solid var(--nb-line); }
+.nb-team p { margin: 0 0 0.6rem; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--nb-muted); }
+.nb-team ul { list-style: none; margin: 0; padding: 0; }
+.nb-team li { margin: 0 0 0.55rem; line-height: 1.3; }
+.nb-team li:last-child { margin-bottom: 0; }
+.nb-team strong { display: block; font-size: 0.95rem; color: var(--nb-ink); }
+.nb-team span { display: block; font-size: 0.85rem; color: var(--nb-muted); }
+/* The page you are on: bold, with a red bar. */
+[data-testid="stSidebarNavLink"] { border-left: 4px solid transparent; border-radius: 0 0.25rem 0.25rem 0; }
+[data-testid="stSidebarNavLink"][aria-current="page"] { border-left-color: var(--nb-brand); }
+[data-testid="stSidebarNavLink"][aria-current="page"] span { font-weight: 700; color: var(--nb-ink); }
 
 a:focus-visible, button:focus-visible, [role="tab"]:focus-visible, [role="radio"]:focus-visible,
 input:focus-visible, textarea:focus-visible, summary:focus-visible {
@@ -75,11 +103,10 @@ input:focus-visible, textarea:focus-visible, summary:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
-/* The wordmark leaves room for the menu buttons on a phone. */
-img[data-testid="stHeaderLogo"] { object-fit: contain; object-position: left center; }
+/* With the sidebar closed, the red OSHC badge stands in for the logo. */
+img[data-testid="stHeaderLogo"] { height: 2rem; object-fit: contain; object-position: left center; }
 @media (max-width: 640px) {
   h1.nb-hero { font-size: 2.1rem; }
-  img[data-testid="stHeaderLogo"] { height: 16px !important; width: auto !important; max-width: none; }
 }
 </style>
 """
@@ -98,6 +125,21 @@ def hero(first: str, second: str) -> None:
 def lead(text: str) -> None:
     """The one sentence under a page title that says what the page is for."""
     st.html(f"<p class='nb-lead'>{escape(text)}</p>")
+
+
+# Who built this. Roles follow the module ownership table in README.md.
+TEAM = (
+    ("Bikram Bhattarai", "Bill Explainer and evaluation"),
+    ("Md Minhaj Rahman", "Journey Coach and measurement"),
+    ("Aayush Khade", "AI answers and safety"),
+)
+
+
+def team_credits() -> None:
+    """Names and roles, shown in the sidebar directly under the logo."""
+    rows = "".join(f"<li><strong>{escape(name)}</strong><span>{escape(role)}</span></li>"
+                   for name, role in TEAM)
+    st.html(f"<div class='nb-team'><p>Team D5 · Swinburne</p><ul>{rows}</ul></div>")
 
 
 def safety_line() -> None:

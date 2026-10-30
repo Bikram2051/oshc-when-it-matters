@@ -17,7 +17,7 @@ os.environ.setdefault("OSHC_MODEL", "claude-haiku-4-5-20251001")
 import streamlit as st
 
 from oshc.home_ui import render
-from oshc.ui_style import apply as apply_style
+from oshc.ui_style import apply as apply_style, team_credits
 
 st.set_page_config(
     page_title="OSHC When It Matters",
@@ -25,7 +25,11 @@ st.set_page_config(
     layout="centered",
 )
 apply_style()
-st.logo(str(Path(__file__).parent / "static/brand/wordmark.svg"), size="small")
+BRAND = Path(__file__).parent / "static/brand"
+# Full logo at the top of the sidebar; the red OSHC badge alone when it is closed.
+st.logo(str(BRAND / "logo.svg"), icon_image=str(BRAND / "mark.svg"), size="large")
+with st.sidebar:
+    team_credits()
 
 # Students see five places. Partners get one page of their own. The research evidence
 # page stays reachable at /Dashboard for assessors but is not part of the product.
@@ -37,5 +41,5 @@ page = st.navigation([
     st.Page("views/4_Ask.py", title="Ask a question"),
     st.Page("views/6_Partners.py", title="For partners"),
     st.Page("views/5_Dashboard.py", title="Project evidence", visibility="hidden"),
-], position="top")
+], position="sidebar")
 page.run()

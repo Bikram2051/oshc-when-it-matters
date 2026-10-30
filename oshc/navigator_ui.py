@@ -8,10 +8,11 @@ from pathlib import Path
 import pymupdf
 import streamlit as st
 
-from oshc.care_navigation import HEALTHDIRECT_NUMBER, SERVICE_FINDER_URL, SYMPTOM_CHECKER_URL
+from oshc.care_navigation import SERVICE_FINDER_URL, SYMPTOM_CHECKER_URL
 from oshc.policy_search import PolicySearch
 from oshc.schemas import EventName
 from oshc.telemetry import track
+from oshc.ui_style import lead, safety_line
 from oshc.policy_source import (
     CAPTURED_ON, OMITTED_PAGES, SOURCE_DOC, SOURCE_SHA256, SOURCE_URL,
     SourceError, build_corpus,
@@ -118,6 +119,20 @@ SERVICES = {
 }
 
 
+# Deep links such as ?task=gp let a partner page open one task directly.
+TASK_SLUGS = {"gp": "GP appointment", "telehealth": "Phone or video appointment",
+              "pharmacy": "Pharmacy", "claim": "Making a claim", "card": "Membership card"}
+
+
+def _apply_deep_link():
+    slug = st.query_params.get("task")
+    if slug is None:
+        return
+    if slug in TASK_SLUGS:
+        st.session_state["nv_service"] = TASK_SLUGS[slug]
+    del st.query_params["task"]
+
+
 def _select_topic(topic):
     if topic in TOPICS:
         st.session_state["nv_view"] = TOPIC_VIEW
@@ -127,34 +142,23 @@ def _select_topic(topic):
 
 def _service_navigation():
     """Show fixed options and official handoffs without collecting a location or symptoms."""
-    st.badge("Services + verified guide", icon=":material/explore:", color="blue")
-    st.caption("Choose the task you want help with. Navigator does not assess symptoms, "
-               "choose your urgency level or confirm personal cover.")
-    left, right = st.columns([1.35, 1])
-    with left, st.container(border=True):
-        selected = st.selectbox("What would you like to do?", list(SERVICES), key="nv_service")
-        service = SERVICES[selected]
-        st.subheader(service["title"], icon=service["icon"])
-        for number, step in enumerate(service["steps"], start=1):
-            st.markdown(f"**{number}.** {step}")
-        if service.get("note"):
-            st.caption(service["note"])
-        st.button("Read related OSHC guide topic", key="nv_related_topic",
-                  on_click=_select_topic, args=(service["topic"],),
-                  icon=":material/menu_book:")
-    with right, st.container(border=True):
-        st.subheader("Connect with an official service", icon=":material/open_in_new:")
-        st.link_button("Open healthdirect Service Finder", SERVICE_FINDER_URL,
-                       icon=":material/location_on:", type="primary", width="stretch")
-        st.caption("Search for services yourself. Navigator does not retrieve locations, "
-                   "check appointment availability or book a visit.")
-        st.link_button("Open healthdirect Symptom Checker", SYMPTOM_CHECKER_URL,
-                       icon=":material/health_and_safety:", width="stretch")
-        st.markdown(f"For health advice, call **healthdirect {HEALTHDIRECT_NUMBER}**, "
-                    "available 24 hours a day. If this is an emergency, call **000**.")
-        st.caption("Links open the official service in a new tab. Your question, location and "
-                   "personal details are not sent by this app. Information you enter there "
-                   "is handled under that service's privacy terms.")
+    selected = st.selectbox("What do you need help with?", list(SERVICES), key="nv_service")
+    service = SERVICES[selected]
+    st.header(service["title"])
+    st.markdown("\n".join(f"{number}. {step}" for number, step in enumerate(service["steps"], 1)))
+    if service.get("note"):
+        st.caption(service["note"])
+    with st.container(horizontal=True):
+        st.link_button("Find a service near you", SERVICE_FINDER_URL, type="primary",
+                       icon=":material/location_on:")
+        st.link_button("Check symptoms with healthdirect", SYMPTOM_CHECKER_URL,
+                       icon=":material/open_in_new:")
+        st.button("Read the guide on this topic", key="nv_related_topic",
+                  on_click=_select_topic, args=(service["topic"],), icon=":material/menu_book:")
+    st.caption("healthdirect links open in a new tab, and this app sends them nothing. "
+               "Navigator does not assess symptoms, choose how urgently you need care or "
+               "confirm your cover.")
+    safety_line()
 
 
 def load_source(root: Path):
@@ -202,14 +206,16 @@ def page_png(verified_pdf: bytes, number: int) -> bytes:
 
 def _preview(raw: bytes, page: int, *, width):
     st.image(io.BytesIO(page_png(raw, page)), width=width,
-             caption=f"Saved guide: physical PDF page {page} of 37")
-    st.markdown(f"[Open publisher PDF at page {page}]({SOURCE_URL}#page={page})")
+             caption=f"Saved guide, page {page} of 37",
+             alt=f"Page {page} of the Medibank OSHC Member Guide, May 2026 edition")
+    st.markdown(f"[Open this page in the publisher's PDF]({SOURCE_URL}#page={page})")
 
 
 def render():
     track(st.session_state, "navigator", EventName.OPEN, once_key="telemetry_navigator_open")
     st.title("Navigator")
-    st.caption("Find a practical next step, then check the original OSHC source.")
+    lead("Get ready to see a doctor, then check what the member guide says.")
+    _apply_deep_link()
     _service_navigation()
     try:
         corpus, raw = load_source(ROOT)
@@ -222,10 +228,10 @@ def render():
         st.session_state["nv_view"] = PAGE_VIEW
         st.session_state["nv_page"] = requested_page
 
-    st.subheader("Check the policy source", icon=":material/menu_book:")
-    st.caption("Medibank OSHC Member Guide | Effective May 2026 | Saved 28 September 2026")
-    st.info("Browse the guide for general information. Excerpts do not determine your cover. "
-            "Read the original page and surrounding conditions before relying on an excerpt.")
+    st.divider()
+    st.header("Check the member guide")
+    st.caption("Medibank OSHC Member Guide, effective May 2026, saved 28 September 2026. "
+               "A passage explains general rules. It does not decide your cover.")
     mode = st.radio("Browse the guide", [TOPIC_VIEW, PAGE_VIEW], horizontal=True, key="nv_view")
     try:
         if mode == TOPIC_VIEW:
@@ -239,43 +245,37 @@ def render():
                 # Existing sessions may still have selected an old passing mention.
                 st.session_state.pop("nv_match", None)
                 st.session_state["nv_starting_section"] = starting_section
-            st.caption("Start here opens an authored guide section checked against the source. "
-                       "Related matches use BM25 and may include passing mentions.")
             selected = st.selectbox(
-                "Source match", list(by_id), key="nv_match",
+                "Section", list(by_id), key="nv_match",
                 format_func=lambda ident: (
                     "Start here" if ident == primary.chunk_id else f"Related match {ranks[ident]}"
-                ) + f" | PDF page {by_id[ident].page}, {by_id[ident].column} column",
+                ) + f", page {by_id[ident].page}, {by_id[ident].column} column",
+                help="Start here is a checked starting section. Related matches are found by "
+                     "word overlap and may only mention the topic in passing.",
             )
             chunk = by_id[selected]
-            left, right = st.columns([1, 1.15])
-            with left:
-                st.subheader("Extracted column")
-                st.caption(f"PDF page {chunk.page}, {chunk.column} column | Source saved {CAPTURED_ON}")
-                with st.container(height=600, border=True):
-                    st.text(chunk.text)
-                st.caption("Text keeps its source wording and line breaks. A condition may "
+            with st.expander(f"Read the text of page {chunk.page}, {chunk.column} column"):
+                st.text(chunk.text)
+                st.caption("The wording and line breaks are the guide's own. A condition may "
                            "continue in the other column or on another page.")
-            with right:
-                st.subheader("Original page")
-                _preview(raw, chunk.page, width="stretch")
+            _preview(raw, chunk.page, width="stretch")
         else:
-            st.caption("All 37 physical pages are available. Page 19 contains the hospital "
-                       "benefits table, which is excluded from text search.")
-            page = st.number_input("PDF page", min_value=1, max_value=37, value=19,
+            st.caption("All 37 pages are here. Page 19 holds the hospital benefits table, "
+                       "which text search does not cover.")
+            page = st.number_input("Page", min_value=1, max_value=37, value=19,
                                    step=1, key="nv_page")
-            _preview(raw, page, width=900)
+            _preview(raw, page, width="stretch")
     except SourceError:
         st.error("The selected guide section could not be verified or displayed. "
                  "Use Read a page or download the saved guide to inspect it.")
 
-    st.caption("The publisher link may show a newer edition. Previews and the download below "
-               "use this saved guide.")
-    st.download_button("Download saved guide", raw, file_name=SOURCE_DOC,
-                       mime="application/pdf", key="nv_download", on_click="ignore")
-    with st.expander("Source details"):
+    with st.expander("About this copy of the guide"):
+        st.caption("The publisher's link may show a newer edition. The pages and download "
+                   "here use the saved copy.")
+        st.download_button("Download the saved guide (PDF)", raw, file_name=SOURCE_DOC,
+                           mime="application/pdf", key="nv_download", on_click="ignore")
         st.text(f"Source: {SOURCE_DOC}\nSaved: {CAPTURED_ON}\nSHA-256: {SOURCE_SHA256}")
-        st.caption(f"Authored starting sections with exact source anchors; related matches use "
-                   f"BM25 across {len(corpus.chunks)} column excerpts. "
-                   "Ranking is not confidence. No generated answer is produced.")
+        st.caption(f"Starting sections are checked against exact source wording. Related "
+                   f"matches use BM25 across {len(corpus.chunks)} column excerpts; ranking is "
+                   "not confidence, and no generated answer is produced.")
         st.text("Pages excluded from text search: " + ", ".join(str(p) for p, _ in OMITTED_PAGES))

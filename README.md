@@ -10,7 +10,10 @@ Bikram Bhattarai, Md Minhaj Rahman, Aayush Khade. Supervisor: Dr Eureka Priyadar
 - **Navigator:** practical service-navigation steps and official links, plus guide passages alongside original PDF pages.
 - **Bill Explainer:** labelled synthetic invoice tables, receipt explanations, privacy minimisation and MBS comparisons.
 - **Ask NextBest:** custom Haiku answers with input screening, verified citations and output safety review.
-- **Project dashboard:** Overview, Results, Safety, and Evidence & sources tabs.
+- **For partners:** a direct link for every moment, so each one can sit in an existing channel, plus content-free pilot measures.
+- **Project evidence** (`/Dashboard`, not in the student navigation): saved evaluation results for assessors.
+
+The interface uses Atkinson Hyperlegible Next with plain Noto Sans digits and Noto Sans Devanagari for Hindi, all bundled in `app/static/fonts` under the SIL Open Font Licence. Colours and fonts are set only in `.streamlit/config.toml`.
 
 The [live chat specification](docs/prototype/live_chat.md) describes the current
 three-stage model path. The [earlier frozen source-only release](docs/prototype/final_demo_2026-10-15.md)

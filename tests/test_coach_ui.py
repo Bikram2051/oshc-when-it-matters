@@ -61,7 +61,10 @@ def test_no_automatic_answer_or_completion(sandbox):
 def test_checklist_is_saved_and_reset_without_identity(sandbox):
     at = app()
     lesson = lessons.LESSONS[0]
-    assert [tab.label for tab in at.tabs] == ["Learn", "Practise", "Take action"]
+    # One vertical flow, no tabs: the lesson, then Try it, then Keep a next step.
+    assert not at.tabs
+    assert [item.value for item in at.header] == [lesson.title]
+    assert [item.value for item in at.subheader] == ["Try it", "Keep a next step"]
     for index in range(len(lessons.ACTIVITIES[lesson.ident].checklist)):
         at.checkbox(key=f"jc_task_{lesson.ident}_{index}").check()
     at.button(key="jc_save_checklist").click().run()
@@ -215,3 +218,26 @@ def test_practice_records_events_without_content(sandbox, isolated_events):
     assert names.count("scenario_start") == 1
     assert names.count("scenario_complete") == 1
     assert all(row == (None, None) for row in text)
+
+
+@pytest.mark.parametrize("slug,index", [("before-you-arrive", 0), ("settling-in", 1),
+                                        ("before-an-appointment", 2)])
+def test_deep_link_opens_the_named_moment_once(sandbox, slug, index):
+    at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=15)
+    at.query_params["moment"] = slug
+    at.run()
+    at.switch_page("views/1_Journey_Coach.py").run()
+    assert not at.exception
+    assert at.segmented_control(key="jc_moment").value == lessons.LESSONS[index].moment
+    other = lessons.LESSONS[(index + 1) % len(lessons.LESSONS)]
+    at.segmented_control(key="jc_moment").select(other.moment).run()
+    assert at.segmented_control(key="jc_moment").value == other.moment
+
+
+def test_unknown_deep_link_falls_back_to_the_first_moment(sandbox):
+    at = AppTest.from_file(str(ROOT / "app/Home.py"), default_timeout=15)
+    at.query_params["moment"] = "not-a-moment"
+    at.run()
+    at.switch_page("views/1_Journey_Coach.py").run()
+    assert not at.exception and not at.error
+    assert at.segmented_control(key="jc_moment").value == lessons.LESSONS[0].moment

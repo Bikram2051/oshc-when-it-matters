@@ -20,6 +20,7 @@ from oshc.schemas import GuardrailVerdict
 from oshc.care_navigation import (
     CLINICAL_HANDOFF, SERVICE_FINDER_URL, SYMPTOM_CHECKER_URL,
 )
+from oshc.ui_style import lead, safety_line
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_TURNS = 10
@@ -88,19 +89,21 @@ def _render_response(response, turn: int, *, source_valid: bool) -> None:
                 # No unreviewed draft is ever streamed. The service returns only
                 # complete answers that passed its input and output checks.
                 st.text(response.answer)
-                st.caption("Haiku answer · input and output checked · cited guide evidence" if response.response_mode == "haiku"
-                           else "Curated general answer · checked against the saved guide · personal benefits are not assessed.")
+                st.caption("Written by Haiku from the guide passages below, with input and output checked."
+                           if response.response_mode == "haiku" else
+                           "A fixed explanation, checked against the guide passages below. "
+                           "It does not assess your own benefits.")
             else:
                 st.markdown(response.message)
-                st.caption("Possible source matches · ranked by wording, not confidence. "
+                st.caption("Possible matches, ranked by wording rather than confidence. "
                            "Read the conditions on the full page.")
             for hit in response.hits:
                 page = _page_of(hit)
-                with st.expander(f"Source {hit.rank} · {hit.section}", expanded=hit.rank == 1):
+                with st.expander(f"Source {hit.rank}: {hit.section}", expanded=hit.rank == 1):
                     st.text(hit.text[:900])
                     if len(hit.text) > 900:
                         st.caption("This passage continues. Open the full page to read all conditions.")
-                    st.caption(f"{SOURCE_DOC} · saved {hit.captured_on}")
+                    st.caption(f"{SOURCE_DOC}, saved {hit.captured_on}")
                     with st.container(horizontal=True):
                         if st.button("Read full page", key=f"ask_goto_{turn}_{hit.chunk_id}",
                                      icon=":material/menu_book:"):
@@ -110,10 +113,10 @@ def _render_response(response, turn: int, *, source_valid: bool) -> None:
                                        icon=":material/open_in_new:")
         with st.expander("Response checks"):
             st.caption(
-                f"Boundary: {response.decision.verdict.value.replace('_', ' ')} · "
-                f"Response: {status.replace('_', ' ')} · "
-                + ("Haiku · input screening, cited evidence and output review"
-                   if response.response_mode == "haiku" else "Local rules · verified source passages")
+                f"Safety boundary: {response.decision.verdict.value.replace('_', ' ')}. "
+                f"Response: {status.replace('_', ' ')}. "
+                + ("Checked by Haiku: input screening, cited evidence and output review."
+                   if response.response_mode == "haiku" else "Checked by local rules against verified guide passages.")
             )
             if response.hits:
                 st.caption("Source passages checked against the verified guide. "
@@ -123,52 +126,36 @@ def _render_response(response, turn: int, *, source_valid: bool) -> None:
 def render():
     live = os.getenv("OSHC_OFFLINE") == "0" and os.getenv("OSHC_ENABLE_LIVE") == "1"
     source_mode = os.getenv("OSHC_OFFLINE") == "1" and os.getenv("OSHC_ENABLE_LIVE") == "0"
-    st.caption("NEXTBEST / ASK THE GUIDE")
     st.title("Ask NextBest")
-    st.markdown("A direct answer, the supporting passage, and a clearer next step.")
-    with st.container(horizontal=True):
-        st.badge("Every message checked", icon=":material/verified_user:")
-        st.badge("Haiku + verified sources" if live else "Curated answers + sources", icon=":material/menu_book:")
-        st.badge("Session-only chat", icon=":material/chat:")
+    lead("Ask a general question about OSHC. Each answer comes from the Medibank member guide, "
+         "with the page to check.")
 
     if not live and not source_mode:
         _clear()
         st.error("The chat mode is inconsistent. Set OSHC_OFFLINE=0 and OSHC_ENABLE_LIVE=1 for Haiku.")
         return
 
-    st.info("Ask general OSHC questions. For each question, I use passages in the saved "
-            "Medibank guide. I cannot assess symptoms, decide your cover or confirm claim "
-            "payments. In an emergency call 000.", icon=":material/info:")
-    st.caption(f"Guide effective May 2026 · Saved {CAPTURED_ON} · "
-               "Avoid personal details. Chat stays in this session; Clear chat removes it.")
-    if live:
-        st.caption("Your general question and relevant public guide passages are sent to Anthropic's Haiku API "
-                   "for safety checks and an answer. Bill uploads and chat history are not sent. "
-                   "Questions and drafts are not saved in the app's disk cache.")
-        if not api_key_configured():
-            st.warning("Haiku is not connected yet. Configure OSHC_API_KEY in the server environment or "
-                       "Streamlit secrets. Emergency and privacy checks remain available.")
+    st.caption("It can't check your own cover, confirm a claim or assess symptoms. "
+               "Please leave out personal details.")
+    if live and not api_key_configured():
+        st.warning("Haiku is not connected yet. Configure OSHC_API_KEY in the server environment or "
+                   "Streamlit secrets. Emergency and privacy checks remain available.")
     history = st.session_state.setdefault("ask_history", [])
-    toolbar, reset = st.columns([4, 1], vertical_alignment="center")
-    toolbar.caption("Name the topic in each follow-up; earlier messages are not used to infer "
-                    "your circumstances.")
-    reset.button("Clear chat", key="ask_clear", icon=":material/delete_sweep:",
-                 on_click=_clear)
 
     pending = None
     if not history:
-        st.subheader("Try a general question")
+        st.markdown("**Try one of these**")
         columns = st.columns(2)
         for index, starter in enumerate(STARTERS):
             if columns[index % 2].button(starter, key=f"ask_s{index}", width="stretch"):
                 pending = starter
 
-    submitted = st.chat_input("Ask a general OSHC question…", key="ask_box",
+    submitted = st.chat_input("Ask a general OSHC question", key="ask_box",
                               max_chars=2000 if live else MAX_QUESTION_CHARS, submit_mode="disable")
     question = submitted if submitted is not None else pending
     if question is not None and question.strip():
         # The service checks this complete message before invoking the loader.
-        with st.spinner("Checking your question, finding evidence and checking the answer…"):
+        with st.spinner("Checking your question, finding the guide passage and checking the answer…"):
             response = answer_question(question, root=ROOT, source_loader=lambda: load_source(ROOT)[0])
         safe_to_echo = response.safe_to_echo
         history = [*st.session_state["ask_history"], {
@@ -186,5 +173,20 @@ def render():
             st.text(turn["question"])
         _render_response(turn["response"], index, source_valid=source_valid)
     if history:
-        st.caption(f"Showing the latest {len(history)} of up to {MAX_TURNS} turns. "
-                   "The transcript stays in session memory. Previous turns are not sent to the model.")
+        st.button("Clear chat", key="ask_clear", icon=":material/delete_sweep:", on_click=_clear)
+
+    st.space("small")
+    safety_line()
+    with st.expander("How answers are checked"):
+        st.caption(f"Answers use the Medibank OSHC Member Guide, effective May 2026, saved {CAPTURED_ON}. "
+                   "Each message is checked on its own, so name the topic in a follow-up; earlier "
+                   "messages are not used to guess your circumstances.")
+        if live:
+            st.caption("Your general question and the relevant public guide passages are sent to "
+                       "Anthropic's Haiku API for safety checks and an answer. Bill uploads and chat "
+                       "history are not sent, and questions and drafts are not saved to disk.")
+        else:
+            st.caption("This session uses fixed explanations bound to guide passages. No AI provider "
+                       "is called.")
+        st.caption(f"The chat keeps up to {MAX_TURNS} turns in this browser session. Clear chat "
+                   "removes them.")
